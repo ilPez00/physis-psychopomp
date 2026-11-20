@@ -7,6 +7,10 @@ constraints on learned representations.
 Research instrument, not a validated architecture. **Status: v0.1 (CPU
 prototype).** Design and pre-registration: `docs/2026-11-20-PREREG.md`.
 
+Public: https://github.com/ilPez00/psychopomp. No LICENSE file yet — public
+publication is not a reuse grant; licensing is a deliberate operator decision,
+deferred.
+
 ## Standing evidence (kept on purpose)
 
 A prior JEPA-derived latent in this lineage was falsified at scale:
