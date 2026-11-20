@@ -246,7 +246,7 @@ def run(
                 if d < 2 * config.r:
                     nx, ny = (dx / d, dy / d) if d > 1e-12 else (1.0, 0.0)
                     rn = (a.vx[-1] - b.vx[-1]) * nx + (a.vy[-1] - b.vy[-1]) * ny
-                    if rn < 0:
+                    if rn > 0:  # closing along the a->b normal: exchange normal components
                         a.vx[-1] -= rn * nx
                         a.vy[-1] -= rn * ny
                         b.vx[-1] += rn * nx
