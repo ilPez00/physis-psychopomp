@@ -22,6 +22,9 @@ Consistency rules:
   C4 continuity -- without contact, exit velocity == entry velocity.
   C5 contact    -- a pair of overlapping intervals may exchange normal
                    components: momentum sum and relative speed preserved.
+                   Requires BOTH exits observed: a truncated episode (ball
+                   still inside) cannot be contact-checked and is outside the
+                   filter's scope -- generate cleared episodes.
 
 consistent_worlds() enumerates every zero-violation world; validate() scores
 a proposed world and names the violated rules. Probabilistic weighting and a

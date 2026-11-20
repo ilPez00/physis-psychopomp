@@ -1,14 +1,14 @@
-# Reproducibility manifest — Psychopomp v0.1
+# Reproducibility manifest — Psychopomp v0.2
 
 ## Environment
 
 - Python 3.12 (pin; other versions untested — `random.Random` and float
   formatting are the determinism surface).
-- v0.1 core is stdlib-only (no numpy/torch/clingo). Dev dep: pytest>=8.
+- Core (sim, event log, filter, controls) is stdlib-only. Dev dep: pytest>=8.
 - Install:
 
 ```bash
-cd ~/dev/psychopomp
+cd ~/dev/physis-psychopomp
 uv venv --python 3.12 .venv
 uv pip install -e '.[dev]'
 .venv/bin/pytest -q
@@ -17,22 +17,37 @@ uv pip install -e '.[dev]'
 ## Determinism
 
 - Seeded via `random.Random(hash((seed, episode)) % 2**63)` — int hashing is
-  stable; no `PYTHONHASHSEED` sensitivity.
+  stable; no `PYTHONHASHSEED` sensitivity (verified cross-process on v0.1).
 - Floats serialized with `round(..., 6)` and `sort_keys=True`.
 - Same (config, seed, episode, init, kicks) ⇒ identical observable/oracle
   JSONL, asserted by `tests/test_sim.py::test_determinism_same_seed`.
-- Occluder must sit strictly inside the walls; one step must not cross the
-  whole occluder (asserted at runtime — `speed * dt < o_hi - o_lo`).
+- Config rejects `speed*dt >= min(occluder width, height)` (tunneling guard).
 
-## Canonical scenarios (fixed)
+## Canonical scenarios (fixed, 2D)
 
-| name | config | seed | init | expects |
-|---|---|---|---|---|
-| straight | SimConfig(steps=45) | 0 | x=(20,80) v=(4,4) | 1 enter (left,+4), 1 exit (right,+4), 1 world |
-| swap | SimConfig(steps=45) | 0 | x=(30,70) v=(4,-4) | hidden contact in oracle only, 2 consistent worlds |
-| teleport (synthetic) | — | — | fabricated log | 0 worlds, C4 violation |
+Occluder x∈[40,60], y∈[35,65]; box 100x100; dt=0.1.
+
+| name | config | init | expects |
+|---|---|---|---|
+| straight | `SimConfig(steps=140)` | x=(20,20) y=(50,80) v=((3,0),(3,0)) | 1 enter (left) + 1 exit (right), v unchanged, 1 world, no contact required |
+| off-axis | `SimConfig(steps=150)` | x=(20,52) y=(45,20) v=((3,1),(0,3.3)) | hidden contact oracle-only; 2 enters (left,bottom), 2 exits (top,right); 2 worlds, ALL with a hidden-contact hypothesis |
+| head-on (degenerate) | synthetic log | – | 2 worlds, one contact-free → 1D degeneracy, documented as unidentifiable |
+
+## Pre-GPU gate (audit response)
+
+```bash
+.venv/bin/python scripts/recoverability.py
+```
+
+Expected shape of the output (see PREREG and fixes plan):
+
+```
+[random]    worlds ~1.1, contact_required ~0, truth-in-worlds == episodes, reference 100%
+[targeted]  worlds == 2, contact_required == 6/6, truth-in-worlds == episodes, reference 100%
+[control]   deranged targeted corpus: worlds 0.00, marginals preserved
+```
 
 ## GPU phase (future, unpinned)
 
-Not started. Before scheduling: confirm omo GPU availability. Pins for
-numpy/torch/EB-JEPA/clingo get added to this file at that point, not before.
+Not started. Before scheduling: confirm omo GPU availability. numpy/torch/
+EB-JEPA/clingo pins get added here at that point, not before.
