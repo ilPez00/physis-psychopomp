@@ -20,7 +20,7 @@ from typing import List, Optional, Tuple
 
 import clingo
 
-from .epec import TOL, _close, _overlaps, _relnorm, _sum, _vel
+from .epec import _close, _vel, contact_ok
 from .eventlog import EventLog
 
 PROGRAM = """
@@ -40,17 +40,6 @@ paired(E) :- pair(_,E).
 """
 
 
-def _contact_ok(e1, x1, e2, x2) -> bool:
-    v1, v2, w1, w2 = _vel(e1), _vel(e2), _vel(x1), _vel(x2)
-    if None in (v1, v2, w1, w2):
-        return True  # unmeasured: cannot falsify
-    return (
-        _close(_sum([v1, v2]), _sum([w1, w2]))
-        and abs(_relnorm(v1, v2) - _relnorm(w1, w2)) <= TOL
-        and _overlaps((e1.t, x1.t), (e2.t, x2.t))
-    )
-
-
 def worlds_via_asp(log: EventLog) -> List[Tuple[Tuple[int, int], ...]]:
     enters = [e for e in log.events if e.kind == "enter_occ"]
     exits = [e for e in log.events if e.kind == "exit_occ"]
@@ -67,7 +56,7 @@ def worlds_via_asp(log: EventLog) -> List[Tuple[Tuple[int, int], ...]]:
         for k in range(i + 1, len(enters)):
             for j in range(len(exits)):
                 for l in range(len(exits)):
-                    if j != l and _contact_ok(enters[i], exits[j], enters[k], exits[l]):
+                    if j != l and contact_ok(enters[i], exits[j], enters[k], exits[l]):
                         facts.append(f"contact_ok({i},{j},{k},{l}).")
     prog = PROGRAM + "\n" + "\n".join(facts)
 

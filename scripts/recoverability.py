@@ -1,7 +1,7 @@
 """Observable-only recoverability baseline + EPEC world accounting.
 
-Gate answered (audit 2026-11-20, demand 3): is the pre-registered task even
-solvable from observable history before any JEPA training?
+Gate answered (audit 2026-11-20): is the pre-registered task even solvable
+from observable history before any JEPA training?
 
 Reference method (oracle-free): restart the episode from the OBSERVED frame-0
 state (x, y, vx, vy -- all visible) and integrate the known physics forward.
@@ -9,21 +9,14 @@ It is a well-posedness check, not a competing learned method: it uses the
 same physics as the ground truth, so it measures whether the observable
 history carries enough information, not whether a model can find it.
 
-Two families:
-  random     -- crossings sampled freely; rarely contacts (reported as such)
-  targeted   -- aimed near the occluder centre; contains hidden contacts,
-                the family the identifiability question is about
-
-Reported arms (Rule 2: every number next to the arm it must beat):
-  - EPEC worlds, contact_required, truth-in-worlds (sanity) per family
-  - reference pairing accuracy vs oracle (per-ball exit sides)
-  - shuffled-control corpus on the targeted family (marginals preserved?)
+Families: `random` (crossings sampled freely; rarely contacts) and
+`targeted` (aimed near the occluder centre; contains hidden contacts).
+Control arm: the targeted corpus with exit payloads deranged across episodes.
 
 Usage: .venv/bin/python scripts/recoverability.py
 """
 from __future__ import annotations
 
-import random
 import sys
 from statistics import mean, median
 
@@ -31,57 +24,8 @@ sys.path.insert(0, ".")
 
 from psychopomp.controls import control_report, shuffle_rules
 from psychopomp.epec import consistent_worlds, summarize
-from psychopomp.sim import Init, SimConfig, run
-
-RANDOM_CFG = SimConfig(steps=300, speed=3.0)
-TARGET_CFG = SimConfig(steps=200)
-
-
-def build_corpus(n_random: int = 8, n_target: int = 6):
-    """Cleared episodes only: every enter has its exit (filter contract).
-
-    A truncated episode (ball still inside at the end) cannot be checked by
-    C5, which needs both exit velocities; such logs are outside the filter's
-    scope by construction, not silently zero-world.
-    """
-    rnd, seed = [], 0
-    while len(rnd) < n_random and seed < 400:
-        ep = run(RANDOM_CFG, seed)
-        s = summarize(ep.observable_log())
-        if s["enters"] >= 1 and s["enters"] == s["exits"]:
-            rnd.append(ep)
-        seed += 1
-    tgt, rng, tries = [], random.Random(7), 0
-    while len(tgt) < n_target and tries < 400:
-        tries += 1
-        init = Init(
-            x=(rng.uniform(15, 25), rng.uniform(48, 56)),
-            y=(rng.uniform(40, 50), rng.uniform(15, 27)),
-            v=((3.0, rng.uniform(0.4, 1.2)), (0.0, rng.uniform(2.8, 4.0))),
-        )
-        ep = run(TARGET_CFG, 0, init=init)
-        hidden = [e for e in ep.oracle_log() if e.kind == "ball_collide" and not e.observable]
-        s = summarize(ep.observable_log())
-        if hidden and s["enters"] == 2 and s["exits"] == 2:
-            tgt.append(ep)
-    return rnd, tgt
-
-
-def truth_matches(ep) -> tuple:
-    """Oracle pairing as (enter_idx, exit_idx) over the observable log order."""
-    obs = ep.observable_log()
-    enters = [e for e in obs if e.kind == "enter_occ"]
-    exits = [e for e in obs if e.kind == "exit_occ"]
-    pairs = []
-    for ball in sorted({e.subjects[0] for e in ep.oracle_log() if e.kind == "enter_occ"}):
-        ent = sorted(e.t for e in ep.oracle_log() if e.kind == "enter_occ" and e.subjects[0] == ball)
-        exi = sorted(e.t for e in ep.oracle_log() if e.kind == "exit_occ" and e.subjects[0] == ball)
-        for a, b in zip(ent, exi):
-            if b > a:
-                ei = next(i for i, e in enumerate(enters) if e.t == a)
-                xi = next(i for i, e in enumerate(exits) if e.t == b)
-                pairs.append((ei, xi))
-    return tuple(sorted(pairs))
+from psychopomp.fixtures import random_corpus, targeted_corpus, truth_matches
+from psychopomp.sim import Init, run
 
 
 def reference_episode(ep):
@@ -127,7 +71,8 @@ def family_report(name: str, eps) -> None:
 
 
 def main() -> int:
-    rnd, tgt = build_corpus()
+    rnd = random_corpus(8)
+    tgt = targeted_corpus(6)
     family_report("random", rnd)
     family_report("targeted", tgt)
 
