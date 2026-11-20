@@ -1,14 +1,18 @@
-"""Ball-in-corridor simulator with strict observable/oracle separation.
+"""2D ball-in-box simulator with strict observable/oracle separation.
 
-1D corridor [0, L]. An occluder hides a ball while its centre is inside
-[o_lo, o_hi]. Physics: constant velocity, elastic wall bounces, elastic
-identical-mass ball collisions (velocity exchange). External actions are
-velocity kicks, applied only to balls that are visible at that step, so no
-action is ever hidden from the camera.
+Box [0, W] x [0, H]; an occluder rectangle hides a ball whose centre is
+inside it (x0 <= x <= x1 and y0 <= y <= y1). Physics: constant velocity,
+elastic wall reflection, elastic equal-mass 2D ball collisions (velocity
+components along the contact normal are exchanged; tangential preserved).
+External actions are velocity kicks, applied only to balls visible at that
+step, so no action is ever hidden from the camera.
 
-Two visually identical balls: the observable log is identity-free. Which
-invisible trajectory connects which entry to which exit is exactly the
-possible-world question the downstream filter enumerates.
+Two visually identical balls: the observable log is identity-free. Off-axis
+contacts change the outgoing directions, so unlike the degenerate 1D head-on
+case a hidden contact is in principle detectable from observable history
+(entry states + known dynamics suffice to continue the motion). The identity
+pairing (which ball exits where) remains the genuinely hard part, and is the
+JEPA's task; an oracle-free forward reference exists (scripts/recoverability.py).
 
 Data products (oracle-leakage control):
   observable_log()  -- camera-measurable, identity-free events only
@@ -19,28 +23,33 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple
 
 from .eventlog import Event, EventLog, Provenance
 
+Vec = Tuple[float, float]
+
 
 @dataclass(frozen=True)
 class SimConfig:
-    L: float = 100.0
-    o_lo: float = 40.0
-    o_hi: float = 60.0
+    W: float = 100.0
+    H: float = 100.0
+    o: Tuple[float, float, float, float] = (40.0, 60.0, 35.0, 65.0)  # x0,x1,y0,y1
     r: float = 1.0
-    dt: float = 0.25
-    steps: int = 400
-    speed: float = 4.0
+    dt: float = 0.1
+    steps: int = 600
+    speed: float = 2.0
     n_balls: int = 2
 
     def __post_init__(self) -> None:
-        assert self.r > 0 and 0 < self.o_lo < self.o_hi < self.L - self.r, (
-            "occluder must sit strictly inside the walls (no bounce inside)"
-        )
+        x0, x1, y0, y1 = self.o
+        assert self.r > 0 and 0 < x0 < x1 < self.W - self.r, "occluder x-range"
+        assert 0 < y0 < y1 < self.H - self.r, "occluder y-range"
+        # one step must never cross the whole occluder (tunneling guard)
+        assert self.speed * self.dt < min(x1 - x0, y1 - y0), "speed*dt vs occluder"
 
     def canonical(self) -> str:
         d = {k: getattr(self, k) for k in self.__dataclass_fields__}
@@ -52,24 +61,60 @@ class SimConfig:
 
 @dataclass(frozen=True)
 class Init:
-    """Scripted initial state (positions, velocities). Overrides random init."""
-
     x: Tuple[float, ...]
-    v: Tuple[float, ...]
+    y: Tuple[float, ...]
+    v: Tuple[Vec, ...]
 
 
 @dataclass(frozen=True)
 class Kick:
     t: int
     ball: int
-    dv: float
+    dv: Vec
 
 
 @dataclass
 class Trajectory:
     x: List[float]
-    v: List[float]
+    y: List[float]
+    vx: List[float]
+    vy: List[float]
     visible: List[bool]
+
+
+def inside(cfg: SimConfig, x: float, y: float) -> bool:
+    x0, x1, y0, y1 = cfg.o
+    return x0 <= x <= x1 and y0 <= y <= y1
+
+
+def _enter_side(cfg: SimConfig, px: float, py: float, cx: float, cy: float) -> str:
+    x0, x1, y0, y1 = cfg.o
+    if px < x0 and cx >= x0 and y0 <= cy <= y1:
+        return "left"
+    if px > x1 and cx <= x1 and y0 <= cy <= y1:
+        return "right"
+    if py < y0 and cy >= y0 and x0 <= cx <= x1:
+        return "top"
+    if py > y1 and cy <= y1 and x0 <= cx <= x1:
+        return "bottom"
+    return "corner"
+
+
+def _exit_side(cfg: SimConfig, x: float, y: float) -> str:
+    x0, x1, y0, y1 = cfg.o
+    if x < x0:
+        return "left"
+    if x > x1:
+        return "right"
+    if y < y0:
+        return "top"
+    return "bottom"
+
+
+def _meas_v(tr: Trajectory, dt: float, a: int, b: int) -> Optional[Vec]:
+    if a < 0 or b >= len(tr.x) or not tr.visible[a] or not tr.visible[b]:
+        return None
+    return [round((tr.x[b] - tr.x[a]) / dt, 6), round((tr.y[b] - tr.y[a]) / dt, 6)]
 
 
 class SimEpisode:
@@ -79,8 +124,8 @@ class SimEpisode:
         seed: int,
         episode: int,
         trajs: List[Trajectory],
-        applied_kicks: Sequence[Kick],
-        skipped_kicks: Sequence[Kick],
+        applied: Sequence[Kick],
+        skipped: Sequence[Kick],
         init: Optional[Init],
         obs: EventLog,
         oracle: EventLog,
@@ -89,17 +134,12 @@ class SimEpisode:
         self.seed = seed
         self.episode = episode
         self.trajs = trajs
-        self.applied_kicks = list(applied_kicks)
-        self.skipped_kicks = list(skipped_kicks)
+        self.applied_kicks = list(applied)
+        self.skipped_kicks = list(skipped)
         self.init = init
         self._obs = obs
         self._oracle = oracle
-        self.prov = Provenance(
-            source="sim:v0.1",
-            config_sha256=config.sha256(),
-            seed=seed,
-            episode=episode,
-        )
+        self.prov = Provenance("sim:v0.2", config.sha256(), seed, episode)
 
     def observable_log(self) -> EventLog:
         return self._obs
@@ -122,14 +162,6 @@ class SimEpisode:
         return out
 
 
-def _meas_v(tr: Trajectory, dt: float, before: int, after: int) -> Optional[float]:
-    """Velocity a camera would measure from two visible frames; None if lacking."""
-    a, b = before, after
-    if a < 0 or b >= len(tr.x) or not tr.visible[a] or not tr.visible[b]:
-        return None
-    return round((tr.x[b] - tr.x[a]) / dt, 6)
-
-
 def run(
     config: SimConfig,
     seed: int,
@@ -139,24 +171,34 @@ def run(
 ) -> SimEpisode:
     rng = random.Random(hash((seed, episode)) % (2**63))
     n = config.n_balls
+    x0, x1, y0, y1 = config.o
 
     if init is not None:
-        assert len(init.x) == n and len(init.v) == n
-        xs, vs = list(init.x), list(init.v)
+        assert len(init.x) == n == len(init.y) == len(init.v)
+        xs, ys, vs = list(init.x), list(init.y), list(init.v)
     else:
-        xs, vs = [], []
+        xs, ys, vs = [], [], []
         for _ in range(n):
-            if rng.random() < 0.5:
-                lo, hi = config.r + 1.0, config.o_lo - 2.0
-            else:
-                lo, hi = config.o_hi + 2.0, config.L - config.r - 1.0
-            xs.append(rng.uniform(lo, hi))
-            vs.append(config.speed * (1 if rng.random() < 0.5 else -1))
-    for x in xs:
-        assert config.r <= x <= config.L - config.r, "init outside corridor"
-        assert not (config.o_lo <= x <= config.o_hi), "init must be visible"
+            while True:
+                cx, cy = rng.uniform(config.r, config.W - config.r), rng.uniform(
+                    config.r, config.H - config.r
+                )
+                if not inside(config, cx, cy) and all(
+                    math.hypot(cx - px, cy - py) >= 6 * config.r for px, py in zip(xs, ys)
+                ):
+                    break
+            th = rng.uniform(0.0, 2 * math.pi)
+            xs.append(cx)
+            ys.append(cy)
+            vs.append((config.speed * math.cos(th), config.speed * math.sin(th)))
+    for px, py in zip(xs, ys):
+        assert config.r <= px <= config.W - config.r and config.r <= py <= config.H - config.r
+        assert not inside(config, px, py), "init must be visible"
 
-    trajs = [Trajectory(x=[xs[i]], v=[vs[i]], visible=[True]) for i in range(n)]
+    trajs = [
+        Trajectory(x=[xs[i]], y=[ys[i]], vx=[vs[i][0]], vy=[vs[i][1]], visible=[True])
+        for i in range(n)
+    ]
 
     applied: List[Kick] = []
     skipped: List[Kick] = []
@@ -167,94 +209,108 @@ def run(
         for k in kicks:
             if k.t == t:
                 if trajs[k.ball].visible[-1]:
-                    trajs[k.ball].v[-1] += k.dv
+                    trajs[k.ball].vx[-1] += k.dv[0]
+                    trajs[k.ball].vy[-1] += k.dv[1]
                     applied.append(k)
                 else:
                     skipped.append(k)
         for i in range(n):
             tr = trajs[i]
-            tr.x.append(tr.x[-1] + tr.v[-1] * config.dt)
-            tr.v.append(tr.v[-1])
+            tr.x.append(tr.x[-1] + tr.vx[-1] * config.dt)
+            tr.y.append(tr.y[-1] + tr.vy[-1] * config.dt)
+            tr.vx.append(tr.vx[-1])
+            tr.vy.append(tr.vy[-1])
         for i in range(n):
             tr = trajs[i]
-            x, v = tr.x[-1], tr.v[-1]
-            if x < config.r:
-                tr.x[-1] = 2 * config.r - x
-                tr.v[-1] = -v
+            if tr.x[-1] < config.r:
+                tr.x[-1] = 2 * config.r - tr.x[-1]
+                tr.vx[-1] = -tr.vx[-1]
                 bounces.append((t + 1, i, "left"))
-            elif x > config.L - config.r:
-                tr.x[-1] = 2 * (config.L - config.r) - x
-                tr.v[-1] = -v
+            elif tr.x[-1] > config.W - config.r:
+                tr.x[-1] = 2 * (config.W - config.r) - tr.x[-1]
+                tr.vx[-1] = -tr.vx[-1]
                 bounces.append((t + 1, i, "right"))
+            if tr.y[-1] < config.r:
+                tr.y[-1] = 2 * config.r - tr.y[-1]
+                tr.vy[-1] = -tr.vy[-1]
+                bounces.append((t + 1, i, "top"))
+            elif tr.y[-1] > config.H - config.r:
+                tr.y[-1] = 2 * (config.H - config.r) - tr.y[-1]
+                tr.vy[-1] = -tr.vy[-1]
+                bounces.append((t + 1, i, "bottom"))
         for i in range(n):
             for j in range(i + 1, n):
                 a, b = trajs[i], trajs[j]
-                if abs(a.x[-1] - b.x[-1]) < 2 * config.r:
-                    # equal masses: exchange velocities on any overlap where
-                    # they differ (handles exact-meet crossings)
-                    if a.v[-1] != b.v[-1]:
-                        a.v[-1], b.v[-1] = b.v[-1], a.v[-1]
+                dx, dy = b.x[-1] - a.x[-1], b.y[-1] - a.y[-1]
+                d = math.hypot(dx, dy)
+                if d < 2 * config.r:
+                    nx, ny = (dx / d, dy / d) if d > 1e-12 else (1.0, 0.0)
+                    rn = (a.vx[-1] - b.vx[-1]) * nx + (a.vy[-1] - b.vy[-1]) * ny
+                    if rn < 0:
+                        a.vx[-1] -= rn * nx
+                        a.vy[-1] -= rn * ny
+                        b.vx[-1] += rn * nx
+                        b.vy[-1] += rn * ny
                         collisions.append((t + 1, i, j))
-                    if abs(a.x[-1] - b.x[-1]) < 2 * config.r:
-                        d = (2 * config.r - abs(a.x[-1] - b.x[-1])) / 2
-                        if a.x[-1] <= b.x[-1]:
-                            a.x[-1] -= d
-                            b.x[-1] += d
-                        else:
-                            a.x[-1] += d
-                            b.x[-1] -= d
+                    if d < 2 * config.r:  # positional separation
+                        push = (2 * config.r - d) / 2
+                        a.x[-1] -= push * nx
+                        a.y[-1] -= push * ny
+                        b.x[-1] += push * nx
+                        b.y[-1] += push * ny
         for i in range(n):
-            x = trajs[i].x[-1]
-            trajs[i].visible.append(not (config.o_lo <= x <= config.o_hi))
+            trajs[i].visible.append(not inside(config, trajs[i].x[-1], trajs[i].y[-1]))
 
-    # ---- event logs (identity discipline: observable = camera-measurable) --
+    prov = Provenance("sim:v0.2", config.sha256(), seed, episode)
     oracle, obs = EventLog(), EventLog()
 
     def emit(log: EventLog, kind: str, t: int, subjects: Tuple[str, ...],
              attrs: dict, observable: bool) -> None:
-        log.add(Event(kind, t, subjects, attrs, observable, _prov))
-
-    _prov = Provenance("sim:v0.1", config.sha256(), seed, episode)
+        log.add(Event(kind, t, subjects, attrs, observable, prov))
 
     for k in applied:
         tr = trajs[k.ball]
-        attrs = {"x": round(tr.x[k.t + 1], 6), "dv": k.dv}
+        attrs = {"x": [round(tr.x[k.t + 1], 6), round(tr.y[k.t + 1], 6)], "dv": list(k.dv)}
         emit(oracle, "kick", k.t, (f"b{k.ball}",), attrs, True)
         emit(obs, "kick", k.t, ("ball",), attrs, True)
     for k in skipped:
-        emit(oracle, "kick_skipped", k.t, (f"b{k.ball}",), {"dv": k.dv}, False)
+        emit(oracle, "kick_skipped", k.t, (f"b{k.ball}",), {"dv": list(k.dv)}, False)
 
     for i, tr in enumerate(trajs):
         for j in range(1, len(tr.visible)):
-            if tr.visible[j] and not tr.visible[j - 1]:  # exit: first visible frame
+            if tr.visible[j] and not tr.visible[j - 1]:
                 v = _meas_v(tr, config.dt, j, j + 1)
-                side = "left" if tr.x[j] < config.o_lo else "right"
-                emit(oracle, "exit_occ", j, (f"b{i}",), {"side": side, "v": v}, True)
-                emit(obs, "exit_occ", j, ("ball",), {"side": side, "v": v}, True)
-            elif tr.visible[j - 1] and not tr.visible[j]:  # enter: first hidden frame
-                assert abs(tr.x[j] - tr.x[j - 1]) < (config.o_hi - config.o_lo), (
-                    "tunneling: one step crossed the whole occluder"
-                )
+                side = _exit_side(config, tr.x[j], tr.y[j])
+                attrs = {"side": side, "v": v}
+                emit(oracle, "exit_occ", j, (f"b{i}",), attrs, True)
+                emit(obs, "exit_occ", j, ("ball",), attrs, True)
+            elif tr.visible[j - 1] and not tr.visible[j]:
                 v = _meas_v(tr, config.dt, j - 2, j - 1)
-                side = "left" if tr.x[j - 1] < config.o_lo else "right"
-                emit(oracle, "enter_occ", j, (f"b{i}",), {"side": side, "v": v}, True)
-                emit(obs, "enter_occ", j, ("ball",), {"side": side, "v": v}, True)
+                side = _enter_side(config, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j])
+                if side == "corner":
+                    raise AssertionError("corner entry is not supported; pick axis crossings")
+                attrs = {"side": side, "v": v}
+                emit(oracle, "enter_occ", j, (f"b{i}",), attrs, True)
+                emit(obs, "enter_occ", j, ("ball",), attrs, True)
 
     for (t, i, side) in bounces:
         tr = trajs[i]
-        v = round(tr.v[min(t, len(tr.v) - 1)], 6)
+        k = min(t, len(tr.vx) - 1)
+        v = [round(tr.vx[k], 6), round(tr.vy[k], 6)]
         emit(oracle, "wall_bounce", t, (f"b{i}",), {"side": side, "v": v}, True)
         emit(obs, "wall_bounce", t, ("ball",), {"side": side, "v": v}, True)
 
     for (t, i, j) in collisions:
         a, b = trajs[i], trajs[j]
-        both_vis = a.visible[t] and b.visible[t]
+        both = a.visible[t] and b.visible[t]
         emit(oracle, "ball_collide", t, (f"b{i}", f"b{j}"),
-             {"x_a": round(a.x[t], 6), "x_b": round(b.x[t], 6),
-              "v_a_after": round(a.v[t], 6), "v_b_after": round(b.v[t], 6)},
-             both_vis)
-        if both_vis:
+             {"x_a": [round(a.x[t], 6), round(a.y[t], 6)],
+              "x_b": [round(b.x[t], 6), round(b.y[t], 6)],
+              "v_a_after": [round(a.vx[t], 6), round(a.vy[t], 6)],
+              "v_b_after": [round(b.vx[t], 6), round(b.vy[t], 6)]}, both)
+        if both:
             emit(obs, "ball_collide", t, ("ball", "ball"),
-                 {"x_a": round(a.x[t], 6), "x_b": round(b.x[t], 6)}, True)
+                 {"x_a": [round(a.x[t], 6), round(a.y[t], 6)],
+                  "x_b": [round(b.x[t], 6), round(b.y[t], 6)]}, True)
 
     return SimEpisode(config, seed, episode, trajs, applied, skipped, init, obs, oracle)
