@@ -94,9 +94,9 @@ def _enter_side(cfg: SimConfig, px: float, py: float, cx: float, cy: float) -> s
     if px > x1 and cx <= x1 and y0 <= cy <= y1:
         return "right"
     if py < y0 and cy >= y0 and x0 <= cx <= x1:
-        return "top"
-    if py > y1 and cy <= y1 and x0 <= cx <= x1:
         return "bottom"
+    if py > y1 and cy <= y1 and x0 <= cx <= x1:
+        return "top"
     return "corner"
 
 
@@ -107,8 +107,8 @@ def _exit_side(cfg: SimConfig, x: float, y: float) -> str:
     if x > x1:
         return "right"
     if y < y0:
-        return "top"
-    return "bottom"
+        return "bottom"
+    return "top"
 
 
 def _meas_v(tr: Trajectory, dt: float, a: int, b: int) -> Optional[Vec]:

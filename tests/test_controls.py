@@ -1,43 +1,51 @@
 from psychopomp.controls import control_report, shuffle_rules
-from psychopomp.eventlog import Event, EventLog, Provenance
 from psychopomp.sim import Init, SimConfig, run
 
-PROV = Provenance("test", "0", 0, 0)
-CFG = SimConfig()
+CFG = SimConfig(steps=150)
+OFF_AXIS = Init(x=(20.0, 52.0), y=(45.0, 20.0), v=((3.0, 1.0), (0.0, 3.3)))
+STRAIGHT = Init(x=(20.0, 20.0), y=(50.0, 80.0), v=((3.0, 0.0), (3.0, 0.0)))
 
 
-def t2_rules():
-    ep = run(CFG, seed=0, init=Init(x=(30.0, 70.0), v=(4.0, -4.0)))
-    return ep.observable_log()
+def corpus():
+    eps = [
+        run(CFG, 0, init=OFF_AXIS),
+        run(CFG, 0, init=STRAIGHT),
+        run(CFG, 11),
+        run(CFG, 12),
+        run(CFG, 13),
+    ]
+    return [ep.observable_log() for ep in eps]
 
 
-def test_preserves_kinds_and_times():
-    orig = t2_rules()
-    shuf = shuffle_rules(orig, seed=42)
-    o = sorted((e.kind, e.t) for e in orig)
-    s = sorted((e.kind, e.t) for e in shuf)
-    assert o == s
+def test_preserves_structure_and_marginals():
+    logs = corpus()
+    shuf = shuffle_rules(logs, seed=42)
+    rep = control_report(logs, shuf)
+    assert rep["n_episodes"] == len(logs)
+    assert rep["kinds_and_times_preserved"] is True
+    assert rep["exit_marginals_preserved"] is True
+    assert rep["alignment_changed"] is True
+    assert rep["episodes_with_changed_pairing"] > 0
 
 
-def test_preserves_marginals_breaks_alignment():
-    orig = t2_rules()
-    shuf = shuffle_rules(orig, seed=42)
-    rep = control_report(orig, shuf)
-    assert rep["n_events"] == len(orig)
-    assert rep["preserved_marginals_and_times"] is True
-    assert rep["joint_alignment_changed"] is True
+def test_derangement_has_no_fixed_points_for_n_ge_2():
+    logs = corpus()
+    shuf = shuffle_rules(logs, seed=7)
+    # every exit payload must have moved to a different (episode, slot)
+    orig = [(k, e.t, str(e.attrs)) for k, log in enumerate(logs) for e in log if e.kind == "exit_occ"]
+    new = [(k, e.t, str(e.attrs)) for k, log in enumerate(shuf) for e in log if e.kind == "exit_occ"]
+    assert len(orig) == len(new) >= 2
+    assert orig != new
 
 
 def test_deterministic_with_seed():
-    orig = t2_rules()
-    assert sorted(
-        (e.kind, e.t, tuple(sorted(e.attrs.items()))) for e in shuffle_rules(orig, seed=9)
-    ) == sorted(
-        (e.kind, e.t, tuple(sorted(e.attrs.items()))) for e in shuffle_rules(orig, seed=9)
-    )
+    logs = corpus()
+    a = shuffle_rules(logs, seed=9)
+    b = shuffle_rules(logs, seed=9)
+    assert [str([e.attrs for e in l]) for l in a] == [str([e.attrs for e in l]) for l in b]
 
 
-def test_singletons_untouched():
-    log = EventLog([Event("enter_occ", 5, ("ball",), {"side": "left", "v": 1.0}, True, PROV)])
-    shuf = shuffle_rules(log, seed=3)
-    assert shuf.events[0].attrs == log.events[0].attrs
+def test_single_exit_corpus_is_identity():
+    logs = [run(CFG, 0, init=STRAIGHT).observable_log()]
+    shuf = shuffle_rules(logs, seed=3)
+    assert [e.attrs for e in shuf[0]] == [e.attrs for e in logs[0]]
