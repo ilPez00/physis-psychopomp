@@ -8,7 +8,7 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "clingo>=5.7"]
 
 [build-system]
 requires = ["setuptools>=68"]

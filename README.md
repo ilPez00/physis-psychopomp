@@ -33,10 +33,14 @@ psychopomp/sim.py        2D deterministic sim; observable/oracle separation
 psychopomp/epec.py       EPEC-inspired possible-world filter (unweighted, own
                          encoding — epec-vanilla is reference only, no
                          LICENSE file in that repo; ask D'Asaro before reuse)
+psychopomp/asp.py        clingo/ASP encoding of C1–C5 (unweighted), numeric
+                         facts computed in Python, cross-checked against the
+                         Python enumeration
 psychopomp/controls.py   cross-episode derangement control (preserves counts,
                          kinds, timestamps, corpus marginals; breaks alignment)
 scripts/recoverability.py  observable-only well-posedness baseline + EPEC
                          world accounting + control arm
+scripts/demo.py          executable quickstart (two canonical worlds)
 docs/2026-11-20-PREREG.md  claims, arms, metrics, failure criteria
 docs/2026-11-20-FIXES-AND-IMPROVEMENTS.md  audit response, statuses, gates
 REPRO.md                 environment, seeds, canonical scenarios
@@ -47,7 +51,8 @@ REPRO.md                 environment, seeds, canonical scenarios
 ```bash
 uv venv --python 3.12 .venv
 uv pip install -e '.[dev]'
-.venv/bin/pytest -q
+.venv/bin/pytest -q          # 28 tests incl. ASP cross-check
+.venv/bin/python scripts/demo.py
 .venv/bin/python scripts/recoverability.py
 ```
 

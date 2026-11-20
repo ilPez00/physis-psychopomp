@@ -30,20 +30,35 @@ and what remains. Each open item names its gate.
 
 ## Improvements (open)
 
-| id | item | gate |
-|---|---|---|
-| IMP-1 | CI: GitHub Actions running `pytest` on push (public repo). | green run |
-| IMP-2 | LICENSE decision. Currently none; publication is not a reuse grant. Operator decision. | operator |
-| IMP-3 | clingo/ASP port of the C1–C5 rules + probabilistic weighting (Claim B prerequisite; epec-vanilla is reference only, no license file — ask D'Asaro first). | ASP encoding reproduces C1–C5 worlds on the canonical fixtures |
-| IMP-4 | Physis export adapter: observable log → physis observations (typed props, provenance). | round-trip query on a fixture |
-| IMP-5 | M2/M3 probe harness on CPU with handcrafted features (stupid-control-first per Rule 2), before any GPU arm. | harness runs end-to-end, shuffled arm first-class |
-| IMP-6 | Filter null test: shuffled-event null log must not yield consistent worlds at the same rate (it already yields 0.00 mean on the targeted corpus; formalize as a test). | test fails if null arm converges to the real arm |
-| IMP-7 | Filter tightness on re-crossing episodes (multiple intervals per ball): enumeration retry handles only one contact pair. Cleared single-crossing episodes are the supported scope; multi-crossing needs interval segmentation. | test: re-crossing cleared episode yields the truths among worlds with bounded counts |
-| IMP-8 | `README` demo script (`scripts/demo.py`) so the quickstart is executable. | script output matches REPRO table |
+| id | item | gate | status |
+|---|---|---|---|
+| IMP-1 | CI: GitHub Actions running `pytest` on push (public repo). | green run | workflow landed (`.github/workflows/ci.yml`, uv + pytest + recoverability + demo); run status depends on the account's Actions billing — verify with `gh run list`, never assume |
+| IMP-2 | LICENSE decision. Currently none; publication is not a reuse grant. Operator decision. | operator | open |
+| IMP-3a | clingo/ASP port of the C1–C5 rules (unweighted). | ASP encoding reproduces the Python worlds on the canonical fixtures | **done** (`psychopomp/asp.py`, clingo 5.8.3; numeric facts computed in Python — clingo is integer-only — combinatorial search in ASP; `tests/test_asp.py` cross-checks straight/off-axis/head-on/teleport) |
+| IMP-3b | Probabilistic weighting of worlds (EPEC proper). epec-vanilla is reference only, no license file — ask D'Asaro first. | weighted counts reproduce orderings, sanity controls | open |
+| IMP-4 | Physis export adapter: observable log → physis observations (typed props, provenance). | round-trip query on a fixture | open |
+| IMP-5 | M2/M3 probe harness on CPU with handcrafted features (stupid-control-first per Rule 2), before any GPU arm. | harness runs end-to-end, shuffled arm first-class | open |
+| IMP-6 | Filter null test: shuffled-event null log must not yield consistent worlds at the same rate (already yields 0.00 mean on the targeted corpus; formalize as a test). | test fails if null arm converges to the real arm | open |
+| IMP-7 | Filter tightness on re-crossing episodes (multiple intervals per ball): enumeration retry handles only one contact pair. Cleared single-crossing episodes are the supported scope; multi-crossing needs interval segmentation. | test: re-crossing cleared episode yields the truths among worlds with bounded counts | open |
+| IMP-8 | `README` demo script so the quickstart is executable. | script output matches REPRO table | **done** (`scripts/demo.py`, prints PASS on the two canonical worlds) |
+
+## Blocker: GPU phase
+
+Checked 2026-11-20: `tailscale status` reports **omo offline, last seen 5 days**
+(and `ssh omo-ts` times out). The GPU phase therefore **cannot be scheduled**;
+it stays blocked until the node is reachable, and this is recorded rather than
+worked around. Nothing in this repo has been run on a GPU.
 
 ## Stop rule
 
 No GPU arm runs until IMP-1..IMP-3 are green **and**
 `scripts/recoverability.py` prints `truth-in-worlds == episodes` on the
 targeted family. Both currently hold; the pre-registered failure criteria in
-`2026-11-20-PREREG.md` remain the decision rule for Claim A.
+`2026-11-20-PREREG.md` remain the decision rule for Claim A. Independently of
+the rule, the GPU node is offline (omo, last seen 5d on 2026-11-20), so the
+phase is blocked, not merely unscheduled.
+
+## Status log
+
+- 2026-11-20: audit fixes landed (FIX-1..8). 23→28 tests (ASP port added).
+  Recoverability gate reproduces on a fresh public clone. omo offline.
