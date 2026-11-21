@@ -68,14 +68,30 @@ def m2_baseline(eps: List[SimEpisode]) -> dict:
     }
 
 
-def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False) -> float:
+def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False) -> dict:
+    """Contact detection, with undecided episodes excluded rather than guessed.
+
+    `contact_required` is None when an episode is not cleared (C5 needs both
+    exits). Coercing that to bool counted "undecidable" as "no contact" -- the
+    same fabrication the oracle-truth fix removed one layer down, so the scorer
+    now reports how many episodes it actually scored.
+    """
     logs = [ep.observable_log() for ep in eps]
     if shuffled:
         logs = shuffle_rules(logs, seed=12345)
-    ok = 0
+    ok = scored = excluded = 0
     for ep, log in zip(eps, logs):
-        ok += int(bool(summarize(log)["contact_required"]) == has_hidden_contact(ep))
-    return ok / len(eps) if eps else 0.0
+        decided = summarize(log)["contact_required"]
+        if decided is None:
+            excluded += 1
+            continue
+        scored += 1
+        ok += int(decided == has_hidden_contact(ep))
+    return {
+        "accuracy": (ok / scored) if scored else 0.0,
+        "scored": scored,
+        "excluded": excluded,
+    }
 
 
 def _pos_residual(log, world) -> float:

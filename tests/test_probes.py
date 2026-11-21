@@ -16,14 +16,14 @@ def test_m2_endpoint_probe_is_chance_on_contact_family():
 
 
 def test_m3_detects_contacts_on_targeted_and_random():
-    assert m3_accuracy(targeted_corpus(3)) == 1.0
-    assert m3_accuracy(random_corpus(4)) == 1.0
+    assert m3_accuracy(targeted_corpus(3))["accuracy"] == 1.0
+    assert m3_accuracy(random_corpus(4))["accuracy"] == 1.0
 
 
 def test_m3_control_breaks_contact_detection():
     tgt = targeted_corpus(3)
-    real = m3_accuracy(tgt)
-    shuffled = m3_accuracy(tgt, shuffled=True)
+    real = m3_accuracy(tgt)["accuracy"]
+    shuffled = m3_accuracy(tgt, shuffled=True)["accuracy"]
     assert real == 1.0
     assert shuffled < real
 
@@ -103,3 +103,28 @@ def test_a2_probe_reads_its_clock_from_the_log():
         for e in log.events
     ])
     assert _pos_residual(stripped, world) == float("inf")
+
+
+def test_m3_excludes_an_undecided_episode_instead_of_calling_it_no_contact():
+    # An uncleared episode has contact_required None. Coercing it to bool scored
+    # "undecidable" as "no contact"; the scorer must exclude and count it.
+    from psychopomp.eventlog import Event, EventLog, Provenance
+
+    prov = Provenance("test", "0", 0, 0)
+
+    class Stub:
+        def observable_log(self):
+            return EventLog([
+                Event("enter_occ", 5, ("ball",), {"side": "left", "v": [3.0, 0.0], "pos": [39.7, 50.0], "dt": 0.1}, True, prov)
+            ])
+
+        def oracle_log(self):
+            return EventLog([
+                Event("enter_occ", 5, ("b0",), {"side": "left", "v": [3.0, 0.0]}, True, prov),
+                Event("ball_collide", 6, ("b0", "b1"), {}, False, prov),
+            ])
+
+    report = m3_accuracy([Stub()])
+    assert report["scored"] == 0
+    assert report["excluded"] == 1
+    assert report["accuracy"] == 0.0
