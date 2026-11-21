@@ -118,3 +118,32 @@ def test_validate_names_c4_and_c5():
     w3 = World(matches=((0, 0), (1, 1)), swaps=((0, 1),), unmatched=())
     exits3 = [ev("exit_occ", 10, "bottom", (0.0, 1.0)), ev("exit_occ", 11, "right", (9.4, 9.5))]
     assert "C5" in validate(w3, enters2, exits3)
+
+
+def test_single_ball_recrossing_is_filtered_to_the_truth():
+    # One ball crosses the occluder twice (wall bounce in between). Four events,
+    # one consistent world, no contact: continuity alone decides it.
+    from psychopomp.fixtures import recrossing_episode, truth_matches
+
+    ep = recrossing_episode()
+    worlds = consistent_worlds(ep.observable_log())
+    assert len(worlds) == 1
+    assert worlds[0].matches == truth_matches(ep)
+    assert worlds[0].swaps == ()
+
+
+def test_two_ball_symmetric_recrossing_is_ambiguous_not_wrong():
+    # Two balls on parallel paths both cross twice: four events, two velocity
+    # classes, so four consistent worlds. The ambiguity is identity, not a
+    # filter failure -- and the truth for such an episode is unattributable
+    # (see tests/test_probes.py), which is why it is excluded, not scored.
+    ep = run(
+        SimConfig(steps=600),
+        5,
+        init=Init(x=(30.0, 30.0), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0))),
+    )
+    log = ep.observable_log()
+    worlds = consistent_worlds(log)
+    assert summarize(log)["enters"] == 4
+    assert len(worlds) == 4
+    assert all(w.swaps == () for w in worlds)

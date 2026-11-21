@@ -12,8 +12,9 @@ and what remains. Each open item names its gate.
   the within-`(kind,t)` shuffle was a multiset permutation (vacuous), and the
   1D equal-mass head-on exchange was observationally identical to
   pass-through (EPEC returned an unidentifiable second world).
-- Fixes below are covered by the test suite (31 tests as committed on
-  2026-11-21: 28 in the five test files that existed, plus 3 probe tests) and
+- Fixes below are covered by the test suite (36 tests as committed on
+  2026-11-21: 28 in the five test files that existed, 3 probe tests, 3
+  oracle-truth regressions, 2 re-crossing regressions) and
   `scripts/recoverability.py`, whose output is quoted per item.
 
 ## Fixes (audit-driven)
@@ -40,7 +41,7 @@ and what remains. Each open item names its gate.
 | IMP-4 | Physis export adapter: observable log → physis observations (typed props, provenance). | round-trip query on a fixture | open |
 | IMP-5 | M2/M3 probe harness on CPU with handcrafted features (stupid-control-first per Rule 2), before any GPU arm. | harness runs end-to-end, shuffled arm first-class | **done** 2026-11-21 — `psychopomp/probes.py` + `psychopomp/fixtures.py` + `scripts/probes.py`, 3 tests. Measured: targeted family M2 top-1 **0.17 vs chance 0.50** (endpoint-only ranking cannot beat chance: the two consistent worlds are relabellings with identical total deflection), M3 contact detection **1.00**, deranged control **0.00**; random family M2 1.00 vs chance 0.94, M3 1.00, shuffled 1.00 (the control does not bite where worlds are near-unique — stated, not hidden). This is the pre-registered gate's second half measured on CPU: the oracle-free reference does not beat chance on M2, and the shuffled control removes the M3 information. |
 | IMP-6 | Filter null test: shuffled-event null log must not yield consistent worlds at the same rate (already yields 0.00 mean on the targeted corpus; formalize as a test). | test fails if null arm converges to the real arm | open |
-| IMP-7 | Filter tightness on re-crossing episodes (multiple intervals per ball): enumeration retry handles only one contact pair. Cleared single-crossing episodes are the supported scope; multi-crossing needs interval segmentation. | test: re-crossing cleared episode yields the truths among worlds with bounded counts | open |
+| IMP-7 | Filter tightness on re-crossing episodes (multiple intervals per ball). Original concern: "enumeration retry handles only one contact pair". | a re-crossing episode filters correctly, and a multi-contact search is not single-pair | **premise corrected 2026-11-21, work closed.** Measured: `_pairings` is a *recursive* perfect pairing over every C4-failing match, not a single pair. One ball crossing twice (4 events) filters to exactly the truth in 1 world (`test_single_ball_recrossing_is_filtered_to_the_truth`); two balls crossing twice yields 4 consistent worlds, all contact-free — identity ambiguity, not filter failure (`test_two_ball_symmetric_recrossing_is_ambiguous_not_wrong`). The genuinely unreachable case is an episode needing **two hidden contacts**: 400 random 4-event attempts found 0, so no generator can exercise it. Interval segmentation stays unimplemented by evidence, not by neglect; the gate for it is a reachable generator for two concurrent hidden contacts. |
 | IMP-8 | `README` demo script so the quickstart is executable. | script output matches REPRO table | **done** (`scripts/demo.py`, prints PASS on the two canonical worlds) |
 | IMP-9 | CI red on `main` after `dcbc611`: `scripts/recoverability.py` imports `psychopomp.fixtures`, which was never committed — 28 tests passed, then the gate died with `ModuleNotFoundError`. | `gh run list` green on `main` | **fixed** 2026-11-21 — the four files that made the imported module exist are committed; a clean-room run of tracked files plus them passes tests/31, recoverability, probes and demo. |
 
