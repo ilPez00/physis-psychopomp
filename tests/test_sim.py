@@ -44,8 +44,17 @@ def test_straight_pass_single_crossing():
     enters = [e for e in obs if e.kind == "enter_occ"]
     exits = [e for e in obs if e.kind == "exit_occ"]
     assert len(enters) == 1 and len(exits) == 1
-    assert enters[0].attrs == {"side": "left", "v": [3.0, 0.0]}
-    assert exits[0].attrs == {"side": "right", "v": [3.0, 0.0]}
+    # `pos` is the observable boundary position (prereg amendment A2). It is
+    # schema, not decoration: it is the only coordinate pair that distinguishes
+    # relabeled worlds whose velocities agree.
+    assert enters[0].attrs["side"] == "left"
+    assert enters[0].attrs["v"] == [3.0, 0.0]
+    assert enters[0].attrs["pos"][1] == 50.0
+    assert enters[0].attrs["pos"][0] < 40.0  # last visible step before the occluder
+    assert exits[0].attrs["side"] == "right"
+    assert exits[0].attrs["v"] == [3.0, 0.0]
+    assert exits[0].attrs["pos"][1] == 50.0
+    assert exits[0].attrs["pos"][0] > 60.0   # first visible step after it
     assert enters[0].t < exits[0].t
     assert not [e for e in ep.oracle_log() if e.kind == "ball_collide"]
 

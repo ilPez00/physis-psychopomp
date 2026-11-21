@@ -9,7 +9,7 @@ from __future__ import annotations
 import random
 from typing import List, Tuple
 
-from .epec import summarize
+from .epec import consistent_worlds, summarize
 from .sim import Init, SimConfig, SimEpisode, run
 
 RANDOM_CFG = SimConfig(steps=300, speed=3.0)
@@ -56,6 +56,32 @@ def recrossing_episode() -> SimEpisode:
     """One ball crosses twice (wall bounce between crossings), no contact."""
     cfg = SimConfig(steps=520)
     return run(cfg, 0, init=Init(x=(30.0, 30.0), y=(50.0, 85.0), v=((3.0, 0.0), (0.05, 0.0))))
+
+
+def parallel_recrossing_corpus(n: int = 6, tries: int = 80) -> List[SimEpisode]:
+    """Two balls on parallel paths, both crossing twice — the A2 family.
+
+    Each episode has four crossing events, four contact-free consistent worlds
+    (two velocity classes, two crossings each) and an *attributable* truth: the
+    balls start at different x, so their crossing timestamps differ. That makes
+    it the only shipped corpus where identity, not physics, is the question.
+    """
+    out: List[SimEpisode] = []
+    cfg = SimConfig(steps=600)
+    for k in range(tries):
+        init = Init(x=(30.0, 30.0 + 2.0 * (k % 5)), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0)))
+        ep = run(cfg, k, init=init)
+        worlds = consistent_worlds(ep.observable_log())
+        if len(worlds) != 4 or any(w.swaps for w in worlds):
+            continue
+        try:
+            truth_matches(ep)
+        except ValueError:
+            continue
+        out.append(ep)
+        if len(out) >= n:
+            break
+    return out
 
 
 def has_hidden_contact(ep: SimEpisode) -> bool:

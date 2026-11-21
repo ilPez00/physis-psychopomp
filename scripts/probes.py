@@ -10,8 +10,8 @@ import sys
 
 sys.path.insert(0, ".")
 
-from psychopomp.fixtures import random_corpus, targeted_corpus
-from psychopomp.probes import m2_baseline, m3_accuracy
+from psychopomp.fixtures import parallel_recrossing_corpus, random_corpus, targeted_corpus
+from psychopomp.probes import m2_baseline, m2_position_continuity, m3_accuracy
 
 
 def main() -> int:
@@ -21,14 +21,28 @@ def main() -> int:
         m2 = m2_baseline(eps)
         m3 = m3_accuracy(eps)
         m3s = m3_accuracy(eps, shuffled=True)
+        a2 = m2_position_continuity(eps)
         print(
             f"[{name}] episodes {len(eps)}  worlds_mean {m2['worlds_mean']:.2f}  "
             f"M2 top1 {m2['top1']:.2f} (chance {m2['chance']:.2f})  "
             f"M3 acc {m3:.2f}  shuffled {m3s:.2f}  "
             f"excluded {m2['excluded_ambiguous_truth']}"
         )
+        print(
+            f"  A2 position-continuity: top1 {a2['top1']:.2f} "
+            f"(chance {a2['chance']:.2f}, scored {a2['episodes']}, "
+            f"excluded {a2['excluded']})"
+        )
+    twin = parallel_recrossing_corpus(6)
+    e, a = m2_baseline(twin), m2_position_continuity(twin)
+    print(
+        f"[parallel x2] episodes {len(twin)}  endpoint top1 {e['top1']:.2f} "
+        f"(chance {e['chance']:.2f})  A2 position top1 {a['top1']:.2f} "
+        f"(chance {a['chance']:.2f})  excluded {a['excluded']}"
+    )
     print("M2 note: endpoint-only ranking is a coin flip on relabeling-symmetric worlds;")
-    print("a model must beat this using pre-contact history, not endpoints.")
+    print("the observable boundary position decides them (amendment A2), so a learned")
+    print("model on this task must beat a deterministic 1.00, not a 0.25 coin flip.")
     return 0
 
 

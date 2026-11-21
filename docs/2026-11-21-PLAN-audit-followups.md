@@ -95,3 +95,44 @@ P1 → P2 → P3 → P4 → P5 → P6. Each lands as its own commit with its gat
 quoted. Stop early if a gate fails twice on the same item: record FAIL, do not
 retry a third time. P4's result is the one that decides whether any GPU work is
 scheduled; everything before it is instrument hygiene.
+
+## Execution status — 2026-11-21
+
+- **P1 DONE.** `tests/test_controls.py::test_null_arm_does_not_reproduce_the_filter_verdict`:
+  real `contact_required` 6/6, null 0/6, worlds mean 2.00 vs 0.00.
+  Mutation-checked: an identity shuffle makes null == real and the test fails.
+- **P2 DONE.** `tests/test_instrument.py` (3 tests): attributable bijective
+  truth per episode, truth ⊆ enumerated worlds for both shipped corpora, and a
+  shared-timestamp log excluded rather than scored. Mutation-checked: restoring
+  the time-only lookup yields `((0,0),(0,0),(1,1),(1,1))`, exclusion 0, RED.
+- **P3 DONE.** `scripts/repro-table.py` + CI step; REPRO's block is generated
+  between markers. Drift-checked: editing `2.00` to `2.01` makes `--check` exit
+  1 with the diff.
+- **P4 DONE, falsifier NOT triggered — and the result changes the GPU plan.**
+  The shipped corpora could not answer the question (random: chance 1.00, one
+  world; targeted: contact episodes excluded by design), so the family the
+  question needs was built: `parallel_recrossing_corpus` (2 balls, parallel,
+  both crossing twice → 4 contact-free worlds, attributable truth).
+  Measured on 6 such episodes: **endpoint-only 0.00 top-1 vs chance 0.25;
+  position continuity 1.00 vs chance 0.25** (excluded 0). Position continuity
+  decides every episode.
+  Consequence, stated plainly: M2 is no longer "unbeatable by an oracle-free
+  method" — a hand-coded physics residual solves it perfectly. A learned model
+  therefore has **no headroom** on M2 or M3 (M3 is already 1.00). Scheduling GPU
+  arms on these tasks would measure a ceiling, not learning. Proposed A3
+  (needs operator sign-off, not implemented here): a harder variant —
+  positions quantized to 5 units, occlusion of wall-bounce events, and/or
+  observation noise — where the residual is insufficient and a model could add
+  something, with its own chance floor measured first.
+- **P5 DONE.** `tests/test_degenerate.py` (4 tests) covers truncated, shared
+  timestamp, tunneling config and cleared episodes. Writing it exposed a real
+  reporting bug: a truncated episode reported `contact_required: False`
+  ("confirmed no contact") when the truth is "undecidable"; `summarize` now
+  reports `cleared` and `contact_required: None` for uncleared logs.
+- **P6 DEFERRED with the measured obstacle.** `physis 1.9.1` offers
+  `observe <tree>` (file scan) and `remember <text> --outcome`, with no typed
+  observation ingest from JSONL, so "typed props round-trip" cannot be built
+  from this repo alone: it needs either the MCP `physis.remember` schema or a
+  store writer, which is a cross-repo design decision. Not faked.
+
+Test count: 45 (was 36 at the start of this plan).

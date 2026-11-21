@@ -76,3 +76,62 @@ def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False) -> float:
     for ep, log in zip(eps, logs):
         ok += int(bool(summarize(log)["contact_required"]) == has_hidden_contact(ep))
     return ok / len(eps) if eps else 0.0
+
+
+def _pos_residual(log, world) -> float:
+    """Straight-line residual of `dy` for a contact-free match, in units.
+
+    Amendment A2: a ball entering at (x, y) with velocity v must leave at
+    `y + v_y * dt * steps` if nothing acted on it. Contacts are excluded here
+    because the residual is only meaningful where no force applied.
+    """
+    enters = [e for e in log.events if e.kind == "enter_occ"]
+    exits = [e for e in log.events if e.kind == "exit_occ"]
+    dt = 0.1  # SimConfig.dt; the probe reads the same physical clock as the log
+    total = 0.0
+    for a, b in world.matches:
+        ea, xb = enters[a], exits[b]
+        v = ea.attrs.get("v")
+        p_in, p_out = ea.attrs.get("pos"), xb.attrs.get("pos")
+        if v is None or p_in is None or p_out is None:
+            return float("inf")
+        predicted = p_in[1] + v[1] * dt * (xb.t - ea.t)
+        total += abs(predicted - p_out[1])
+    return total
+
+
+def m2_position_continuity(eps: List[SimEpisode]) -> dict:
+    """Top-1 for the A2 probe: rank worlds by straight-line y residual.
+
+    Only contact-free episodes are scored: where the truth requires a contact
+    the residual cannot be zero, so the probe is not applicable and the episode
+    is counted as excluded rather than scored against a probe that does not fit.
+    """
+    top1 = n = excluded = 0
+    world_counts: List[int] = []
+    for ep in eps:
+        log = ep.observable_log()
+        ws = consistent_worlds(log)
+        if not ws:
+            continue
+        try:
+            truth = truth_matches(ep)
+        except ValueError:
+            excluded += 1
+            continue
+        if any(w.swaps for w in ws):
+            excluded += 1
+            continue
+        scores = {w: _pos_residual(log, w) for w in ws}
+        best = min(scores.values())
+        winners = [w for w, s in scores.items() if s == best]
+        n += 1
+        world_counts.append(len(ws))
+        if len(winners) == 1 and winners[0].matches == truth:
+            top1 += 1
+    return {
+        "episodes": n,
+        "top1": (top1 / n) if n else 0.0,
+        "chance": (sum(1.0 / w for w in world_counts) / len(world_counts)) if world_counts else 0.0,
+        "excluded": excluded,
+    }

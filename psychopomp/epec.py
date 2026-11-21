@@ -217,11 +217,18 @@ def summarize(log: EventLog) -> dict:
         for a, b in w.matches:
             if _vel(enters[a]) is None or _vel(exits[b]) is None:
                 unconstrained += 1
+    # A truncated episode (an enter with no exit) cannot be contact-checked:
+    # C5 needs both exit velocities. Reporting `contact_required: False` there
+    # read as "confirmed no contact" when the truth is "not decidable", so the
+    # field becomes None whenever the episode is not cleared (FIX-5's contract,
+    # now enforced in the reporting layer as well as in the builders).
+    cleared = len(enters) == len(exits)
     return {
         "enters": len(enters),
         "exits": len(exits),
+        "cleared": cleared,
         "n_worlds": len(ws),
-        "contact_required": bool(ws) and all(w.swaps for w in ws),
+        "contact_required": (bool(ws) and all(w.swaps for w in ws)) if cleared else None,
         "unconstrained": unconstrained,
         "worlds": [w.describe() for w in ws],
     }

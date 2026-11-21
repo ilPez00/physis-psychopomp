@@ -67,3 +67,21 @@ def test_m2_counts_an_unattributable_truth_as_excluded_not_wrong():
     assert m2["excluded_ambiguous_truth"] == 1
     assert m2["episodes"] == 0
     assert m2["top1"] == 0.0
+
+
+def test_a2_position_continuity_breaks_the_relabeling_tie():
+    # Amendment A2, measured on the family built for it: four contact-free
+    # worlds, attributable truth. Endpoints cannot decide (0.00 vs chance 0.25);
+    # the observable boundary position decides all six (1.00 vs chance 0.25).
+    from psychopomp.fixtures import parallel_recrossing_corpus
+    from psychopomp.probes import m2_position_continuity
+
+    eps = parallel_recrossing_corpus(6)
+    assert len(eps) == 6
+    endpoint = m2_baseline(eps)
+    a2 = m2_position_continuity(eps)
+    assert abs(endpoint["chance"] - 0.25) < 1e-9
+    assert endpoint["top1"] == 0.0
+    assert a2["excluded"] == 0
+    assert abs(a2["chance"] - 0.25) < 1e-9
+    assert a2["top1"] == 1.0
