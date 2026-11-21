@@ -14,6 +14,7 @@ deranged control corpus must break this agreement.
 from __future__ import annotations
 
 import math
+import random
 from typing import List
 
 from .controls import shuffle_rules
@@ -94,7 +95,11 @@ def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False) -> dict:
     }
 
 
-def _pos_residual(log, world) -> float:
+def _quantize(value: float, unit: float) -> float:
+    return round(value / unit) * unit
+
+
+def _pos_residual(log, world, quantize: float = 0.0) -> float:
     """Straight-line residual of `dy` for a contact-free match, in units.
 
     Amendment A2: a ball entering at (x, y) with velocity v must leave at
@@ -113,12 +118,42 @@ def _pos_residual(log, world) -> float:
         # that changed it.
         if v is None or p_in is None or p_out is None or dt is None:
             return float("inf")
+        if quantize > 0:
+            # Coarsened observation: rounding is the sensor, and the probe must
+            # see only what a sensor at this resolution could have reported.
+            p_in = [_quantize(p_in[0], quantize), _quantize(p_in[1], quantize)]
+            p_out = [_quantize(p_out[0], quantize), _quantize(p_out[1], quantize)]
+            v = [_quantize(v[0], quantize), _quantize(v[1], quantize)]
         predicted = p_in[1] + v[1] * dt * (xb.t - ea.t)
         total += abs(predicted - p_out[1])
     return total
 
 
-def m2_position_continuity(eps: List[SimEpisode]) -> dict:
+def _jittered(log: EventLog, magnitude: float, seed: int):
+    """A sensor's error, applied to every position/velocity attribute.
+
+    Rounding to a grid is not noise: it preserves the ordering that carries the
+    identity signal (measured: top-1 stayed 1.00 down to a 20-unit grid, because
+    y=45 and y=53 rounded to 40 and 60). Jitter is what removes information.
+    """
+    rng = random.Random(seed)
+    events = []
+    for e in log.events:
+        attrs = dict(e.attrs)
+        for key in ("pos", "v"):
+            value = attrs.get(key)
+            if value is not None:
+                attrs[key] = [
+                    round(component + rng.uniform(-magnitude / 2, magnitude / 2), 6)
+                    for component in value
+                ]
+        events.append(type(e)(e.kind, e.t, e.subjects, attrs, e.observable, e.provenance, e.seq))
+    return type(log)(events)
+
+
+def m2_position_continuity(
+    eps: List[SimEpisode], quantize: float = 0.0, jitter: float = 0.0, seed: int = 0
+) -> dict:
     """Top-1 for the A2 probe: rank worlds by straight-line y residual.
 
     Only contact-free episodes are scored: where the truth requires a contact
@@ -140,7 +175,9 @@ def m2_position_continuity(eps: List[SimEpisode]) -> dict:
         if any(w.swaps for w in ws):
             excluded += 1
             continue
-        scores = {w: _pos_residual(log, w) for w in ws}
+        if jitter > 0:
+            log = _jittered(log, jitter, seed + len(world_counts))
+        scores = {w: _pos_residual(log, w, quantize) for w in ws}
         best = min(scores.values())
         winners = [w for w, s in scores.items() if s == best]
         n += 1

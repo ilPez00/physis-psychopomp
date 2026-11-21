@@ -128,3 +128,21 @@ def test_m3_excludes_an_undecided_episode_instead_of_calling_it_no_contact():
     assert report["scored"] == 0
     assert report["excluded"] == 1
     assert report["accuracy"] == 0.0
+
+
+def test_identity_signal_survives_grid_rounding_and_dies_under_jitter():
+    # The A3 decision needs to know which degradation removes information.
+    # Measured: a grid preserves the y-ordering that carries identity (y=45 and
+    # y=53 round to 40 and 60), so top-1 stays 1.00; jitter removes it, dropping
+    # to 0.50 at 5 units and 0.33 at 20, against a 0.25 chance floor.
+    from psychopomp.fixtures import parallel_recrossing_corpus
+    from psychopomp.probes import m2_position_continuity
+
+    eps = parallel_recrossing_corpus(6)
+    grid = m2_position_continuity(eps, quantize=20.0)
+    noisy = m2_position_continuity(eps, jitter=5.0)
+    heavy = m2_position_continuity(eps, jitter=20.0)
+    assert grid["top1"] == 1.0          # rounding is not information loss here
+    assert noisy["top1"] == 0.5         # jitter is
+    assert heavy["top1"] < noisy["top1"]
+    assert heavy["top1"] >= 0.25        # still above the chance floor
