@@ -10,6 +10,7 @@
 ```bash
 cd ~/dev/physis-psychopomp
 uv venv --python 3.12 .venv
+uv lock --check                 # dependencies are locked in uv.lock
 uv pip install -e '.[dev]'
 .venv/bin/pytest -q
 ```
