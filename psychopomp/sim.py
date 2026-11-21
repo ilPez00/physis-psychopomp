@@ -175,6 +175,7 @@ def run(
     episode: int = 0,
     init: Optional[Init] = None,
     kicks: Sequence[Kick] = (),
+    source: str = "sim:v0.2",
 ) -> SimEpisode:
     rng = random.Random(hash((seed, episode)) % (2**63))
     n = config.n_balls
@@ -268,7 +269,7 @@ def run(
         for i in range(n):
             trajs[i].visible.append(not inside(config, trajs[i].x[-1], trajs[i].y[-1]))
 
-    prov = Provenance("sim:v0.2", config.sha256(), seed, episode)
+    prov = Provenance(source, config.sha256(), seed, episode)
     oracle, obs = EventLog(), EventLog()
 
     # Int-only derivation on purpose: hashing a string makes the seed depend on
