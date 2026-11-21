@@ -36,8 +36,8 @@ def main() -> int:
     print()
     print("World-level sensor noise (SimConfig.noise), filter tolerance set to")
     print("the sensor accuracy; corpus rebuilt per level:")
-    print("| noise | episodes | worlds mean | top-1 | chance | excluded |")
-    print("|---|---|---|---|---|---|")
+    print("| noise | episodes | worlds mean | top-1 | chance | decided/ambiguous | excluded |")
+    print("|---|---|---|---|---|---|---|")
     for q in [0.0, 2.0, 5.0, 10.0, 20.0]:
         # The corpus builder insists on exactly four worlds, which is a
         # full-precision property; above 0 the velocity classes blur, so build
@@ -63,8 +63,29 @@ def main() -> int:
         worlds_mean = sum(len(consistent_worlds(e.observable_log(), max(q, 1e-4))) for e in noisy_eps) / len(noisy_eps)
         print(
             f"| {q:g} | {len(noisy_eps)} | {worlds_mean:.2f} | {r['top1']:.2f} | "
-            f"{r['chance']:.2f} | {r['excluded']} |"
+            f"{r['chance']:.2f} | {r['decided']}/{r['ambiguous']} | {r['excluded']} |"
         )
+    print()
+    print("Abstention trade-off at noise 20 (does a margin buy accuracy with coverage?):")
+    print("| margin | decided | accuracy among decided |")
+    print("|---|---|---|")
+    heavyweight = []
+    for k in range(80):
+        init = Init(x=(30.0, 30.0 + 2.0 * (k % 5)), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0)))
+        ep = run(SimConfig(steps=600, noise=20.0), k, init=init)
+        if not consistent_worlds(ep.observable_log(), 20.0):
+            continue
+        try:
+            truth_matches(ep)
+        except ValueError:
+            continue
+        heavyweight.append(ep)
+        if len(heavyweight) >= 6:
+            break
+    for margin in (0.0, 1.0, 2.0, 5.0, 10.0):
+        r = m2_position_continuity(heavyweight, tol=20.0, abstain_margin=margin)
+        acc = r["top1"] / (r["decided"] / r["episodes"]) if r["decided"] else 0.0
+        print(f"| {margin:g} | {r['decided']}/{r['episodes']} | {acc:.2f} |")
     return 0
 
 
