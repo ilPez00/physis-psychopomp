@@ -12,6 +12,14 @@ Public: https://github.com/ilPez00/physis-psychopomp. No LICENSE file yet —
 public publication is not a reuse grant; licensing is a deliberate operator
 decision, deferred.
 
+
+> **TL;DR.** Research instrument, not a validated architecture: provenance-bearing world
+> states → temporal reasoning → falsifiable constraints. Pre-registered claims and failure
+> criteria; a public audit found two experimental blockers (vacuous control, non-identifiable
+> target) — both confirmed in code and fixed. **75 tests pass on a fresh checkout
+> (2026-11-21)**; demo reproduces the two-world result. No claim asserted ahead of evidence;
+> licensing deliberately deferred (public ≠ reuse grant).
+
 ## Standing evidence (kept on purpose)
 
 A prior JEPA-derived latent in this lineage was falsified at scale:
@@ -51,7 +59,7 @@ REPRO.md                 environment, seeds, canonical scenarios
 ```bash
 uv venv --python 3.12 .venv
 uv pip install -e '.[dev]'
-.venv/bin/pytest -q          # 28 tests incl. ASP cross-check
+.venv/bin/pytest -q          # 75 tests incl. ASP cross-check (fresh checkout, 2026-11-21)
 .venv/bin/python scripts/demo.py
 .venv/bin/python scripts/recoverability.py
 ```
@@ -117,3 +125,13 @@ of the working tree: the portable, restorable, verifiable artifact is
 restore it.
 
 Details and the rest of the storage tiers: `~/.config/agents/SYNC.md`.
+
+
+## Verified 2026-11-21
+
+Fresh public checkout/release, run on a clean host (pansa, 12-core Linux):
+
+- `uv venv` + `uv pip install -e ".[dev]"` + `pytest -q`: **75 passed** (README previously said 28 — stale).
+- `scripts/demo.py`: PASS — straight world=1/no contact; off-axis world=2, hidden contact required.
+
+Method + full logs: portfolio audit verification log (private hub); reproduction commands in this README.
