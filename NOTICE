@@ -1,0 +1,8 @@
+NOTICE — third-party research attribution
+
+Original work in this repository is licensed under Apache-2.0 (see LICENSE).
+The EPEC-inspired possible-world filter in psychopomp/epec.py is our own encoding,
+written from the published formalism. D'Asaro et al.'s epec-vanilla implementation is
+architectural reference only: no code was copied from it, and that repository carries
+no license file. No license is granted here to epec-vanilla or any other third party.
+The pre-registered design and negative results are cited in docs/ and the README.
