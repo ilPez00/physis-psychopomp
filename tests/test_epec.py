@@ -120,6 +120,34 @@ def test_validate_names_c4_and_c5():
     assert "C5" in validate(w3, enters2, exits3)
 
 
+def test_multiple_contact_pairs_enumerated():
+    # two independent reflection-consistent contact pairs (IMP-7)
+    log = log_from(
+        ev("enter_occ", 0, "left", (3.0, 1.0)),
+        ev("enter_occ", 1, "bottom", (0.0, 3.3)),
+        ev("enter_occ", 20, "left", (-3.0, -1.0)),
+        ev("enter_occ", 21, "bottom", (0.0, -3.3)),
+        ev("exit_occ", 10, "bottom", (0.0, 1.0)),
+        ev("exit_occ", 11, "right", (3.0, 3.3)),
+        ev("exit_occ", 30, "bottom", (0.0, -1.0)),
+        ev("exit_occ", 31, "right", (-3.0, -3.3)),
+    )
+    worlds = consistent_worlds(log)
+    assert [w for w in worlds if len(w.swaps) == 2], [w.describe() for w in worlds]
+
+
+def test_recrossing_episode_has_single_identity_world():
+    from psychopomp.fixtures import recrossing_episode, truth_matches
+
+    ep = recrossing_episode()
+    obs = ep.observable_log()
+    s = summarize(obs)
+    assert s["enters"] == 2 and s["exits"] == 2
+    assert s["n_worlds"] == 1
+    assert s["contact_required"] is False
+    assert consistent_worlds(obs)[0].matches == truth_matches(ep)
+
+
 def test_single_ball_recrossing_is_filtered_to_the_truth():
     # One ball crosses the occluder twice (wall bounce in between). Four events,
     # one consistent world, no contact: continuity alone decides it.
