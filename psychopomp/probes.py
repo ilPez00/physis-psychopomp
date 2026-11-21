@@ -412,7 +412,31 @@ def m2_map_accuracy(eps: List[SimEpisode], noise: float, tol: float = 1e-4) -> d
     }
 
 
-def _uniform_feasible(log, world, noise: float) -> bool | None:
+def _lsq_velocity(track, dt: float, fallback):
+    """Least-squares velocity over the observed track (positions one dt apart).
+
+    Averaging n samples costs the sensor noise by sqrt(n): with n=3 the velocity
+    is ~1.7x better, and since the residual multiplies it by the crossing
+    duration (~67 steps) that term dominates.
+    """
+    points = [p for p in (track or []) if p is not None]
+    if len(points) < 2 or not dt:
+        return fallback
+    n = len(points)
+    mean_i = (n - 1) / 2
+    mean_x = sum(p[0] for p in points) / n
+    mean_y = sum(p[1] for p in points) / n
+    var_i = sum((i - mean_i) ** 2 for i in range(n))
+    if var_i == 0:
+        return fallback
+    slope_x = sum((i - mean_i) * (p[0] - mean_x) for i, p in enumerate(points)) / var_i
+    slope_y = sum((i - mean_i) * (p[1] - mean_y) for i, p in enumerate(points)) / var_i
+    return [slope_x / dt, slope_y / dt]
+
+
+def _uniform_feasible(
+    log, world, noise: float, use_track: bool = False
+) -> bool | None:
     """Exact Bayes support under the TRUE sensor: uniform +-noise/2 on pos and v.
 
     Returns True when every residual is inside the sensor's half-width (world has
@@ -430,6 +454,9 @@ def _uniform_feasible(log, world, noise: float) -> bool | None:
         v_out = xb.attrs.get("v")
         if v is None or dt is None or p_in is None or p_out is None or v_out is None:
             return None
+        if use_track:
+            v = _lsq_velocity(ea.attrs.get("track"), dt, v)
+            v_out = _lsq_velocity(xb.attrs.get("track"), dt, v_out)
         # The enter position is logged at the last VISIBLE step (t_enter - 1) while the
         # exit position is at t_exit, so the elapsed interval is one step longer
         # than the event-time difference. Measured 2026-11-21: without the +1 every
@@ -451,7 +478,9 @@ def _uniform_feasible(log, world, noise: float) -> bool | None:
     return True
 
 
-def m2_bayes_accuracy(eps: List[SimEpisode], noise: float, tol: float = 1e-4) -> dict:
+def m2_bayes_accuracy(
+    eps: List[SimEpisode], noise: float, tol: float = 1e-4, use_track: bool = False
+) -> dict:
     """Accuracy of the exact Bayes rule under the uniform sensor: decide only when
     exactly one world has non-zero likelihood; abstain on ties and on an empty set.
     """
@@ -468,7 +497,7 @@ def m2_bayes_accuracy(eps: List[SimEpisode], noise: float, tol: float = 1e-4) ->
         except ValueError:
             excluded += 1
             continue
-        support = [w for w in ws if _uniform_feasible(log, w, noise) is True]
+        support = [w for w in ws if _uniform_feasible(log, w, noise, use_track) is True]
         if not support:
             empty += 1
             continue

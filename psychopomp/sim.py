@@ -32,6 +32,8 @@ from .eventlog import Event, EventLog, Provenance
 
 Vec = Tuple[float, float]
 
+TRACK_SAMPLES = 3  # observable positions kept before/after a crossing (round 9)
+
 
 @dataclass(frozen=True)
 class SimConfig:
@@ -274,6 +276,10 @@ def run(
     # the noise arm scored 0.17 locally and 0.33 on CI for identical inputs.
     # The base RNG above is safe because its tuple holds ints only.
     noise_rng = random.Random((seed * 1000003 + episode * 7919 + 17) % (2**63))
+    # A separate stream for `track`: sharing one stream means adding an attribute
+    # silently re-rolls every later draw, so pinned cross-process numbers move
+    # whenever the log schema grows (measured 2026-11-21).
+    track_rng = random.Random((seed * 1000033 + episode * 104729 + 29) % (2**63))
 
     def emit(log: EventLog, kind: str, t: int, subjects: Tuple[str, ...],
              attrs: dict, observable: bool) -> None:
@@ -286,6 +292,12 @@ def run(
                         round(component + noise_rng.uniform(-config.noise / 2, config.noise / 2), 6)
                         for component in value
                     ]
+            if attrs.get("track") is not None:
+                attrs["track"] = [
+                    [round(component + track_rng.uniform(-config.noise / 2, config.noise / 2), 6)
+                     for component in point]
+                    for point in attrs["track"]
+                ]
         log.add(Event(kind, t, subjects, attrs, observable, prov))
 
     for k in applied:
@@ -305,7 +317,18 @@ def run(
                 # again: observable, and the only coordinate pair that can
                 # distinguish two relabeled worlds with equal velocities
                 # (prereg amendment A2, 2026-11-21).
-                attrs = {"side": side, "v": v, "pos": [round(tr.x[j], 6), round(tr.y[j], 6)], "dt": config.dt}
+                attrs = {
+                    "side": side,
+                    "v": v,
+                    "pos": [round(tr.x[j], 6), round(tr.y[j], 6)],
+                    "dt": config.dt,
+                    # First TRACK_SAMPLES visible steps after the exit: the ball is
+                    # visible and its positions are observable, and averaging a
+                    # least-squares velocity over them costs the sensor noise by
+                    # sqrt(n) (round 9).
+                    "track": [[round(tr.x[s], 6), round(tr.y[s], 6)]
+                              for s in range(j, min(j + TRACK_SAMPLES, len(tr.x)))],
+                }
                 emit(oracle, "exit_occ", j, (f"b{i}",), attrs, True)
                 emit(obs, "exit_occ", j, ("ball",), attrs, True)
             elif tr.visible[j - 1] and not tr.visible[j]:
@@ -313,7 +336,14 @@ def run(
                 side = _enter_side(config, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j])
                 if side == "corner":
                     raise AssertionError("corner entry is not supported; pick axis crossings")
-                attrs = {"side": side, "v": v, "pos": [round(tr.x[j - 1], 6), round(tr.y[j - 1], 6)], "dt": config.dt}
+                attrs = {
+                    "side": side,
+                    "v": v,
+                    "pos": [round(tr.x[j - 1], 6), round(tr.y[j - 1], 6)],
+                    "dt": config.dt,
+                    "track": [[round(tr.x[s], 6), round(tr.y[s], 6)]
+                              for s in range(max(0, j - TRACK_SAMPLES), j)],
+                }
                 emit(oracle, "enter_occ", j, (f"b{i}",), attrs, True)
                 emit(obs, "enter_occ", j, ("ball",), attrs, True)
 

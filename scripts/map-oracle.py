@@ -35,8 +35,9 @@ def corpus(sep: float, noise: float, n: int = 6) -> list:
 
 
 def main() -> int:
-    print("| cell | best unfitted statistic | MAP (Gaussian surrogate) | exact Bayes (uniform) | chance |")
-    print("|---|---|---|---|---|")
+    print("| cell | best unfitted statistic | MAP (Gaussian surrogate) | exact Bayes (uniform) "
+          "| + track(3) | chance |")
+    print("|---|---|---|---|---|---|")
     for sep, noise in ((6.0, 2.0), (2.0, 2.0), (2.0, 5.0)):
         eps = corpus(sep, noise)
         if not eps:
@@ -52,10 +53,12 @@ def main() -> int:
         best_stat = max(covered) if covered else float("nan")
         oracle = m2_map_accuracy(eps, noise=noise, tol=tol)
         bayes = m2_bayes_accuracy(eps, noise=noise, tol=tol)
+        tracked = m2_bayes_accuracy(eps, noise=noise, tol=tol, use_track=True)
         print(f"| {sep:g}/{noise:g} | {best_stat:.2f} | {oracle['top1']:.2f} "
               f"(n={oracle['decided']}) | {bayes['top1']:.2f} "
-              f"(n={bayes['decided']}, tie {bayes['tied']}, empty {bayes['empty']}) | "
-              f"{bayes['chance']:.2f} |")
+              f"(decided {bayes['decided']}, tie {bayes['tied']}, empty {bayes['empty']}) | "
+              f"{tracked['top1']:.2f} (decided {tracked['decided']}, "
+              f"tie {tracked['tied']}, empty {tracked['empty']}) | {bayes['chance']:.2f} |")
     print()
     print("MAP assumption: independent Gaussian error, sigma = noise/sqrt(12) (the SD")
     print("of the uniform sensor). Uniform noise ties under its exact likelihood, so")
