@@ -12,9 +12,9 @@ and what remains. Each open item names its gate.
   the within-`(kind,t)` shuffle was a multiset permutation (vacuous), and the
   1D equal-mass head-on exchange was observationally identical to
   pass-through (EPEC returned an unidentifiable second world).
-- Fixes below are covered by the test suite (36 tests as committed on
-  2026-11-21: 28 in the five test files that existed, 3 probe tests, 3
-  oracle-truth regressions, 2 re-crossing regressions) and
+- Fixes below are covered by the test suite (the CI job is the authority on the
+  count; this paragraph used to quote one and went stale within a day: 48 pass
+  locally on 2026-11-21, versus 28 before the audit follow-ups) and
   `scripts/recoverability.py`, whose output is quoted per item.
 
 ## Fixes (audit-driven)

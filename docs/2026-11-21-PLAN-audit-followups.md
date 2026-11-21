@@ -135,4 +135,5 @@ scheduled; everything before it is instrument hygiene.
   from this repo alone: it needs either the MCP `physis.remember` schema or a
   store writer, which is a cross-repo design decision. Not faked.
 
-Test count: 45 (was 36 at the start of this plan).
+Test count: 45 at the end of this plan (36 at its start); see the round-2
+plan for what came after. The CI job, not this line, is the authority.
