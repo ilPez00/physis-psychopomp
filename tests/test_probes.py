@@ -85,3 +85,21 @@ def test_a2_position_continuity_breaks_the_relabeling_tie():
     assert a2["excluded"] == 0
     assert abs(a2["chance"] - 0.25) < 1e-9
     assert a2["top1"] == 1.0
+
+
+def test_a2_probe_reads_its_clock_from_the_log():
+    # A probe that assumes dt mixed its own constant into the measurement. The
+    # events now carry dt; a log without it must be unscorable, not defaulted.
+    from psychopomp.epec import World
+    from psychopomp.fixtures import parallel_recrossing_corpus
+    from psychopomp.probes import _pos_residual
+
+    ep = parallel_recrossing_corpus(1)[0]
+    log = ep.observable_log()
+    world = World(((0, 0), (1, 1), (2, 2), (3, 3)), (), ())
+    assert _pos_residual(log, world) != float("inf")
+    stripped = type(log)([
+        type(e)(e.kind, e.t, e.subjects, {k: v for k, v in e.attrs.items() if k != "dt"}, e.observable, e.provenance, e.seq)
+        for e in log.events
+    ])
+    assert _pos_residual(stripped, world) == float("inf")

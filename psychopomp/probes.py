@@ -87,13 +87,15 @@ def _pos_residual(log, world) -> float:
     """
     enters = [e for e in log.events if e.kind == "enter_occ"]
     exits = [e for e in log.events if e.kind == "exit_occ"]
-    dt = 0.1  # SimConfig.dt; the probe reads the same physical clock as the log
     total = 0.0
     for a, b in world.matches:
         ea, xb = enters[a], exits[b]
-        v = ea.attrs.get("v")
+        v, dt = ea.attrs.get("v"), ea.attrs.get("dt")
         p_in, p_out = ea.attrs.get("pos"), xb.attrs.get("pos")
-        if v is None or p_in is None or p_out is None:
+        # The clock comes from the log: a probe that assumes dt is measuring its
+        # own constant, not the episode, and would silently mis-score any config
+        # that changed it.
+        if v is None or p_in is None or p_out is None or dt is None:
             return float("inf")
         predicted = p_in[1] + v[1] * dt * (xb.t - ea.t)
         total += abs(predicted - p_out[1])

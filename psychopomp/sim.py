@@ -285,7 +285,7 @@ def run(
                 # again: observable, and the only coordinate pair that can
                 # distinguish two relabeled worlds with equal velocities
                 # (prereg amendment A2, 2026-11-21).
-                attrs = {"side": side, "v": v, "pos": [round(tr.x[j], 6), round(tr.y[j], 6)]}
+                attrs = {"side": side, "v": v, "pos": [round(tr.x[j], 6), round(tr.y[j], 6)], "dt": config.dt}
                 emit(oracle, "exit_occ", j, (f"b{i}",), attrs, True)
                 emit(obs, "exit_occ", j, ("ball",), attrs, True)
             elif tr.visible[j - 1] and not tr.visible[j]:
@@ -293,7 +293,7 @@ def run(
                 side = _enter_side(config, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j])
                 if side == "corner":
                     raise AssertionError("corner entry is not supported; pick axis crossings")
-                attrs = {"side": side, "v": v, "pos": [round(tr.x[j - 1], 6), round(tr.y[j - 1], 6)]}
+                attrs = {"side": side, "v": v, "pos": [round(tr.x[j - 1], 6), round(tr.y[j - 1], 6)], "dt": config.dt}
                 emit(oracle, "enter_occ", j, (f"b{i}",), attrs, True)
                 emit(obs, "enter_occ", j, ("ball",), attrs, True)
 
