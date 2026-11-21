@@ -269,7 +269,11 @@ def run(
     prov = Provenance("sim:v0.2", config.sha256(), seed, episode)
     oracle, obs = EventLog(), EventLog()
 
-    noise_rng = random.Random(hash((seed, episode, "noise")) % (2**63))
+    # Int-only derivation on purpose: hashing a string makes the seed depend on
+    # PYTHONHASHSEED, which is randomised per process. Measured 2026-11-21 --
+    # the noise arm scored 0.17 locally and 0.33 on CI for identical inputs.
+    # The base RNG above is safe because its tuple holds ints only.
+    noise_rng = random.Random((seed * 1000003 + episode * 7919 + 17) % (2**63))
 
     def emit(log: EventLog, kind: str, t: int, subjects: Tuple[str, ...],
              attrs: dict, observable: bool) -> None:

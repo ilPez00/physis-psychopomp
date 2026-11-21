@@ -58,11 +58,12 @@ def test_sensor_noise_degrades_the_probe_the_same_way_jitter_did():
     assert noisy["top1"] <= clean["top1"]
 
 
-def test_a_coarse_sensor_makes_the_physics_probe_worse_than_guessing():
-    # Measured curve (world-level noise, filter tolerance = sensor accuracy):
-    # 0 -> 1.00, 2 -> 1.00, 5 -> 0.50, 10 -> 0.33, 20 -> 0.17 against a 0.25
-    # chance floor. Past ~20 units the residual is not merely uninformative,
-    # it is misleading -- the regime where a learned prior could add something.
+def test_a_coarse_sensor_degrades_the_probe_to_a_plateau_above_chance():
+    # Measured with the int-only noise seed (world-level noise, filter tolerance
+    # = sensor accuracy): 0 -> 1.00, 2 -> 0.83, 5/10/20 -> 0.33, against a 0.25
+    # chance floor. The earlier "below chance at 20" reading was an artifact of
+    # hashing a string into the seed (0.17 locally, 0.33 on CI); with a stable
+    # seed the residual degrades and then plateaus, and never loses to guessing.
     def corpus(noise):
         eps = []
         for k in range(80):
@@ -83,4 +84,5 @@ def test_a_coarse_sensor_makes_the_physics_probe_worse_than_guessing():
     clean = m2_position_continuity(corpus(0.0))
     coarse = m2_position_continuity(corpus(20.0), tol=20.0)
     assert clean["top1"] == 1.0
-    assert coarse["top1"] < coarse["chance"]
+    assert coarse["top1"] > coarse["chance"]      # degraded, still better than guessing
+    assert coarse["top1"] < clean["top1"]
