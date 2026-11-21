@@ -58,7 +58,7 @@ def recrossing_episode() -> SimEpisode:
     return run(cfg, 0, init=Init(x=(30.0, 30.0), y=(50.0, 85.0), v=((3.0, 0.0), (0.05, 0.0))))
 
 
-def parallel_recrossing_corpus(n: int = 6, tries: int = 80) -> List[SimEpisode]:
+def parallel_recrossing_corpus(n: int = 6, tries: int = 80, noise: float = 0.0) -> List[SimEpisode]:
     """Two balls on parallel paths, both crossing twice — the A2 family.
 
     Each episode has four crossing events, four contact-free consistent worlds
@@ -67,7 +67,7 @@ def parallel_recrossing_corpus(n: int = 6, tries: int = 80) -> List[SimEpisode]:
     it the only shipped corpus where identity, not physics, is the question.
     """
     out: List[SimEpisode] = []
-    cfg = SimConfig(steps=600)
+    cfg = SimConfig(steps=600, noise=noise)
     for k in range(tries):
         init = Init(x=(30.0, 30.0 + 2.0 * (k % 5)), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0)))
         ep = run(cfg, k, init=init)

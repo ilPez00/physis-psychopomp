@@ -43,6 +43,11 @@ class SimConfig:
     steps: int = 600
     speed: float = 2.0
     n_balls: int = 2
+    # Sensor noise on the OBSERVABLE log only (uniform +-noise/2 on `pos`/`v`).
+    # 0.0 reproduces the exact log, so every corpus and gate built before this
+    # field still means what it meant. Oracle attributes are never jittered: a
+    # sensor cannot corrupt the answer key.
+    noise: float = 0.0
 
     def __post_init__(self) -> None:
         x0, x1, y0, y1 = self.o
@@ -264,8 +269,19 @@ def run(
     prov = Provenance("sim:v0.2", config.sha256(), seed, episode)
     oracle, obs = EventLog(), EventLog()
 
+    noise_rng = random.Random(hash((seed, episode, "noise")) % (2**63))
+
     def emit(log: EventLog, kind: str, t: int, subjects: Tuple[str, ...],
              attrs: dict, observable: bool) -> None:
+        if log is obs and config.noise > 0:
+            attrs = dict(attrs)
+            for key in ("pos", "v"):
+                value = attrs.get(key)
+                if value is not None:
+                    attrs[key] = [
+                        round(component + noise_rng.uniform(-config.noise / 2, config.noise / 2), 6)
+                        for component in value
+                    ]
         log.add(Event(kind, t, subjects, attrs, observable, prov))
 
     for k in applied:

@@ -10,7 +10,9 @@ import sys
 
 sys.path.insert(0, ".")
 
-from psychopomp.fixtures import parallel_recrossing_corpus
+from psychopomp.epec import consistent_worlds
+from psychopomp.fixtures import parallel_recrossing_corpus, truth_matches
+from psychopomp.sim import Init, SimConfig, run
 from psychopomp.probes import m2_position_continuity
 
 UNITS = [0.01, 2.0, 5.0, 8.0, 10.0, 20.0]
@@ -30,6 +32,38 @@ def main() -> int:
         print(
             f"| {q:g} | {grid['top1']:.2f} | {noisy['top1']:.2f} | "
             f"{noisy['episodes']} | {noisy['excluded']} |"
+        )
+    print()
+    print("World-level sensor noise (SimConfig.noise), filter tolerance set to")
+    print("the sensor accuracy; corpus rebuilt per level:")
+    print("| noise | episodes | worlds mean | top-1 | chance | excluded |")
+    print("|---|---|---|---|---|---|")
+    for q in [0.0, 2.0, 5.0, 10.0, 20.0]:
+        # The corpus builder insists on exactly four worlds, which is a
+        # full-precision property; above 0 the velocity classes blur, so build
+        # the episodes directly and report whatever world count the filter gives.
+        noisy_eps = []
+        for k in range(80):
+            init = Init(x=(30.0, 30.0 + 2.0 * (k % 5)), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0)))
+            ep = run(SimConfig(steps=600, noise=q), k, init=init)
+            tol = max(q, 1e-4)
+            if not consistent_worlds(ep.observable_log(), tol):
+                continue
+            try:
+                truth_matches(ep)
+            except ValueError:
+                continue
+            noisy_eps.append(ep)
+            if len(noisy_eps) >= 6:
+                break
+        if not noisy_eps:
+            print(f"| {q:g} | 0 | - | - | - | - |")
+            continue
+        r = m2_position_continuity(noisy_eps, tol=max(q, 1e-4))
+        worlds_mean = sum(len(consistent_worlds(e.observable_log(), max(q, 1e-4))) for e in noisy_eps) / len(noisy_eps)
+        print(
+            f"| {q:g} | {len(noisy_eps)} | {worlds_mean:.2f} | {r['top1']:.2f} | "
+            f"{r['chance']:.2f} | {r['excluded']} |"
         )
     return 0
 

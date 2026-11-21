@@ -93,19 +93,19 @@ def _vel(ev) -> Optional[List[float]]:
     return _vec(ev.attrs.get("v"))
 
 
-def contact_ok(e1, x1, e2, x2) -> bool:
+def contact_ok(e1, x1, e2, x2, tol: float = TOL) -> bool:
     """Equal-mass contact feasibility for a matched pair of trajectories."""
     v1, v2, w1, w2 = _vel(e1), _vel(e2), _vel(x1), _vel(x2)
     if None in (v1, v2, w1, w2):
         return True  # unmeasured: cannot falsify
     return (
-        _close(_sum([v1, v2]), _sum([w1, w2]))
-        and abs(_relnorm(v1, v2) - _relnorm(w1, w2)) <= TOL
+        _close(_sum([v1, v2]), _sum([w1, w2]), tol)
+        and abs(_relnorm(v1, v2) - _relnorm(w1, w2)) <= tol
         and _overlaps((e1.t, x1.t), (e2.t, x2.t))
     )
 
 
-def validate(world: World, enters: List, exits: List) -> List[str]:
+def validate(world: World, enters: List, exits: List, tol: float = TOL) -> List[str]:
     """Return the list of violated rule names for a proposed world."""
     bad: List[str] = []
     used_exits = [b for (_, b) in world.matches]
@@ -138,7 +138,7 @@ def validate(world: World, enters: List, exits: List) -> List[str]:
     match_of = {a: b for (a, b) in world.matches}
     for a, b in world.matches:
         if a not in pair_of:
-            if not _close(_vel(exits[b]), _vel(enters[a])):
+            if not _close(_vel(exits[b]), _vel(enters[a]), tol):
                 bad.append("C4")
     for pa, pb in world.swaps:
         if pa not in match_of or pb not in match_of:
@@ -148,7 +148,7 @@ def validate(world: World, enters: List, exits: List) -> List[str]:
         xa, xb = _vel(exits[match_of[pa]]), _vel(exits[match_of[pb]])
         if ea is None or eb is None or xa is None or xb is None:
             continue  # unmeasured: cannot falsify
-        if not _close(_sum([ea, eb]), _sum([xa, xb])):
+        if not _close(_sum([ea, eb]), _sum([xa, xb]), tol):
             bad.append("C5")
         if abs(_relnorm(ea, eb) - _relnorm(xa, xb)) > TOL:
             bad.append("C5")
@@ -158,7 +158,7 @@ def validate(world: World, enters: List, exits: List) -> List[str]:
     return sorted(set(bad))
 
 
-def _pairings(fails, enters, exits):
+def _pairings(fails, enters, exits, tol: float = TOL):
     """Every feasible perfect pairing of C4-failing matches (contact set)."""
     if not fails:
         yield ()
@@ -166,12 +166,12 @@ def _pairings(fails, enters, exits):
     first, rest = fails[0], fails[1:]
     for i, other in enumerate(rest):
         if contact_ok(enters[first[0]], exits[first[1]],
-                      enters[other[0]], exits[other[1]]):
-            for tail in _pairings(rest[:i] + rest[i + 1:], enters, exits):
+                      enters[other[0]], exits[other[1]], tol):
+            for tail in _pairings(rest[:i] + rest[i + 1:], enters, exits, tol):
                 yield ((first[0], other[0]),) + tail
 
 
-def consistent_worlds(log: EventLog) -> List[World]:
+def consistent_worlds(log: EventLog, tol: float = TOL) -> List[World]:
     """Enumerate all zero-violation worlds over the log's enter/exit events."""
     enters = [e for e in log.events if e.kind == "enter_occ"]
     exits = [e for e in log.events if e.kind == "exit_occ"]
@@ -186,7 +186,7 @@ def consistent_worlds(log: EventLog) -> List[World]:
             matches = tuple((chosen[k], perm[k]) for k in range(n_x))
             unmatched = tuple(i for i in range(n_e) if i not in chosen)
             w = World(matches, (), unmatched)
-            bad = validate(w, enters, exits)
+            bad = validate(w, enters, exits, tol)
             if not bad:
                 key = (w.matches, w.swaps)
                 if key not in seen:
@@ -196,11 +196,11 @@ def consistent_worlds(log: EventLog) -> List[World]:
             if bad and set(bad) <= {"C4"}:
                 fails = [
                     (a, b) for (a, b) in matches
-                    if not _close(_vel(exits[b]), _vel(enters[a]))
+                    if not _close(_vel(exits[b]), _vel(enters[a]), tol)
                 ]
-                for swaps in _pairings(fails, enters, exits):
+                for swaps in _pairings(fails, enters, exits, tol):
                     w2 = World(matches, swaps, unmatched)
-                    if not validate(w2, enters, exits):
+                    if not validate(w2, enters, exits, tol):
                         key = (w2.matches, w2.swaps)
                         if key not in seen:
                             seen.add(key)
@@ -208,8 +208,8 @@ def consistent_worlds(log: EventLog) -> List[World]:
     return worlds
 
 
-def summarize(log: EventLog) -> dict:
-    ws = consistent_worlds(log)
+def summarize(log: EventLog, tol: float = TOL) -> dict:
+    ws = consistent_worlds(log, tol)
     enters = [e for e in log.events if e.kind == "enter_occ"]
     exits = [e for e in log.events if e.kind == "exit_occ"]
     unconstrained = 0

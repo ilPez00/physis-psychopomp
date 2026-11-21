@@ -152,7 +152,11 @@ def _jittered(log: EventLog, magnitude: float, seed: int):
 
 
 def m2_position_continuity(
-    eps: List[SimEpisode], quantize: float = 0.0, jitter: float = 0.0, seed: int = 0
+    eps: List[SimEpisode],
+    quantize: float = 0.0,
+    jitter: float = 0.0,
+    seed: int = 0,
+    tol: float = 1e-4,
 ) -> dict:
     """Top-1 for the A2 probe: rank worlds by straight-line y residual.
 
@@ -164,7 +168,7 @@ def m2_position_continuity(
     world_counts: List[int] = []
     for ep in eps:
         log = ep.observable_log()
-        ws = consistent_worlds(log)
+        ws = consistent_worlds(log, tol)
         if not ws:
             continue
         try:
