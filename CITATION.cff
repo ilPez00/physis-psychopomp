@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you cite this instrument, cite the version you ran; the research claim is registered in docs/2026-11-20-PREREG.md and is NOT yet supported by GPU-phase evidence."
+title: "Psychopomp: identity-free possible-world filtering under occlusion"
+abstract: >-
+  A deterministic two-dimensional occluder simulator with an observable/oracle
+  event split, a typed append-only event log, an EPEC-inspired possible-world
+  filter over identity-free observations, a structure-preserving shuffled
+  control, and pre-GPU CPU baselines. Publication is not a reuse grant: no
+  license file is present, by operator decision.
+authors:
+  - family-names: "ilPez00"
+    alias: "ilPez00"
+version: 0.2.0
+date-released: 2026-11-21
+repository-code: "https://github.com/ilPez00/physis-psychopomp"
+url: "https://github.com/ilPez00/physis-psychopomp"
+keywords:
+  - occlusion
+  - possible worlds
+  - event calculus
+  - identity
+  - reproducibility
