@@ -124,7 +124,7 @@ def _pos_residual(log, world, quantize: float = 0.0) -> float:
             p_in = [_quantize(p_in[0], quantize), _quantize(p_in[1], quantize)]
             p_out = [_quantize(p_out[0], quantize), _quantize(p_out[1], quantize)]
             v = [_quantize(v[0], quantize), _quantize(v[1], quantize)]
-        predicted = p_in[1] + v[1] * dt * (xb.t - ea.t)
+        predicted = p_in[1] + v[1] * dt * (xb.t - ea.t + 1)
         total += abs(predicted - p_out[1])
     return total
 
@@ -234,7 +234,11 @@ def _statistics(log, world) -> dict:
         p_in, p_out = ea.attrs.get("pos"), xb.attrs.get("pos")
         if v is None or dt is None or p_in is None or p_out is None:
             return {k: float("inf") for k in totals}
-        steps = xb.t - ea.t
+        # The enter position is logged at the last VISIBLE step (t_enter - 1) while the
+        # exit position is at t_exit, so the elapsed interval is one step longer
+        # than the event-time difference. Measured 2026-11-21: without the +1 every
+        # x residual carries a systematic v*dt bias (0.3 units at v=3, dt=0.1).
+        steps = xb.t - ea.t + 1
         totals["y_residual"] += abs(p_in[1] + v[1] * dt * steps - p_out[1])
         totals["x_residual"] += abs(p_in[0] + v[0] * dt * steps - p_out[0])
         totals["y_order"] += abs(p_out[1] - p_in[1])
@@ -341,3 +345,144 @@ def statistic_survey(eps: List[SimEpisode], tol: float = 1e-4) -> dict:
             "decided": decided[name],
         }
     return report
+
+
+def _loglik(log, world, sigma: float) -> float:
+    """Gaussian log-likelihood of the observed boundary quantities under a world.
+
+    Three residuals per match (y, x, velocity continuity), each an independent
+    sensor error. sigma is supplied by the caller from the sensor setting; nothing
+    is fitted to the corpus. Uniform noise is only approximated as Gaussian here,
+    because the exact uniform likelihood ties and a tie is not a decision.
+    """
+    enters = [e for e in log.events if e.kind == "enter_occ"]
+    exits = [e for e in log.events if e.kind == "exit_occ"]
+    total = 0.0
+    for a, b in world.matches:
+        ea, xb = enters[a], exits[b]
+        v, dt = ea.attrs.get("v"), ea.attrs.get("dt")
+        p_in, p_out = ea.attrs.get("pos"), xb.attrs.get("pos")
+        v_out = xb.attrs.get("v")
+        if v is None or dt is None or p_in is None or p_out is None or v_out is None:
+            return float("-inf")
+        # The enter position is logged at the last VISIBLE step (t_enter - 1) while the
+        # exit position is at t_exit, so the elapsed interval is one step longer
+        # than the event-time difference. Measured 2026-11-21: without the +1 every
+        # x residual carries a systematic v*dt bias (0.3 units at v=3, dt=0.1).
+        steps = xb.t - ea.t + 1
+        residuals = (
+            p_in[1] + v[1] * dt * steps - p_out[1],
+            p_in[0] + v[0] * dt * steps - p_out[0],
+            v_out[0] - v[0],
+            v_out[1] - v[1],
+        )
+        total -= sum(r * r for r in residuals) / (2 * sigma * sigma)
+    return total
+
+
+def m2_map_accuracy(eps: List[SimEpisode], noise: float, tol: float = 1e-4) -> dict:
+    """MAP world under the Gaussian-error assumption: the observables' ceiling."""
+    hits = decided = excluded = 0
+    world_counts: List[int] = []
+    sigma = max(noise, 1e-4) / math.sqrt(12)
+    for ep in eps:
+        log = ep.observable_log()
+        ws = consistent_worlds(log, tol)
+        if not ws or any(w.swaps for w in ws):
+            excluded += 1
+            continue
+        try:
+            truth = truth_matches(ep)
+        except ValueError:
+            excluded += 1
+            continue
+        scores = {w: _loglik(log, w, sigma) for w in ws}
+        best = max(scores.values())
+        winners = [w for w, s in scores.items() if s == best]
+        if len(winners) != 1:
+            continue
+        decided += 1
+        world_counts.append(len(ws))
+        hits += int(winners[0].matches == truth)
+    return {
+        "top1": (hits / decided) if decided else 0.0,
+        "decided": decided,
+        "excluded": excluded,
+        "chance": (sum(1.0 / w for w in world_counts) / len(world_counts)) if world_counts else 0.0,
+    }
+
+
+def _uniform_feasible(log, world, noise: float) -> bool | None:
+    """Exact Bayes support under the TRUE sensor: uniform +-noise/2 on pos and v.
+
+    Returns True when every residual is inside the sensor's half-width (world has
+    non-zero likelihood), False when one is outside, None when a quantity is
+    missing. No surrogate, no sigma: this is the likelihood the simulator actually
+    uses.
+    """
+    enters = [e for e in log.events if e.kind == "enter_occ"]
+    exits = [e for e in log.events if e.kind == "exit_occ"]
+    half = max(noise, 1e-4) / 2
+    for a, b in world.matches:
+        ea, xb = enters[a], exits[b]
+        v, dt = ea.attrs.get("v"), ea.attrs.get("dt")
+        p_in, p_out = ea.attrs.get("pos"), xb.attrs.get("pos")
+        v_out = xb.attrs.get("v")
+        if v is None or dt is None or p_in is None or p_out is None or v_out is None:
+            return None
+        # The enter position is logged at the last VISIBLE step (t_enter - 1) while the
+        # exit position is at t_exit, so the elapsed interval is one step longer
+        # than the event-time difference. Measured 2026-11-21: without the +1 every
+        # x residual carries a systematic v*dt bias (0.3 units at v=3, dt=0.1).
+        steps = xb.t - ea.t + 1
+        # The sensor perturbs each logged attribute independently, so a residual
+        # that combines three of them has support (noise/2) * sum|coefficients|,
+        # not (noise/2). Measured 2026-11-21: using noise/2 rejected every world.
+        span = 2 + dt * steps           # |1| for p_out + |1| for p_in + |dt*steps| for v
+        residuals = (
+            (p_in[1] + v[1] * dt * steps - p_out[1], span * half),
+            (p_in[0] + v[0] * dt * steps - p_out[0], span * half),
+            # A difference of two independently noisy velocities has double support.
+            (v_out[0] - v[0], 2 * half),
+            (v_out[1] - v[1], 2 * half),
+        )
+        if any(abs(r) > width for r, width in residuals):
+            return False
+    return True
+
+
+def m2_bayes_accuracy(eps: List[SimEpisode], noise: float, tol: float = 1e-4) -> dict:
+    """Accuracy of the exact Bayes rule under the uniform sensor: decide only when
+    exactly one world has non-zero likelihood; abstain on ties and on an empty set.
+    """
+    hits = decided = excluded = empty = tie = 0
+    world_counts: List[int] = []
+    for ep in eps:
+        log = ep.observable_log()
+        ws = consistent_worlds(log, tol)
+        if not ws or any(w.swaps for w in ws):
+            excluded += 1
+            continue
+        try:
+            truth = truth_matches(ep)
+        except ValueError:
+            excluded += 1
+            continue
+        support = [w for w in ws if _uniform_feasible(log, w, noise) is True]
+        if not support:
+            empty += 1
+            continue
+        if len(support) > 1:
+            tie += 1
+            continue
+        decided += 1
+        world_counts.append(len(ws))
+        hits += int(support[0].matches == truth)
+    return {
+        "top1": (hits / decided) if decided else 0.0,
+        "decided": decided,
+        "tied": tie,
+        "empty": empty,
+        "excluded": excluded,
+        "chance": (sum(1.0 / w for w in world_counts) / len(world_counts)) if world_counts else 0.0,
+    }

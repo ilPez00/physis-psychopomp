@@ -88,3 +88,39 @@ def test_no_unfitted_combination_beats_the_best_single_statistic_at_ratio_0_4():
     assert r["borda"]["top1"] == pytest.approx(0.5)
     assert r["x_residual"]["top1"] == pytest.approx(2 / 3)
     assert r["borda"]["top1"] < r["x_residual"]["top1"]
+
+
+def test_exact_bayes_decides_only_where_the_sensor_supports_one_world():
+    from psychopomp.probes import m2_bayes_accuracy
+
+    r = m2_bayes_accuracy(corpus(6.0, 2.0), noise=2.0, tol=2.0)
+    assert r["decided"] > 0 and r["tied"] > 0
+    assert r["top1"] == 1.0          # when it decides, it is right
+    assert r["empty"] == 0           # support propagation is not too tight
+
+
+def test_at_ratio_0_4_the_exact_sensor_supports_every_world():
+    # The decisive measurement: with noise 5 on a 2-unit separation, every
+    # world is consistent with the sensor readings. The observables carry no
+    # identity information there, so any accuracy above chance is a prior
+    # artifact -- including the 0.67 of the best unfitted statistic.
+    from psychopomp.probes import m2_bayes_accuracy
+
+    r = m2_bayes_accuracy(corpus(2.0, 5.0), noise=5.0, tol=5.0)
+    assert r["decided"] == 0
+    assert r["tied"] == r["excluded"] == 0 or r["tied"] > 0
+    assert r["tied"] >= 6            # every episode ties over its four worlds
+    assert r["empty"] == 0
+
+
+def test_a_gaussian_surrogate_manufactures_a_decision_the_exact_model_refuses():
+    # Same episodes, same observables: the surrogate scores 0.67, the exact
+    # uniform model abstains. A likelihood choice can invent signal.
+    from psychopomp.probes import m2_bayes_accuracy, m2_map_accuracy
+
+    eps = corpus(2.0, 5.0)
+    surrogate = m2_map_accuracy(eps, noise=5.0, tol=5.0)
+    exact = m2_bayes_accuracy(eps, noise=5.0, tol=5.0)
+    assert surrogate["decided"] == 6
+    assert surrogate["top1"] > 0.25
+    assert exact["decided"] == 0
