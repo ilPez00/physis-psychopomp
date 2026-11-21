@@ -35,13 +35,13 @@ def deflection(log, world) -> float:
     return total
 
 
-def m2_baseline(eps: List[SimEpisode]) -> dict:
+def m2_baseline(eps: List[SimEpisode], tol: float = 1e-4) -> dict:
     """Top-1 ranking of the truth world by minimum endpoint deflection."""
     top1 = n = excluded = 0
     worlds: List[int] = []
     for ep in eps:
         log = ep.observable_log()
-        ws = consistent_worlds(log)
+        ws = consistent_worlds(log, tol)
         worlds.append(len(ws))
         if not ws:
             continue
@@ -69,7 +69,7 @@ def m2_baseline(eps: List[SimEpisode]) -> dict:
     }
 
 
-def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False) -> dict:
+def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False, tol: float = 1e-4) -> dict:
     """Contact detection, with undecided episodes excluded rather than guessed.
 
     `contact_required` is None when an episode is not cleared (C5 needs both
@@ -82,7 +82,7 @@ def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False) -> dict:
         logs = shuffle_rules(logs, seed=12345)
     ok = scored = excluded = 0
     for ep, log in zip(eps, logs):
-        decided = summarize(log)["contact_required"]
+        decided = summarize(log, tol)["contact_required"]
         if decided is None:
             excluded += 1
             continue
@@ -157,6 +157,7 @@ def m2_position_continuity(
     jitter: float = 0.0,
     seed: int = 0,
     tol: float = 1e-4,
+    abstain_margin: float = 0.0,
 ) -> dict:
     """Top-1 for the A2 probe: rank worlds by straight-line y residual.
 
@@ -164,7 +165,7 @@ def m2_position_continuity(
     the residual cannot be zero, so the probe is not applicable and the episode
     is counted as excluded rather than scored against a probe that does not fit.
     """
-    top1 = n = excluded = 0
+    top1 = n = excluded = decided = ambiguous = 0
     world_counts: List[int] = []
     for ep in eps:
         log = ep.observable_log()
@@ -183,14 +184,28 @@ def m2_position_continuity(
             log = _jittered(log, jitter, seed + len(world_counts))
         scores = {w: _pos_residual(log, w, quantize) for w in ws}
         best = min(scores.values())
-        winners = [w for w, s in scores.items() if s == best]
+        # A tie is not the only reason to abstain: a probe that always names a
+        # winner reports confident errors. With a margin, a winner is named only
+        # when it beats the runner-up by at least that much.
+        ordered = sorted(scores.values())
+        runner_up = ordered[1] if len(ordered) > 1 else float("inf")
+        if runner_up - best < abstain_margin:
+            winners = []
+        else:
+            winners = [w for w, s in scores.items() if s == best]
         n += 1
         world_counts.append(len(ws))
-        if len(winners) == 1 and winners[0].matches == truth:
-            top1 += 1
+        if len(winners) == 1:
+            decided += 1
+            if winners[0].matches == truth:
+                top1 += 1
+        else:
+            ambiguous += 1
     return {
         "episodes": n,
         "top1": (top1 / n) if n else 0.0,
         "chance": (sum(1.0 / w for w in world_counts) / len(world_counts)) if world_counts else 0.0,
+        "decided": decided,
+        "ambiguous": ambiguous,
         "excluded": excluded,
     }

@@ -146,3 +146,32 @@ def test_identity_signal_survives_grid_rounding_and_dies_under_jitter():
     assert noisy["top1"] == 0.5         # jitter is
     assert heavy["top1"] < noisy["top1"]
     assert heavy["top1"] >= 0.25        # still above the chance floor
+
+
+def test_scoring_accepts_the_filter_tolerance_so_noise_is_measured_not_collapsed():
+    # Without a tolerance the scorer measures R1's "no world" bucket instead of
+    # the sensor; at noise=2 the default tolerance yields zero worlds and the
+    # strict scorer excludes everything while a stated tolerance scores it.
+    from psychopomp.sim import Init, SimConfig, run
+
+    offset = Init(x=(30.0, 34.0), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0)))
+    noisy = run(SimConfig(steps=600, noise=2.0), 5, init=offset)
+    strict = m3_accuracy([noisy])
+    stated = m3_accuracy([noisy], tol=2.0)
+    assert strict["excluded"] == 1        # nothing explains it at 1e-4
+    assert stated["excluded"] == 0        # the sensor explains it at its own accuracy
+
+
+def test_margin_abstention_is_off_by_default_and_can_refuse_everything():
+    from psychopomp.fixtures import parallel_recrossing_corpus
+    from psychopomp.probes import m2_position_continuity
+
+    eps = parallel_recrossing_corpus(6)
+    default = m2_position_continuity(eps)
+    assert default["decided"] == 6 and default["ambiguous"] == 0
+    assert default["top1"] == 1.0
+    # A margin larger than any real gap must abstain on every episode rather than
+    # name a winner: that is the instrument saying "I cannot decide", not a score.
+    refused = m2_position_continuity(eps, abstain_margin=1000.0)
+    assert refused["decided"] == 0
+    assert refused["ambiguous"] == refused["episodes"] == 6
