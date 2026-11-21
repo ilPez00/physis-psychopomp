@@ -64,8 +64,32 @@ def has_hidden_contact(ep: SimEpisode) -> bool:
     )
 
 
+def _unique_index(events, t: int, what: str) -> int:
+    """Index of the single `what` event at time `t`; refuse to guess when shared.
+
+    Two balls on the same trajectory cross at the same timestamps, and an
+    identity-free log then cannot say which crossing belongs to which ball.
+    Resolving by time alone used to return the same index twice -- a "truth"
+    that is not a bijection, so no world can equal it and every score against
+    it is fabricated. Measured 2026-11-21: identical trajectories gave
+    ((0,0),(0,0),(1,1),(1,1)); offset ones gave a clean bijection.
+    """
+    hits = [i for i, e in enumerate(events) if e.t == t]
+    if len(hits) != 1:
+        raise ValueError(
+            f"ambiguous oracle truth: {len(hits)} {what} events at t={t} in the "
+            "observable log, so this crossing cannot be attributed to a ball. "
+            "Exclude the episode (and count the exclusion); do not invent a truth."
+        )
+    return hits[0]
+
+
 def truth_matches(ep: SimEpisode) -> Tuple[Tuple[int, int], ...]:
-    """Oracle pairing as (enter_idx, exit_idx) over the observable log order."""
+    """Oracle pairing as (enter_idx, exit_idx) over the observable log order.
+
+    Raises ValueError when the pairing is not a bijection over observable
+    events: an unusable truth must stop the caller, not score against noise.
+    """
     obs = ep.observable_log()
     enters = [e for e in obs if e.kind == "enter_occ"]
     exits = [e for e in obs if e.kind == "exit_occ"]
@@ -76,7 +100,17 @@ def truth_matches(ep: SimEpisode) -> Tuple[Tuple[int, int], ...]:
         exi = sorted(e.t for e in ep.oracle_log() if e.kind == "exit_occ" and e.subjects[0] == ball)
         for a, b in zip(ent, exi):
             if b > a:
-                ei = next(i for i, e in enumerate(enters) if e.t == a)
-                xi = next(i for i, e in enumerate(exits) if e.t == b)
-                pairs.append((ei, xi))
+                pairs.append((_unique_index(enters, a, "enter"), _unique_index(exits, b, "exit")))
+    used_enters = [a for a, _ in pairs]
+    used_exits = [b for _, b in pairs]
+    if len(set(used_enters)) != len(used_enters) or len(set(used_exits)) != len(used_exits):
+        raise ValueError(
+            f"ambiguous oracle truth: pairing {pairs} reuses an event index; "
+            "exclude the episode and count the exclusion."
+        )
+    if len(pairs) != len(exits):
+        raise ValueError(
+            f"ambiguous oracle truth: {len(pairs)} pairs for {len(exits)} exits; "
+            "the oracle and the observable log disagree about this episode."
+        )
     return tuple(sorted(pairs))

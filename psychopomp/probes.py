@@ -36,7 +36,7 @@ def deflection(log, world) -> float:
 
 def m2_baseline(eps: List[SimEpisode]) -> dict:
     """Top-1 ranking of the truth world by minimum endpoint deflection."""
-    top1 = n = 0
+    top1 = n = excluded = 0
     worlds: List[int] = []
     for ep in eps:
         log = ep.observable_log()
@@ -44,7 +44,14 @@ def m2_baseline(eps: List[SimEpisode]) -> dict:
         worlds.append(len(ws))
         if not ws:
             continue
-        truth = truth_matches(ep)
+        try:
+            truth = truth_matches(ep)
+        except ValueError:
+            # Shared timestamps leave the pairing unattributable. Count it as an
+            # exclusion so the denominator stays honest; scoring against a
+            # fabricated truth is the one thing this baseline must not do.
+            excluded += 1
+            continue
         scores = sorted(deflection(log, w) for w in ws)
         best = scores[0]
         winners = [w for w in ws if deflection(log, w) == best]
@@ -57,6 +64,7 @@ def m2_baseline(eps: List[SimEpisode]) -> dict:
         "worlds_mean": (sum(worlds) / len(worlds)) if worlds else 0.0,
         "top1": (top1 / n) if n else 0.0,
         "chance": (sum(1.0 / w for w in nz) / len(nz)) if nz else 0.0,
+        "excluded_ambiguous_truth": excluded,
     }
 
 

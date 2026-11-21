@@ -1,5 +1,8 @@
-from psychopomp.fixtures import random_corpus, targeted_corpus
+import pytest
+
+from psychopomp.fixtures import random_corpus, targeted_corpus, truth_matches
 from psychopomp.probes import m2_baseline, m3_accuracy
+from psychopomp.sim import Init, SimConfig, run
 
 
 def test_m2_endpoint_probe_is_chance_on_contact_family():
@@ -9,6 +12,7 @@ def test_m2_endpoint_probe_is_chance_on_contact_family():
     assert abs(m2["worlds_mean"] - 2.0) < 1e-9
     # relabeling symmetry: ties, no strict winner -> at or below chance
     assert m2["top1"] <= m2["chance"] + 1e-9
+    assert m2["excluded_ambiguous_truth"] == 0
 
 
 def test_m3_detects_contacts_on_targeted_and_random():
@@ -22,3 +26,44 @@ def test_m3_control_breaks_contact_detection():
     shuffled = m3_accuracy(tgt, shuffled=True)
     assert real == 1.0
     assert shuffled < real
+
+
+def test_truth_refuses_shared_timestamps_instead_of_inventing_a_pairing():
+    # Two balls on the same trajectory cross at the same t, so an identity-free
+    # log cannot attribute the crossing. This used to return ((0,0),(0,0),
+    # (1,1),(1,1)) -- not a bijection, so no world could equal it and every
+    # score against it was noise.
+    ep = run(
+        SimConfig(steps=600),
+        5,
+        init=Init(x=(30.0, 30.0), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0))),
+    )
+    with pytest.raises(ValueError, match="ambiguous oracle truth"):
+        truth_matches(ep)
+
+
+def test_truth_is_a_bijection_when_trajectories_are_offset():
+    ep = run(
+        SimConfig(steps=600),
+        5,
+        init=Init(x=(30.0, 36.0), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0))),
+    )
+    pairs = truth_matches(ep)
+    enters = [a for a, _ in pairs]
+    exits = [b for _, b in pairs]
+    assert len(set(enters)) == len(enters)
+    assert len(set(exits)) == len(exits)
+
+
+def test_m2_counts_an_unattributable_truth_as_excluded_not_wrong():
+    # Same-trajectory episodes are real physics with an unattributable oracle
+    # pairing: the harness must shrink the denominator, never score a guess.
+    ambiguous = run(
+        SimConfig(steps=600),
+        5,
+        init=Init(x=(30.0, 30.0), y=(45.0, 53.0), v=((3.0, 0.0), (3.0, 0.0))),
+    )
+    m2 = m2_baseline([ambiguous])
+    assert m2["excluded_ambiguous_truth"] == 1
+    assert m2["episodes"] == 0
+    assert m2["top1"] == 0.0
