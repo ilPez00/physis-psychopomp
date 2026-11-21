@@ -86,6 +86,10 @@ Subjective prior **0.4** (not calibrated; registered in the physis-next store,
 > than world-frame analysis under camera degradation, without gaining
 > information through the frame transform.
 
+Registered 2026-11-21 as hypothesis `1ff62ee2-78c5-4911-a342-145924586c08`.
+The store's embedder is random-projection (lexical) — the registration is a
+record for later refutation, not a calibrated judgement.
+
 ## Non-claims
 
 No claim about human-like imagination, consciousness, or learned models
