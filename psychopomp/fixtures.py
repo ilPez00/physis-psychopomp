@@ -58,6 +58,33 @@ def recrossing_episode() -> SimEpisode:
     return run(cfg, 0, init=Init(x=(30.0, 30.0), y=(50.0, 85.0), v=((3.0, 0.0), (0.05, 0.0))))
 
 
+def parallel_lane_corpus(
+    sep: float = 6.0, noise: float = 0.0, n: int = 6, max_k: int = 200
+) -> List[SimEpisode]:
+    """Two parallel lanes separated by ``sep``; attributable episodes only."""
+    from .epec import consistent_worlds
+
+    eps: List[SimEpisode] = []
+    for k in range(max_k):
+        init = Init(
+            x=(30.0, 30.0 + 2.0 * (k % 5)),
+            y=(45.0, 45.0 + sep),
+            v=((3.0, 0.0), (3.0, 0.0)),
+        )
+        ep = run(SimConfig(steps=600, noise=noise), k, init=init)
+        tol = max(noise, 1e-4)
+        if not consistent_worlds(ep.observable_log(), tol):
+            continue
+        try:
+            truth_matches(ep)
+        except ValueError:
+            continue
+        eps.append(ep)
+        if len(eps) >= n:
+            break
+    return eps
+
+
 def parallel_recrossing_corpus(n: int = 6, tries: int = 80, noise: float = 0.0) -> List[SimEpisode]:
     """Two balls on parallel paths, both crossing twice — the A2 family.
 

@@ -28,25 +28,9 @@ EPISODES = 6
 
 
 def corpus(sep: float, noise: float, n: int = EPISODES) -> list:
-    eps = []
-    for k in range(200):
-        init = Init(
-            x=(30.0, 30.0 + 2.0 * (k % 5)),
-            y=(45.0, 45.0 + sep),
-            v=((3.0, 0.0), (3.0, 0.0)),
-        )
-        ep = run(SimConfig(steps=600, noise=noise), k, init=init)
-        tol = max(noise, 1e-4)
-        if not consistent_worlds(ep.observable_log(), tol):
-            continue
-        try:
-            truth_matches(ep)
-        except ValueError:
-            continue
-        eps.append(ep)
-        if len(eps) >= n:
-            break
-    return eps
+    from psychopomp.fixtures import parallel_lane_corpus
+
+    return parallel_lane_corpus(sep=sep, noise=noise, n=n)
 
 
 def best_statistic(eps, tol: float) -> float:
