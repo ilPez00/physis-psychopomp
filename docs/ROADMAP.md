@@ -55,6 +55,16 @@ into R-P1.7 · IMP-5 **done** (probes baseline; M2 endpoint=chance, A2
 position=1.00) · IMP-6 partially covered by the M3 shuffled-control test ·
 IMP-7 code generalized, tests added locally (pending commit).
 
+## A4 — executed 2026-11-21
+
+Prereg: `2026-11-21-PREREG-A4-perspectives.md`; results:
+`2026-11-21-A4-run-1-results.md`. **H1 falsified** (frame-normalized beats
+world-frame on 0/5, 1/5, 0/5 seeds on the headroom cells; threshold ≥2),
+**H2 upheld** (worlds and truth-in-worlds invariant across inertial frames),
+**H3 upheld** (shuffled control 0.00). Claim `1ff62ee2` contradicted. This is
+the fifth slice-closing negative receipt in the repo; the ceiling rule and the
+≥2-seed threshold are what kept it honest.
+
 ## Non-claims
 
 - A2 is a deterministic result on a constructed task; it is **not** evidence
