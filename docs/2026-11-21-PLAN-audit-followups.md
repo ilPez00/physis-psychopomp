@@ -22,7 +22,7 @@ The shuffled control is currently demonstrated by `scripts/probes.py` output and
 one probe test. It must fail if it ever converges to the real arm.
 
 Gate: `tests/test_controls.py` contains a test asserting, on the targeted
-corpus, real `contact_required` = 6/6 and null = 0/6 with fixed seed 12345, and
+corpus, real `contact_required` = 6/6 and null = 0/6 decided (6 undecided: no world explains a deranged log) with fixed seed 12345, and
 that `worlds` mean falls from 2.00 to 0.00. Mutation: making `shuffle_rules`
 the identity must turn it RED.
 
@@ -99,7 +99,7 @@ scheduled; everything before it is instrument hygiene.
 ## Execution status — 2026-11-21
 
 - **P1 DONE.** `tests/test_controls.py::test_null_arm_does_not_reproduce_the_filter_verdict`:
-  real `contact_required` 6/6, null 0/6, worlds mean 2.00 vs 0.00.
+  real `contact_required` 6/6, null 0/6 decided with 6 undecided, worlds mean 2.00 vs 0.00.
   Mutation-checked: an identity shuffle makes null == real and the test fails.
 - **P2 DONE.** `tests/test_instrument.py` (3 tests): attributable bijective
   truth per episode, truth ⊆ enumerated worlds for both shipped corpora, and a

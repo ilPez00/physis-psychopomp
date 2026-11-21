@@ -48,11 +48,17 @@ def exit_sides(ep) -> dict:
 
 def family_report(name: str, eps) -> None:
     n = len(eps)
-    worlds, contact_req, truth_in = [], 0, 0
+    worlds, contact_req, undecided, truth_in = [], 0, 0, 0
     for ep in eps:
         s = summarize(ep.observable_log())
         worlds.append(s["n_worlds"])
-        contact_req += int(s["contact_required"])
+        # contact_required is None when no world explains the log (or the episode
+        # is truncated). Counting that as 0 conflated "undecidable" with "no
+        # contact" -- the same fabrication the reporting layer stopped making.
+        if s["contact_required"] is None:
+            undecided += 1
+        else:
+            contact_req += int(s["contact_required"])
         truth = truth_matches(ep)
         if any(w.matches == truth for w in consistent_worlds(ep.observable_log())):
             truth_in += 1
@@ -65,7 +71,7 @@ def family_report(name: str, eps) -> None:
             ok += int(t_sides.get(ball) == p_sides.get(ball))
     print(f"[{name}] episodes {n}")
     print(f"  EPEC worlds: mean {mean(worlds):.2f} median {median(worlds):.0f} zero {worlds.count(0)}")
-    print(f"  contact_required: {contact_req}/{n}")
+    print(f"  contact_required: {contact_req}/{n} undecided {undecided}")
     print(f"  truth-in-worlds (EPEC sanity, must be {n}): {truth_in}/{n}")
     print(f"  reference exit-side accuracy (observable-only restart, shared physics): {ok}/{tot}")
 
@@ -80,9 +86,11 @@ def main() -> int:
     shuf = shuffle_rules(corpus, seed=12345)
     rep = control_report(corpus, shuf)
     s_worlds = [summarize(l)["n_worlds"] for l in shuf]
-    s_contact = sum(int(summarize(l)["contact_required"]) for l in shuf)
+    s_vals = [summarize(l)["contact_required"] for l in shuf]
+    s_contact = sum(1 for v in s_vals if v is True)
+    s_undecided = sum(1 for v in s_vals if v is None)
     print(f"[control: targeted corpus deranged] worlds mean {mean(s_worlds):.2f} "
-          f"contact_required {s_contact}/{len(tgt)} "
+          f"contact_required {s_contact}/{len(tgt)} undecided {s_undecided} "
           f"marginals_preserved={rep['exit_marginals_preserved']} "
           f"alignment_changed={rep['alignment_changed']}")
     return 0
