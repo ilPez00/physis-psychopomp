@@ -1,0 +1,70 @@
+"""Handcrafted CPU probes: M2/M3 baselines before any GPU arm (IMP-5).
+
+M2 — rank the truth world among consistent worlds. Score = total endpoint
+deflection sum ||v_exit - v_entry|| over matches. On the 2D contact family the
+two consistent worlds are relabelings with identical total deflection, so an
+endpoint-only probe is a coin flip. That is the documented stupid control a
+learned model must beat; a probe claiming more from endpoints alone would be
+an artifact until it explains why.
+
+M3 — hidden-contact detection: the filter's contact_required (decided only
+after exit velocities are observed) against the oracle hidden contact. The
+deranged control corpus must break this agreement.
+"""
+from __future__ import annotations
+
+import math
+from typing import List
+
+from .controls import shuffle_rules
+from .epec import _vel, consistent_worlds, summarize
+from .fixtures import has_hidden_contact, truth_matches
+from .sim import SimEpisode
+
+
+def deflection(log, world) -> float:
+    enters = [e for e in log.events if e.kind == "enter_occ"]
+    exits = [e for e in log.events if e.kind == "exit_occ"]
+    total = 0.0
+    for a, b in world.matches:
+        v, w = _vel(enters[a]), _vel(exits[b])
+        if v is None or w is None:
+            continue
+        total += math.hypot(w[0] - v[0], w[1] - v[1])
+    return total
+
+
+def m2_baseline(eps: List[SimEpisode]) -> dict:
+    """Top-1 ranking of the truth world by minimum endpoint deflection."""
+    top1 = n = 0
+    worlds: List[int] = []
+    for ep in eps:
+        log = ep.observable_log()
+        ws = consistent_worlds(log)
+        worlds.append(len(ws))
+        if not ws:
+            continue
+        truth = truth_matches(ep)
+        scores = sorted(deflection(log, w) for w in ws)
+        best = scores[0]
+        winners = [w for w in ws if deflection(log, w) == best]
+        n += 1
+        if len(winners) == 1 and winners[0].matches == truth:
+            top1 += 1
+    nz = [w for w in worlds if w]
+    return {
+        "episodes": n,
+        "worlds_mean": (sum(worlds) / len(worlds)) if worlds else 0.0,
+        "top1": (top1 / n) if n else 0.0,
+        "chance": (sum(1.0 / w for w in nz) / len(nz)) if nz else 0.0,
+    }
+
+
+def m3_accuracy(eps: List[SimEpisode], shuffled: bool = False) -> float:
+    logs = [ep.observable_log() for ep in eps]
+    if shuffled:
+        logs = shuffle_rules(logs, seed=12345)
+    ok = 0
+    for ep, log in zip(eps, logs):
+        ok += int(bool(summarize(log)["contact_required"]) == has_hidden_contact(ep))
+    return ok / len(eps) if eps else 0.0

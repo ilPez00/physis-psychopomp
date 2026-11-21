@@ -18,5 +18,7 @@ jobs:
         run: .venv/bin/pytest -q
       - name: recoverability gate
         run: .venv/bin/python scripts/recoverability.py
+      - name: probe baseline (M2/M3)
+        run: .venv/bin/python scripts/probes.py
       - name: demo
         run: .venv/bin/python scripts/demo.py
