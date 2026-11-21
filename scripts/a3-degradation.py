@@ -86,6 +86,34 @@ def main() -> int:
         r = m2_position_continuity(heavyweight, tol=20.0, abstain_margin=margin)
         acc = r["top1"] / (r["decided"] / r["episodes"]) if r["decided"] else 0.0
         print(f"| {margin:g} | {r['decided']}/{r['episodes']} | {acc:.2f} |")
+    print()
+    print("Separation sweep: does a closer pair kill the residual sooner than noise does?")
+    print("| separation | noise | episodes | worlds mean | top-1 | chance |")
+    print("|---|---|---|---|---|---|")
+    for sep in (8.0, 6.0, 4.0, 2.0):
+        for noise in (0.0, 2.0, 5.0):
+            eps = []
+            for k in range(80):
+                init = Init(x=(30.0, 30.0 + 2.0 * (k % 5)), y=(45.0, 45.0 + sep),
+                            v=((3.0, 0.0), (3.0, 0.0)))
+                ep = run(SimConfig(steps=600, noise=noise), k, init=init)
+                tol = max(noise, 1e-4)
+                if not consistent_worlds(ep.observable_log(), tol):
+                    continue
+                try:
+                    truth_matches(ep)
+                except ValueError:
+                    continue
+                eps.append(ep)
+                if len(eps) >= 6:
+                    break
+            if not eps:
+                print(f"| {sep:g} | {noise:g} | 0 | - | - | - |")
+                continue
+            tol = max(noise, 1e-4)
+            r = m2_position_continuity(eps, tol=tol)
+            wm = sum(len(consistent_worlds(e.observable_log(), tol)) for e in eps) / len(eps)
+            print(f"| {sep:g} | {noise:g} | {len(eps)} | {wm:.2f} | {r['top1']:.2f} | {r['chance']:.2f} |")
     return 0
 
 
