@@ -147,3 +147,19 @@ def test_two_ball_symmetric_recrossing_is_ambiguous_not_wrong():
     assert summarize(log)["enters"] == 4
     assert len(worlds) == 4
     assert all(w.swaps == () for w in worlds)
+
+
+def test_zero_worlds_is_undecidable_not_no_contact():
+    # A teleport/inconsistent log has no consistent world at all. Reading that as
+    # contact_required False turned "nothing explains this" into a negative label.
+    from psychopomp.eventlog import Provenance
+
+    prov = Provenance("test", "0", 0, 0)
+    log = EventLog([
+        ev("enter_occ", 1, "left", (3.0, 0.0)),
+        ev("exit_occ", 2, "right", (-9.0, 7.0)),
+    ])
+    s = summarize(log)
+    assert s["n_worlds"] == 0
+    assert s["cleared"] is True
+    assert s["contact_required"] is None

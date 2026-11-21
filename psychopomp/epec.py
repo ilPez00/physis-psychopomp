@@ -223,12 +223,20 @@ def summarize(log: EventLog, tol: float = TOL) -> dict:
     # field becomes None whenever the episode is not cleared (FIX-5's contract,
     # now enforced in the reporting layer as well as in the builders).
     cleared = len(enters) == len(exits)
+    # Three distinct states, never two: contact requires a cleared episode AND at
+    # least one consistent world. An empty enumeration means "no world explains
+    # this log" (inconsistent log, coarser-than-tolerance sensor, teleport), which
+    # is not the same claim as "no contact" and must not be read as a negative.
+    if not ws or not cleared:
+        contact: bool | None = None
+    else:
+        contact = all(w.swaps for w in ws)
     return {
         "enters": len(enters),
         "exits": len(exits),
         "cleared": cleared,
         "n_worlds": len(ws),
-        "contact_required": (bool(ws) and all(w.swaps for w in ws)) if cleared else None,
+        "contact_required": contact,
         "unconstrained": unconstrained,
         "worlds": [w.describe() for w in ws],
     }
