@@ -14,7 +14,7 @@ from psychopomp.fixtures import truth_matches
 from psychopomp.probes import statistic_survey
 from psychopomp.sim import Init, SimConfig, run
 
-NAMES = ("y_residual", "x_residual", "y_order", "speed_delta", "vote")
+NAMES = ("y_residual", "x_residual", "y_order", "speed_delta", "v_bounce", "borda", "vote")
 
 
 def corpus(sep: float, noise: float, n: int = 6) -> list:

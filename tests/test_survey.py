@@ -1,4 +1,5 @@
-"""Unfitted statistics: which ones can rank the true world (round 6)."""
+"""Unfitted statistics: which ones can rank the true world (rounds 6-7)."""
+import pytest
 from psychopomp.epec import consistent_worlds
 from psychopomp.fixtures import truth_matches
 from psychopomp.probes import statistic_survey
@@ -57,3 +58,33 @@ def test_a_coarse_sensor_defeats_every_single_statistic():
     assert r["chance"] == 0.25
     assert max(covered) < 1.0
     assert max(covered) > r["chance"]
+
+
+def test_bounces_can_never_fall_inside_a_matched_interval_in_this_geometry():
+    # Round 7's premise, measured: 0 of 96 matched intervals contained a bounce.
+    # It is geometric, not accidental -- the occluder occupies x in [40, 60] and
+    # the walls are at x = 0 and 100, so a ball inside the occluder cannot touch
+    # a wall. The v_bounce statistic therefore never fires on this simulator, and
+    # this test fails the moment the geometry changes enough to make it live.
+    log_corpora = corpus(2.0, 5.0)
+    total = inside = 0
+    for ep in log_corpora:
+        log = ep.observable_log()
+        enters = [e for e in log.events if e.kind == "enter_occ"]
+        exits = [e for e in log.events if e.kind == "exit_occ"]
+        bounces = [e for e in log.events if e.kind == "wall_bounce"]
+        for world in consistent_worlds(log, 5.0):
+            for a, b in world.matches:
+                total += 1
+                if any(enters[a].t < e.t < exits[b].t for e in bounces):
+                    inside += 1
+    assert total > 0
+    assert inside == 0
+
+
+def test_no_unfitted_combination_beats_the_best_single_statistic_at_ratio_0_4():
+    r = statistic_survey(corpus(2.0, 5.0), tol=5.0)
+    assert r["borda"]["decided"] == r["episodes"]
+    assert r["borda"]["top1"] == pytest.approx(0.5)
+    assert r["x_residual"]["top1"] == pytest.approx(2 / 3)
+    assert r["borda"]["top1"] < r["x_residual"]["top1"]

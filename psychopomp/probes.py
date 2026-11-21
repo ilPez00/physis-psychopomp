@@ -220,7 +220,14 @@ def _statistics(log, world) -> dict:
     """
     enters = [e for e in log.events if e.kind == "enter_occ"]
     exits = [e for e in log.events if e.kind == "exit_occ"]
-    totals = {"y_residual": 0.0, "x_residual": 0.0, "y_order": 0.0, "speed_delta": 0.0}
+    totals = {
+        "y_residual": 0.0,
+        "x_residual": 0.0,
+        "y_order": 0.0,
+        "speed_delta": 0.0,
+        "v_bounce": 0.0,
+    }
+    bounces = [e for e in log.events if e.kind == "wall_bounce"]
     for a, b in world.matches:
         ea, xb = enters[a], exits[b]
         v, dt = ea.attrs.get("v"), ea.attrs.get("dt")
@@ -234,8 +241,19 @@ def _statistics(log, world) -> dict:
         v_out = xb.attrs.get("v")
         if v_out is None:
             totals["speed_delta"] = float("inf")
+            totals["v_bounce"] = float("inf")
         else:
             totals["speed_delta"] += abs(math.hypot(*v_out) - math.hypot(*v))
+            # The log carries the constraint the other statistics ignore: after a
+            # wall bounce between entry and exit, the exit velocity must be the
+            # POST-bounce one. Falls back to entry velocity when no bounce falls
+            # in the interval, which is the current (bounce-blind) assumption.
+            inside = [e for e in bounces if ea.t < e.t < xb.t]
+            expected = max(inside, key=lambda e: e.t).attrs.get("v") if inside else v
+            if expected is None:
+                totals["v_bounce"] = float("inf")
+            else:
+                totals["v_bounce"] += math.hypot(v_out[0] - expected[0], v_out[1] - expected[1])
     return totals
 
 
@@ -245,10 +263,10 @@ def statistic_survey(eps: List[SimEpisode], tol: float = 1e-4) -> dict:
     Only attributable, contact-free episodes are scored (same rule as A2): where
     the truth needs a contact these statistics have no defined value.
     """
-    names = ("y_residual", "x_residual", "y_order", "speed_delta")
+    names = ("y_residual", "x_residual", "y_order", "speed_delta", "v_bounce")
     hits = {n: 0 for n in names}
     decided = {n: 0 for n in names}
-    vote_hits = vote_decided = 0
+    vote_hits = vote_decided = borda_hits = borda_decided = 0
     scored = excluded = 0
     world_counts: List[int] = []
     for ep in eps:
@@ -265,14 +283,36 @@ def statistic_survey(eps: List[SimEpisode], tol: float = 1e-4) -> dict:
         scored += 1
         world_counts.append(len(ws))
         ranks = {}
+        per_stat_scores: dict = {}
         for name in names:
-            scores = {w: _statistics(log, w)[name] for w in ws}
+            stats = {w: _statistics(log, w) for w in ws}
+            scores = {w: s[name] for w, s in stats.items()}
+            per_stat_scores[name] = scores
             best = min(scores.values())
             winners = [w for w, s in scores.items() if s == best]
             if len(winners) == 1:
                 decided[name] += 1
                 hits[name] += int(winners[0].matches == truth)
                 ranks[name] = winners[0]
+        # Borda: unfitted combination (sum of per-statistic ranks). A combination
+        # is the cheapest way to ask whether the statistics are jointly
+        # informative, without fitting anything to the corpus.
+        borda: dict = {w: 0.0 for w in ws}
+        usable = False
+        for name in names:
+            scores = per_stat_scores[name]
+            if any(v == float("inf") for v in scores.values()):
+                continue
+            usable = True
+            order = sorted(ws, key=lambda w: scores[w])
+            for rank, w in enumerate(order):
+                borda[w] += rank
+        if usable:
+            best = min(borda.values())
+            winners = [w for w, s in borda.items() if s == best]
+            if len(winners) == 1:
+                borda_decided += 1
+                borda_hits += int(winners[0].matches == truth)
         if len(ranks) == len(names):
             tally: dict = {}
             for winner in ranks.values():
@@ -290,6 +330,10 @@ def statistic_survey(eps: List[SimEpisode], tol: float = 1e-4) -> dict:
             "top1": (vote_hits / vote_decided) if vote_decided else 0.0,
             "decided": vote_decided,
         },
+    }
+    report["borda"] = {
+        "top1": (borda_hits / borda_decided) if borda_decided else 0.0,
+        "decided": borda_decided,
     }
     for name in names:
         report[name] = {
