@@ -209,3 +209,91 @@ def m2_position_continuity(
         "ambiguous": ambiguous,
         "excluded": excluded,
     }
+
+
+def _statistics(log, world) -> dict:
+    """Unfitted per-world statistics a reader can re-derive by hand.
+
+    Each is expressed in world units so the numbers are comparable; none is
+    fitted to the corpus, so a ranking here is a property of the observation,
+    not of a model.
+    """
+    enters = [e for e in log.events if e.kind == "enter_occ"]
+    exits = [e for e in log.events if e.kind == "exit_occ"]
+    totals = {"y_residual": 0.0, "x_residual": 0.0, "y_order": 0.0, "speed_delta": 0.0}
+    for a, b in world.matches:
+        ea, xb = enters[a], exits[b]
+        v, dt = ea.attrs.get("v"), ea.attrs.get("dt")
+        p_in, p_out = ea.attrs.get("pos"), xb.attrs.get("pos")
+        if v is None or dt is None or p_in is None or p_out is None:
+            return {k: float("inf") for k in totals}
+        steps = xb.t - ea.t
+        totals["y_residual"] += abs(p_in[1] + v[1] * dt * steps - p_out[1])
+        totals["x_residual"] += abs(p_in[0] + v[0] * dt * steps - p_out[0])
+        totals["y_order"] += abs(p_out[1] - p_in[1])
+        v_out = xb.attrs.get("v")
+        if v_out is None:
+            totals["speed_delta"] = float("inf")
+        else:
+            totals["speed_delta"] += abs(math.hypot(*v_out) - math.hypot(*v))
+    return totals
+
+
+def statistic_survey(eps: List[SimEpisode], tol: float = 1e-4) -> dict:
+    """Top-1 per unfitted statistic, plus a majority vote across them.
+
+    Only attributable, contact-free episodes are scored (same rule as A2): where
+    the truth needs a contact these statistics have no defined value.
+    """
+    names = ("y_residual", "x_residual", "y_order", "speed_delta")
+    hits = {n: 0 for n in names}
+    decided = {n: 0 for n in names}
+    vote_hits = vote_decided = 0
+    scored = excluded = 0
+    world_counts: List[int] = []
+    for ep in eps:
+        log = ep.observable_log()
+        ws = consistent_worlds(log, tol)
+        if not ws or any(w.swaps for w in ws):
+            excluded += 1
+            continue
+        try:
+            truth = truth_matches(ep)
+        except ValueError:
+            excluded += 1
+            continue
+        scored += 1
+        world_counts.append(len(ws))
+        ranks = {}
+        for name in names:
+            scores = {w: _statistics(log, w)[name] for w in ws}
+            best = min(scores.values())
+            winners = [w for w, s in scores.items() if s == best]
+            if len(winners) == 1:
+                decided[name] += 1
+                hits[name] += int(winners[0].matches == truth)
+                ranks[name] = winners[0]
+        if len(ranks) == len(names):
+            tally: dict = {}
+            for winner in ranks.values():
+                tally[winner] = tally.get(winner, 0) + 1
+            top = max(tally.values())
+            leaders = [w for w, c in tally.items() if c == top]
+            if len(leaders) == 1:
+                vote_decided += 1
+                vote_hits += int(leaders[0].matches == truth)
+    report = {
+        "episodes": scored,
+        "chance": (sum(1.0 / w for w in world_counts) / len(world_counts)) if world_counts else 0.0,
+        "excluded": excluded,
+        "vote": {
+            "top1": (vote_hits / vote_decided) if vote_decided else 0.0,
+            "decided": vote_decided,
+        },
+    }
+    for name in names:
+        report[name] = {
+            "top1": (hits[name] / decided[name]) if decided[name] else 0.0,
+            "decided": decided[name],
+        }
+    return report
