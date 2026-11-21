@@ -49,3 +49,24 @@ def test_single_exit_corpus_is_identity():
     logs = [run(CFG, 0, init=STRAIGHT).observable_log()]
     shuf = shuffle_rules(logs, seed=3)
     assert [e.attrs for e in shuf[0]] == [e.attrs for e in logs[0]]
+
+
+def test_null_arm_does_not_reproduce_the_filter_verdict():
+    # IMP-6: the shuffled control must be a TEST, not a printout. Fixed seed and
+    # corpus, so a regression (shuffle becoming identity) fails loudly instead of
+    # showing up as a nicer-looking number in scripts/probes.py.
+    from psychopomp.epec import summarize
+    from psychopomp.fixtures import targeted_corpus
+
+    eps = targeted_corpus(6)
+    real = [summarize(ep.observable_log()) for ep in eps]
+    null = [
+        summarize(l)
+        for l in shuffle_rules([ep.observable_log() for ep in eps], seed=12345)
+    ]
+    assert sum(1 for r in real if r["contact_required"]) == 6
+    assert sum(1 for n in null if n["contact_required"]) == 0
+    real_mean = sum(r["n_worlds"] for r in real) / len(real)
+    null_mean = sum(n["n_worlds"] for n in null) / len(null)
+    assert abs(real_mean - 2.0) < 1e-9
+    assert null_mean == 0.0
