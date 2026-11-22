@@ -71,6 +71,10 @@ class SimConfig:
     # marker opportunity and drops the next `marker_outage_len` opportunities.
     marker_outage_prob: float = 0.0
     marker_outage_len: int = 2
+    # Detection latency (R-P1.43): a crossing is reported this many steps late,
+    # carrying the body's position THEN (a lagging sampler). 0 = instant, and the
+    # oracle log is never delayed.
+    detect_latency: int = 0
     # Start a body already occluded (R-P1.39 case 3): models an observer that was
     # created with something hidden, so zero identity evidence exists for it.
     # Off by default; the init-observable guard still applies otherwise.
@@ -288,6 +292,27 @@ def transition_rect(
         if not entering and before and not after:
             return rect
     return None
+
+
+def _lagged_attrs(config: SimConfig, tr, j: int, attrs: dict,
+                  entering: bool) -> tuple:
+    """A lagging sampler's report for a crossing at step `j` (R-P1.43).
+
+    The detector notices `detect_latency` steps late, so it reports a position that
+    lies `L` steps further along the body's travel — *outward* from the crossing:
+    backwards (`j - L`) for an entry, forwards (`j + L`) for an exit. Sampling the
+    wrong side is not a small error: it moves the reported position back into the
+    region and the bound then shrinks inward, which is what the first run of this
+    card measured. Returns `(step, attrs)`.
+    """
+    lag = max(0, config.detect_latency)
+    if lag == 0:
+        return j, attrs
+    k = j - lag if entering else j + lag
+    k = min(max(k, 0), len(tr.x) - 1)
+    lagged = dict(attrs)
+    lagged["pos"] = [round(tr.x[k], 6), round(tr.y[k], 6)]
+    return (j + lag if not entering else j), lagged
 
 
 def _meas_v(tr: Trajectory, dt: float, a: int, b: int) -> Optional[Vec]:
@@ -535,7 +560,8 @@ def run(
                               for s in range(j, min(j + TRACK_SAMPLES, len(tr.x)))],
                 }
                 emit(oracle, "exit_occ", j, (f"b{i}",), attrs, True)
-                emit(obs, "exit_occ", j, ("ball",), attrs, True)
+                t_obs, obs_attrs = _lagged_attrs(config, tr, j, attrs, entering=False)
+                emit(obs, "exit_occ", t_obs, ("ball",), obs_attrs, True)
             elif tr.visible[j - 1] and not tr.visible[j]:
                 v = _meas_v(tr, config.dt, j - 2, j - 1)
                 rect = transition_rect(config, j, tr.x[j - 1], tr.y[j - 1],
@@ -563,7 +589,8 @@ def run(
                               for s in range(max(0, j - TRACK_SAMPLES), j)],
                 }
                 emit(oracle, "enter_occ", j, (f"b{i}",), attrs, True)
-                emit(obs, "enter_occ", j, ("ball",), attrs, True)
+                t_obs, obs_attrs = _lagged_attrs(config, tr, j, attrs, entering=True)
+                emit(obs, "enter_occ", t_obs, ("ball",), obs_attrs, True)
 
     if config.identity_marker:
         channel_down = 0

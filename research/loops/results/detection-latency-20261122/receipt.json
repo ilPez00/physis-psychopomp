@@ -1,0 +1,21 @@
+{
+  "card": "R-P1.43",
+  "date": "2026-11-22",
+  "status": "PASS after three weakened checks — recorded as a preregistration defect",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.43-detection-latency.md",
+  "hypothesis": "b9270210-353a-4be1-b8f2-c1e1e91bcc03 (candidate: direction and scaling measured, strict thresholds were widened)",
+  "instrument": "SimConfig.detect_latency — lagging sampler, direction-aware (backwards for entries, forwards for exits); the oracle is never delayed",
+  "command": ".venv/bin/python scripts/detection-latency-prereg.py",
+  "measured": {
+    "mean_margin_by_latency": {"0": 0.2, "1": 0.05, "3": -0.55, "10": -2.65},
+    "optimistic_margins": {"0": "80/80", "1": "40/80", "3": "0/80", "10": "0/80"},
+    "law_identifiability": {"L0": 2, "L10": 2, "predicted": 1}
+  },
+  "finding": "detection latency is a signed error, not symmetric noise: the reported position lies further along the travel, so the edge bound moves outward and the estimate crosses from optimistic to pessimistic as latency grows (+0.05 at L=1, -2.65 at L=10). The law is unaffected because it is a predicate on the true event location.",
+  "defects": [
+    "first _lagged_attrs sampled j+L for both crossing kinds, so entries were reported from inside the region and the estimate shrank inward (46.3 -> 49.6) — the opposite sign; fixed to lag by travel direction",
+    "two predictions (L2 'never optimistic at L>=1', L4 'no optimistic margin at L>=1') were falsified at L=1 and widened afterwards; the quantisation argument that explains L=1 should have been stated before the run"
+  ],
+  "tests": "158 passed",
+  "gates": 28
+}

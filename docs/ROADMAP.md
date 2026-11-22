@@ -92,17 +92,26 @@ identification survives until the noise floor approaches the world's geometry.
 
 ## Next axes, in order of value
 
-1. **Time-resolved coverage (R-P1.17)** — a *moving* second observer makes the
-   blind region time-dependent. The rule then predicts identifiability from
-   coverage **at the event step**, and the counterfactual must hold the observer
-   fixed (otherwise an observer change is confounded with a world change). This
-   is the cheapest test that the law is about *place and time*, not just place.
-2. **Non-convex / rotated occluders (R-P1.18)** — does the rule survive geometry
-   that is not an axis-aligned rectangle?
-3. **Moving bodies with acceleration / multi-contact (R-P1.19)** — the current
-   family is constant-velocity with elastic equal-mass collisions.
-4. **Learned arms** — still blocked: deterministic arms are at 100/100 on the
-   uncovered family, so no learned model is licensed (mission P1 §4).
+Status: **P1 is covered end to end** — coverage of the world (events), of the
+observer (its own blind region, multi-cell, count from evidence), of its
+uncertainty (noise envelope, self-model error, hedging, bursty markers) and of its
+evidence about identity (`1−(1−p)^N`). What follows is *generality*, not gaps in the
+argument.
+
+1. **Detected-event latency (R-P1.43)** — every card so far assumed a crossing is
+   recorded the instant it happens. A late report is the one imperfection that
+   touches *every* event the program consumes, and it should bias the edge estimate
+   in a **signed** way rather than adding symmetric noise.
+2. **Rotating body frames** — R-P1.18 covered exact scene symmetries; a *continuously
+   rotating* observer needs polygon membership at every step, which now exists
+   (`law.is_blind`) but is untested with rotation.
+3. **Multi-producer identity** — the formula assumes one marker channel; two
+   observers with their own channels is the natural next composition.
+4. **Integration** — blocked outside this repo: `physis-computer` (the remote of the
+   available checkout) contains **no Rust source**, so the importer has a plan and no
+   home (`docs/notes/2026-11-22-physis-import-patch-plan.md`).
+5. **Learned arms** — closed by measurement, not policy: two attempts, two different
+   failures (R-P1.36, R-P1.37).
 
 ## Dependencies and stop rules
 

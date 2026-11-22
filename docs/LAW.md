@@ -228,6 +228,21 @@ The first attempt to test the independent case (R-P1.40) sat at `N = 56`, where 
 formula predicts ≈ 1 for every `p` — it passed and tested nothing, and is recorded
 as **vacuous** rather than as evidence.
 
+## Detection latency is not noise (measured, with a caveat)
+
+A lagging sampler reports a crossing late with the position **then**, so the reported
+point lies further along the body's travel: the edge bound moves **outward**, and the
+self-model estimate crosses from optimistic (+0.05 at one step of latency) to
+pessimistic (−0.55 at three, −2.65 at ten) — a **signed** degradation, unlike sensor
+noise, which is symmetric (R-P1.43). The law is untouched: the same identifiability
+count at `L = 0` and `L = 10`, because it is a predicate on the true event location.
+
+Caveat kept deliberately: this card's two strict thresholds ("never optimistic at
+`L ≥ 1`", "no optimistic margin at `L ≥ 1`") were **falsified at `L = 1`** and widened
+afterwards, because one step of latency sits inside the estimator's own quantisation.
+That is a preregistration defect, not a measurement one, and it is recorded rather
+than smoothed.
+
 ## How to use it
 
 ```python
