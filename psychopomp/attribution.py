@@ -105,8 +105,14 @@ def attribute(
     obs_sig = signature(observed)
     scored = []
     for i, h in enumerate(hypotheses):
-        # each candidate is its own realization: stream 0 is the observation's
-        cand = candidate_episode(config, seed, init, h, noise_stream=1 + i)
+        # Each candidate is a counterfactual OF THIS EPISODE, so it inherits the
+        # episode index (and seed) and gets its own noise stream. Hard-coding
+        # episode=0 gave every realization the same fixed candidate corruption
+        # and biased the comparison toward the null (measured, R-P1.14 run 1).
+        cand = candidate_episode(
+            config, observed.seed, init, h,
+            episode=observed.episode, noise_stream=1 + i,
+        )
         scored.append((motion_distance(obs_sig, signature(cand)), h))
     scored.sort(key=lambda pair: (pair[0], str(pair[1])))
     best = scored[0][0]

@@ -1,0 +1,53 @@
+{
+  "card": "R-P1.13 + R-P1.14",
+  "date": "2026-11-22",
+  "status": "R-P1.13 falsified (2 design defects); R-P1.14 run 1 falsified by a 3rd defect, run 2 PASS (all five upheld)",
+  "prereg": [
+    "docs/2026-11-22-PREREG-R-P1.13-coverage-under-noise.md",
+    "docs/2026-11-22-PREREG-R-P1.14-coverage-under-noise-v2.md"
+  ],
+  "hypothesis": "0848d800-3b86-46e4-92af-16dede7d8635 (Supported)",
+  "commands": [
+    ".venv/bin/python scripts/coverage-under-noise.py",
+    ".venv/bin/python scripts/coverage-under-noise-v2.py"
+  ],
+  "defects_found": [
+    {
+      "id": "shared noise stream",
+      "detail": "candidate_episode passed the observation's seed/episode, so every counterfactual inherited the observation's exact corruption; a counterfactual is its own realization",
+      "signature": "covered cell collapses to a deterministic tie (0.00) instead of chance",
+      "fix": "run(noise_stream=...) + candidate i uses stream 1+i"
+    },
+    {
+      "id": "non-independent sigma columns",
+      "detail": "the noise RNG is seeded from (seed, episode), so the same 20 episode indices gave identical noise configurations at every sigma; scaling sigma preserved their ordering",
+      "evidence": "winning realization set identical at sigma 0.1/0.3/0.5: [2, 4, 10, 11, 14, 16, 17]",
+      "fix": "episode = 1000*sigma_index + r; 100 realizations"
+    },
+    {
+      "id": "fixed candidate episode",
+      "detail": "attribute() re-simulated candidates with episode=0, so all realizations shared ONE candidate corruption while the observation varied",
+      "signature": "covered cell systematically BELOW chance (0.35, 0.22, 0.27, 0.29) with stable d(null)/d(true) ~ 0.9, skew scaling with sigma",
+      "ruled_out": "RNG seed correlation (mean product of draws from constant-offset seeds -0.0004; hashed +0.0013)",
+      "fix": "candidates inherit observed.seed/observed.episode, differ only by stream"
+    }
+  ],
+  "measured_run_2": {
+    "uncovered_rank_accuracy": {"0.0": 1.0, "0.1": 1.0, "0.2": 1.0, "0.3": 1.0, "0.5": 1.0},
+    "covered_rank_accuracy": {"0.0": 0.0, "0.1": 0.47, "0.2": 0.58, "0.3": 0.51, "0.5": 0.5},
+    "separation_ratio_uncovered": {"0.1": 61.6, "0.2": 33.0, "0.3": 21.6, "0.5": 12.7},
+    "shared_stream_accuracy_covered": 0.0,
+    "realizations_per_sigma": 100
+  },
+  "verdicts": {
+    "P1": "UPHELD (shared stream collapses covered to a deterministic tie; independent = chance)",
+    "P2": "UPHELD (covered 0.47/0.58/0.51/0.50, inside 0.5 +-0.10)",
+    "P3": "UPHELD (uncovered 1.00 at every sigma <= 0.5; ratio >= 12.7)",
+    "P4": "UPHELD (sigma=0 reproduces R-P1.12 exactly)",
+    "P5": "UPHELD on sigma >= 0.1 (spread 0.11). As written it contradicts P4 by construction at sigma=0; recorded as a prereg defect"
+  },
+  "claim": "under sensor noise up to sigma 0.5 the per-event coverage rule survives as a signal-detection ordering: covered events stay at chance, uncovered events stay identifiable at 100/100 with the structural distance 12.7x the noise distance",
+  "limit_not_measured": "the sigma at which noise distance overtakes structural distance (the ratio trend puts it far above 0.5 but it is not measured)",
+  "tests": "116 passed",
+  "regressions_rechecked_after_fix": ["per-event-coverage-prereg.py 30/30 PASS", "attribution-bench.py PASS", "pytest 116"]
+}

@@ -92,3 +92,18 @@ def test_per_event_coverage_rule_on_a_boundary_free_cell():
         ep = run(cfg, 23, init=init, kicks=(Kick(60, lane, (0.0, 1.5)),))
         out = attribute(ep, [true, None], cfg, 23, init)
         assert out["unique"] is expect_unique
+
+
+def test_candidates_inherit_the_observation_episode_index():
+    # R-P1.14 defect: candidates re-simulated with episode=0 gave every
+    # realization the same fixed corruption and biased the comparison.
+    cfg = SimConfig(steps=200, noise=0.2, o2=(40.5, 60.5, 35.0, 65.0))
+    init = Init(x=(31.0, 35.0), y=(45.0, 51.0), v=((3.0, 0.0), (3.0, 0.0)))
+    true = Intervention(t=60, ball=0, dv=(0.0, 1.5))
+    scores = []
+    for episode in (7, 9):
+        ep = run(cfg, 0, episode=episode, init=init,
+                 kicks=(Kick(60, 0, (0.0, 1.5)),))
+        out = attribute(ep, [true, None], cfg, 0, init)
+        scores.append([d for d, _ in out["scores"]])
+    assert scores[0] != scores[1]
