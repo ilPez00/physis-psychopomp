@@ -48,6 +48,9 @@ class SimConfig:
     # translates rigidly and folds inside the box, so it reflects at the walls
     # deterministically. (0, 0) reproduces the fixed observer exactly.
     o2_velocity: Tuple[float, float] = (0.0, 0.0)
+    # Constant acceleration (R-P1.19), semi-implicit Euler. (0, 0) keeps every
+    # constant-velocity number exactly as it was.
+    accel: Tuple[float, float] = (0.0, 0.0)
     r: float = 1.0
     dt: float = 0.1
     steps: int = 600
@@ -304,6 +307,8 @@ def run(
                     skipped.append(k)
         for i in range(n):
             tr = trajs[i]
+            tr.vx[-1] += config.accel[0] * config.dt
+            tr.vy[-1] += config.accel[1] * config.dt
             tr.x.append(tr.x[-1] + tr.vx[-1] * config.dt)
             tr.y.append(tr.y[-1] + tr.vy[-1] * config.dt)
             tr.vx.append(tr.vx[-1])

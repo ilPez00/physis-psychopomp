@@ -1,0 +1,31 @@
+{
+  "cards": ["R-P1.19", "R-P1.20"],
+  "date": "2026-11-22",
+  "status": "R-P1.19: P1/P2 upheld, P3/P4 falsified by design. R-P1.20: P1/P3/P4/P5 upheld, P2 falsified (gravity cells lack capacity)",
+  "prereg": [
+    "docs/2026-11-22-PREREG-R-P1.19-rich-physics.md",
+    "docs/2026-11-22-PREREG-R-P1.20-hidden-multi-contact.md"
+  ],
+  "hypothesis": "ddf6b815-b960-42a9-935a-53f6783b1925 (candidate, partial support)",
+  "commands": ["scripts/rich-physics-prereg.py", "scripts/hidden-contact-prereg.py"],
+  "R-P1.19": {
+    "cells": 12,
+    "matched": "12/12",
+    "gravity_error_of_closed_form_units": 39.8,
+    "collisions_per_cell": "0 or 1, none hidden",
+    "design_failures": ["no hidden collision (pair met at x=32.5, blind starts at 40.5)", "no second contact within 200 steps (equal masses separate after exchange)"]
+  },
+  "R-P1.20": {
+    "cells": 8,
+    "capacity_passing": 4,
+    "design_failed": 4,
+    "hidden_contact_cells": 4,
+    "multi_contact_cells": 2,
+    "max_collisions": 3,
+    "all_capacity_passing_cells_match_rule": true,
+    "design_failure_cause": "under gravity (0, -0.5) the pair falls while approaching; the contact happens at y ~ 33.8, below the blind region's y >= 35, so the collision is observable and the cell tests the wrong class",
+    "amendment": "kicked body moved to its own lane (y=51) because a kick on a pair member displaced it and silently destroyed the collision (capacity checks caught this before any verdict)"
+  },
+  "claim_update": "rule now measured with (a) constant acceleration, (b) one collision, (c) a collision hidden inside the blind region, (d) three collisions with one hidden. Untested conjunction: acceleration AND hidden contact.",
+  "tests": "122 passed"
+}
