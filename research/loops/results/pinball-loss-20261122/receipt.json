@@ -1,0 +1,18 @@
+{
+  "card": "R-P1.37",
+  "date": "2026-11-22",
+  "status": "Q1/Q3 upheld, Q2/Q4 falsified — learner line closed",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.37-pinball-loss.md",
+  "hypothesis": "fadbda33-0073-40fc-afaf-fac39a095791 (Contradicted)",
+  "command": "PYTHONPATH=. python3 scripts/pinball-edge-prereg.py (host numpy; venv stays stdlib-only)",
+  "loss": "pinball tau=0.9 (9x penalty for over-prediction)",
+  "held_out": {
+    "0.3": {"deterministic_pessimism": 0.09, "mse_pessimism": 0.30, "pinball_pessimism": 0.0, "control_pessimism": 0.0, "deterministic_median": 0.149, "pinball_median": 0.795},
+    "1.0": {"deterministic_pessimism": 0.53, "mse_pessimism": 0.61, "pinball_pessimism": 0.0, "control_pessimism": 0.41, "deterministic_median": 0.176, "pinball_median": 0.616},
+    "1.5": {"deterministic_pessimism": 0.61, "mse_pessimism": 0.68, "pinball_pessimism": 0.0, "control_pessimism": 0.56, "deterministic_median": 0.265, "pinball_median": 0.527}
+  },
+  "finding": "a learned arm can be made one-sidedly safe by changing the loss, but not both safe and accurate at this data scale: MSE spends the conservative tail, pinball spends the honest estimate (median error 0.62-0.80, 2-3 steps, i.e. claiming vision it does not have). Its shuffled control lands 0.12 below the deterministic baseline, so a third of the apparent gain is the loss's global bias, not learning. The deterministic inner bound (0.53 pessimism, 0.18 median error) remains the best self-model.",
+  "consequence": "learner line closed after two attempts with two different failures; revisiting would need a per-sample control matched on prediction variance to separate bias from skill",
+  "tests": "142 passed",
+  "gates": 21
+}
