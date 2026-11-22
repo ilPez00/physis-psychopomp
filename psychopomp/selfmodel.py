@@ -70,16 +70,22 @@ class BlindEstimate:
         return True
 
 
-def _bound(values, upper: bool, quantile: Optional[float]) -> Optional[float]:
-    """Tightest bound, or a quantile bound that a single outlier cannot set."""
-    if not values:
-        return None
-    ordered = sorted(values)
-    if quantile is None:
-        return ordered[-1] if upper else ordered[0]
-    q = min(max(quantile, 0.0), 1.0)
-    index = int(q * (len(ordered) - 1))
-    return ordered[index] if not upper else ordered[min(index, len(ordered) - 1)]
+def _scan(episodes: Iterable) -> list:
+    """Every crossing event, read once, in the order the estimators need.
+
+    A row is `(kind, side, pos, vel, edge, normal)`. Reading the observable log in
+    one place keeps the estimators (rect, multi-cell, auto-count, polygon) and the
+    raw-bound export from drifting apart — they all read the same evidence.
+    """
+    rows = []
+    for episode in episodes:
+        for event in episode.observable_log():
+            if event.kind not in CROSSINGS:
+                continue
+            a = event.attrs
+            rows.append((event.kind, a.get("side"), a.get("pos"), a.get("v"),
+                         a.get("edge"), a.get("normal")))
+    return rows
 
 
 def _spread(values) -> float:
@@ -95,32 +101,7 @@ def estimate_blind_region(episodes: Iterable, step: float,
     Only observable events are read — an oracle log would be cheating, and is
     never touched here.
     """
-    left_in: list = []
-    right_out: list = []
-    bottom_in: list = []
-    top_out: list = []
-    samples = {"left": 0, "right": 0, "bottom": 0, "top": 0}
-
-    for episode in episodes:
-        for event in episode.observable_log():
-            if event.kind not in CROSSINGS:
-                continue
-            side = event.attrs.get("side")
-            pos = event.attrs.get("pos")
-            if pos is None:
-                continue
-            if event.kind == "enter_occ" and side == "left":
-                left_in.append(pos[0] + step)
-                samples["left"] += 1
-            elif event.kind == "exit_occ" and side == "right":
-                right_out.append(pos[0] - step)
-                samples["right"] += 1
-            elif event.kind == "enter_occ" and side == "bottom":
-                bottom_in.append(pos[1] + step)
-                samples["bottom"] += 1
-            elif event.kind == "exit_occ" and side == "top":
-                top_out.append(pos[1] - step)
-                samples["top"] += 1
+    left_in, right_out, bottom_in, top_out, samples = _rect_bounds(episodes, step)
 
     def edge(values, upper: bool, direction: str) -> Optional[float]:
         # x0 and y0 are upper bounds on the near edge, x1 and y1 lower bounds;
@@ -152,6 +133,50 @@ def estimate_blind_region(episodes: Iterable, step: float,
 # R-P1.31's P4), not a geometric one.
 
 
+def _rect_bounds(episodes: Iterable, step: float):
+    """Rect-edge bounds and crossing counts, from the shared scan."""
+    left_in, right_out, bottom_in, top_out = [], [], [], []
+    counts = {"left": 0, "right": 0, "bottom": 0, "top": 0}
+    for kind, side, pos, _vel, _edge, _normal in _scan(episodes):
+        if pos is None:
+            continue
+        if kind == "enter_occ" and side == "left":
+            left_in.append(pos[0] + step)
+            counts["left"] += 1
+        elif kind == "exit_occ" and side == "right":
+            right_out.append(pos[0] - step)
+            counts["right"] += 1
+        elif kind == "enter_occ" and side == "bottom":
+            bottom_in.append(pos[1] + step)
+            counts["bottom"] += 1
+        elif kind == "exit_occ" and side == "top":
+            top_out.append(pos[1] - step)
+            counts["top"] += 1
+    return left_in, right_out, bottom_in, top_out, counts
+
+
+def _cell_bounds(episodes: Iterable, step: float):
+    """Like `_rect_bounds`, but `y` edges keep their `x` so cells can be separated."""
+    left_in, right_out, bottom_in, top_out = [], [], [], []
+    counts = {"left": 0, "right": 0, "bottom": 0, "top": 0}
+    for kind, side, pos, _vel, _edge, _normal in _scan(episodes):
+        if pos is None:
+            continue
+        if kind == "enter_occ" and side == "left":
+            left_in.append(pos[0] + step)
+            counts["left"] += 1
+        elif kind == "exit_occ" and side == "right":
+            right_out.append(pos[0] - step)
+            counts["right"] += 1
+        elif kind == "enter_occ" and side == "bottom":
+            bottom_in.append((pos[0], pos[1] + step))
+            counts["bottom"] += 1
+        elif kind == "exit_occ" and side == "top":
+            top_out.append((pos[0], pos[1] - step))
+            counts["top"] += 1
+    return left_in, right_out, bottom_in, top_out, counts
+
+
 def _cluster(values, tolerance: float):
     """Greedy 1-D clustering: split where consecutive values differ by > tolerance."""
     out = []
@@ -171,32 +196,7 @@ def estimate_blind_cells(episodes: Iterable, step: float, n_cells: int) -> Tuple
     right-exit bounds. `y` edges are assigned by whether the crossing's `x` falls
     inside the cell's estimated `x`-range.
     """
-    left_in: list = []
-    right_out: list = []
-    bottom_in: list = []
-    top_out: list = []
-    samples = {"left": 0, "right": 0, "bottom": 0, "top": 0}
-
-    for episode in episodes:
-        for event in episode.observable_log():
-            if event.kind not in CROSSINGS:
-                continue
-            side = event.attrs.get("side")
-            pos = event.attrs.get("pos")
-            if pos is None:
-                continue
-            if event.kind == "enter_occ" and side == "left":
-                left_in.append(pos[0] + step)
-                samples["left"] += 1
-            elif event.kind == "exit_occ" and side == "right":
-                right_out.append(pos[0] - step)
-                samples["right"] += 1
-            elif event.kind == "enter_occ" and side == "bottom":
-                bottom_in.append((pos[0], pos[1] + step))
-                samples["bottom"] += 1
-            elif event.kind == "exit_occ" and side == "top":
-                top_out.append((pos[0], pos[1] - step))
-                samples["top"] += 1
+    left_in, right_out, bottom_in, top_out, samples = _cell_bounds(episodes, step)
 
     left_clusters = _cluster(left_in, 2 * step)
     right_clusters = _cluster(right_out, 2 * step)
@@ -229,32 +229,7 @@ def estimate_blind_cells_auto(episodes: Iterable, step: float) -> Tuple[BlindEst
     counts so a caller can see how thin the coverage was — nothing here can invent
     a cell the corpus never crossed, and nothing pretends the model is complete.
     """
-    left_in: list = []
-    right_out: list = []
-    bottom_in: list = []
-    top_out: list = []
-    samples = {"left": 0, "right": 0, "bottom": 0, "top": 0}
-
-    for episode in episodes:
-        for event in episode.observable_log():
-            if event.kind not in CROSSINGS:
-                continue
-            side = event.attrs.get("side")
-            pos = event.attrs.get("pos")
-            if pos is None:
-                continue
-            if event.kind == "enter_occ" and side == "left":
-                left_in.append(pos[0] + step)
-                samples["left"] += 1
-            elif event.kind == "exit_occ" and side == "right":
-                right_out.append(pos[0] - step)
-                samples["right"] += 1
-            elif event.kind == "enter_occ" and side == "bottom":
-                bottom_in.append((pos[0], pos[1] + step))
-                samples["bottom"] += 1
-            elif event.kind == "exit_occ" and side == "top":
-                top_out.append((pos[0], pos[1] - step))
-                samples["top"] += 1
+    left_in, right_out, bottom_in, top_out, samples = _cell_bounds(episodes, step)
 
     left_clusters = _cluster(left_in, 2 * step)
     right_clusters = _cluster(right_out, 2 * step)
@@ -295,25 +270,18 @@ def estimate_polygon_halfplanes(episodes: Iterable, step: float,
     estimator).
     """
     per_edge: Dict[int, list] = {}
-    for episode in episodes:
-        for event in episode.observable_log():
-            if event.kind not in CROSSINGS:
-                continue
-            edge = event.attrs.get("edge")
-            normal = event.attrs.get("normal")
-            pos = event.attrs.get("pos")
-            vel = event.attrs.get("v")
-            if edge is None or normal is None or pos is None:
-                continue
-            nx, ny = normal
-            projection = nx * pos[0] + ny * pos[1]
-            penetration = 0.0
-            if vel is not None:
-                speed = (vel[0] ** 2 + vel[1] ** 2) ** 0.5
-                if speed > 1e-12:
-                    towards = abs(nx * vel[0] + ny * vel[1]) / speed
-                    penetration = step * towards
-            per_edge.setdefault(int(edge), []).append((projection, penetration, (nx, ny)))
+    for _kind, _side, pos, vel, edge, normal in _scan(episodes):
+        if edge is None or normal is None or pos is None:
+            continue
+        nx, ny = normal
+        projection = nx * pos[0] + ny * pos[1]
+        penetration = 0.0
+        if vel is not None:
+            speed = (vel[0] ** 2 + vel[1] ** 2) ** 0.5
+            if speed > 1e-12:
+                towards = abs(nx * vel[0] + ny * vel[1]) / speed
+                penetration = step * towards
+        per_edge.setdefault(int(edge), []).append((projection, penetration, (nx, ny)))
 
     out: Dict[int, dict] = {}
     for edge, samples in per_edge.items():
@@ -339,21 +307,5 @@ def collect_edge_bounds(episodes: Iterable, step: float) -> Dict[str, list]:
     so a learned correction can read exactly what the deterministic estimator reads
     (R-P1.36) without re-implementing the event scan.
     """
-    bounds: Dict[str, list] = {"x0": [], "x1": [], "y0": [], "y1": []}
-    for episode in episodes:
-        for event in episode.observable_log():
-            if event.kind not in CROSSINGS:
-                continue
-            side = event.attrs.get("side")
-            pos = event.attrs.get("pos")
-            if pos is None:
-                continue
-            if event.kind == "enter_occ" and side == "left":
-                bounds["x0"].append(pos[0] + step)
-            elif event.kind == "exit_occ" and side == "right":
-                bounds["x1"].append(pos[0] - step)
-            elif event.kind == "enter_occ" and side == "bottom":
-                bounds["y0"].append(pos[1] + step)
-            elif event.kind == "exit_occ" and side == "top":
-                bounds["y1"].append(pos[1] - step)
-    return bounds
+    left_in, right_out, bottom_in, top_out, _counts = _rect_bounds(episodes, step)
+    return {"x0": left_in, "x1": right_out, "y0": bottom_in, "y1": top_out}

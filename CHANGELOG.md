@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.5.0 — 2026-11-22
+
+**Public API for the self-model** (`psychopomp/law.py`, `psychopomp/selfmodel.py`):
+`law.is_blind` / `blind_cells` (membership, polygons included),
+`selfmodel.estimate_blind_region` (rect, with `quantile`/`max_spread`),
+`estimate_blind_cells` / `estimate_blind_cells_auto` (multi-cell, count from
+evidence), `estimate_polygon_halfplanes` (labelled polygon edges) and
+`collect_edge_bounds` (the raw evidence, so a model reads what the estimator reads).
+
+**Findings this release records:** rotated occluders are ordinary membership and a
+bounding box fails on their corners; the estimator's optimism is the **side of the
+bound**, not the shape; under noise containment **goes** (14/20 pessimistic at
+σ = 1.0) and abstention does not restore it; and **two learned arms were rejected** —
+MSE spends the conservative tail, pinball spends the honest estimate (median error
+0.62–0.80) while its control recovers a third of the gain as pure bias. The
+deterministic inner bound remains the best self-model here.
+
+**Internal:** one event scan for every estimator (was five copies), dead helper
+removed, `scripts/status.py` reports the repo's state in one command.
+
 ## 0.4.0 — 2026-11-22
 
 **Self-model inference** (`psychopomp/selfmodel.py`): an observer recovers its own

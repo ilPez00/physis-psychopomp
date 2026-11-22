@@ -104,12 +104,24 @@ additive-margin model.
 
 | claim id | statement | status |
 |---|---|---|
-| `9624cc4a` | identifiable iff the event location is outside `o ∩ o2` | **Supported** (fitness 0.613) |
+| `9624cc4a` | identifiable iff the event location is outside the blind region | **Supported** |
 | `0848d800` | survives sensor noise as a signal-detection ordering | **Supported** |
+| `ddf6b815` | survives rich physics (gravity, hidden and multiple contacts) | **Supported** |
+| `bfaab7be` | a hedged plan recovers the loss a wrong self-model causes | **Supported** |
+| `90821d05` | the law is membership, not the blind set's envelope | **Supported** |
+| `52c28f5e` | the cost is a cliff at certainty, not a gradient | **Supported** |
+| `cff544e7` | the blind region is recoverable from the observer's own log | **Supported** |
+| `1a0259c2` | calibrating then planning matches an oracle; the hedge becomes vestigial | **Supported** |
+| `011fd125` | several blind cells are recoverable per cell | **Supported** |
+| `3e855a8f` | the cell count is recoverable; a corpus that never crosses a cell is silently incomplete | **Supported** |
+| `1de8a2d3` | optimism is the side of the bound, not the shape | **Supported** |
 | `2661e5ab` | a differing blind spot is sufficient | **Contradicted** |
 | `4fdea69b` | collapse near σ ≈ 30 | **Contradicted** (mechanism clause held) |
-| `ddf6b815` | survives rich physics (gravity, hidden and multiple contacts) | **candidate** — hidden/multi-contact supported, the conjunction gravity ∧ hidden contact untested |
-| `ad1b14aa` | wrong self-model cost is discrete in the ranking flip | **candidate** — cost measured, discreteness partly refuted |
+| `148b49eb` | the rect estimator over-covers rotated geometry | **Contradicted** (it abstains) |
+| `3a807034` | quantile + abstention restores containment under noise | **Contradicted** (5/9 honest) |
+| `25350618` | a learned MSE correction beats the deterministic bound | **Contradicted** (and its control) |
+| `fadbda33` | a pinball loss makes a learned arm safe *and* accurate | **Contradicted** (median error 2–3 steps) |
+| `ad1b14aa` | self-model cost is discrete in the ranking flip | **candidate** — cost measured, discreteness partly refuted |
 
 ## Consequences for an observer (measured, not advised)
 
