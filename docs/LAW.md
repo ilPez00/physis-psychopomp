@@ -147,6 +147,18 @@ where a body crossed it, so an observer can believe it is *less* blind than it i
 never more. Code: `psychopomp/selfmodel.py`; limits: single axis-aligned rect,
 known step, noise-free, one estimate per blind cell.
 
+## The loop closes: calibrate, then plan (measured)
+
+An agent that estimates its own blind region from its own log (R-P1.29) and plans
+from the estimate reaches **4/4** on the task set — the oracle's score — where an
+agent with a fixed wrong belief scores **1/4** (R-P1.30). The minimax hedge of
+R-P1.24 is then **vestigial**: with uncertainty down from ±20 units to one step it
+picks the same drift and buys nothing.
+
+> Calibration replaces conservatism. The hedge paid because the model was wrong by
+> up to 20 units; measuring reduces the error to 0.3 and the hedge has nothing
+> left to protect against.
+
 ## How to use it
 
 ```python

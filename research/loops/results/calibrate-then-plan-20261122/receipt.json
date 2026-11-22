@@ -1,0 +1,17 @@
+{
+  "card": "R-P1.30",
+  "date": "2026-11-22",
+  "status": "PASS — all four predictions upheld",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.30-calibrate-then-plan.md",
+  "hypothesis": "1a0259c2-d796-4573-b820-53ff37f7ffe5 (Supported)",
+  "command": ".venv/bin/python scripts/calibrate-then-plan-prereg.py",
+  "measured": {
+    "true_blind": [46.0, 54.0, 35.0, 65.0],
+    "estimated": [46.3, 53.8, 35.2, 64.9],
+    "agents": {"uncalibrated-wrong": "-0.5 -> 1/4", "calibrated": "+1.0 -> 4/4", "calibrated-hedged": "+1.0 -> 4/4", "oracle": "+1.0 -> 4/4"},
+    "regret": {"uncalibrated-wrong": 3, "calibrated": 0, "calibrated-hedged": 0}
+  },
+  "finding": "calibration replaces conservatism: the agent that measures its own blind region reaches the oracle score and the minimax hedge becomes vestigial, because its uncertainty drops from +/-20 units to one step",
+  "limits": "one world, one corpus, one drift grid, noise-free; the hedge is over estimator uncertainty, not a posterior; a real camera would also face occlusion of the edges themselves",
+  "tests": "136 passed"
+}

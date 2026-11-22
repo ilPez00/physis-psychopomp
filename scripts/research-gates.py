@@ -36,6 +36,8 @@ GATES = [
     ("scripts/bayes-vs-minimax-prereg.py", 1,
      "P3 misplaced confident prior is worse than minimax",
      "R-P1.26: flat prior = hedge, honest prior = oracle; the misplaced-prior prediction was falsified (documented negative)"),
+    ("scripts/calibrate-then-plan-prereg.py", 0, "prereg run: PASS",
+     "R-P1.30: calibrated agent 4/4 vs uncalibrated 1/4, hedge collapses onto the calibrated pick"),
     ("scripts/self-model-inference-prereg.py", 0, "prereg run: PASS",
      "R-P1.29: blind-region estimate within one step, contained, abstains, errors one-signed"),
     ("scripts/plan-table.py", 0, "predicted score by","generated plan tables (no hand-read numbers in preregs)"),
