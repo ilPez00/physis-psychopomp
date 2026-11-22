@@ -23,7 +23,7 @@ git clone physis-psychopomp.bundle restore && cd restore && .venv/bin/pytest -q
 ```
 
 Verified 2026-11-21: 137 KB, 40 commits at `2c6ba68`, `HEAD` matches the source
-repo, and 69 tests pass from the clone. The bundle is the copy that survives a
+repo, and the test suite passes from the clone. The bundle is the copy that survives a
 dead node and a dead NAS; `fleet-sync` writes it once per repo per day to
 `/mnt/bigstore` and to air's USB stick when that stick is mounted. When it is
 not mounted the tier is skipped with a log line, never faked and never written

@@ -26,3 +26,7 @@ jobs:
         run: .venv/bin/python scripts/repro-table.py --check
       - name: demo
         run: .venv/bin/python scripts/demo.py
+      - name: law conformance (random geometries)
+        run: .venv/bin/python scripts/law-conformance.py --cells 120
+      - name: research gates (every documented result, pinned)
+        run: .venv/bin/python scripts/research-gates.py

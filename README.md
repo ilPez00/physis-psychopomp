@@ -4,9 +4,10 @@ A machine for making possible worlds experimentally accountable: persistent,
 provenance-bearing world states → temporal reasoning → falsifiable
 constraints on learned representations.
 
-Research instrument, not a validated architecture. **Status: v0.2 (CPU
-prototype, post-audit).** Design: `docs/2026-11-20-PREREG.md`. Fix/improve
-plan after the first public audit: `docs/2026-11-20-FIXES-AND-IMPROVEMENTS.md`.
+Research instrument, not a validated architecture. **Status: v0.3 (CPU
+prototype, post-audit, one measured law).** Design:
+`docs/2026-11-20-PREREG.md`. Fix/improve plan after the first public audit:
+`docs/2026-11-20-FIXES-AND-IMPROVEMENTS.md`. **The law: `docs/LAW.md`.**
 
 Public: https://github.com/ilPez00/physis-psychopomp. License:
 **Apache-2.0** (`LICENSE`, third-party attribution in `NOTICE`), adopted
@@ -17,8 +18,8 @@ Apache grant applies from `cca8220` onward.
 > **TL;DR.** Research instrument, not a validated architecture: provenance-bearing world
 > states → temporal reasoning → falsifiable constraints. Pre-registered claims and failure
 > criteria; a public audit found two experimental blockers (vacuous control, non-identifiable
-> target) — both confirmed in code and fixed. **77 tests pass on a fresh checkout
-> (2026-11-21)**; demo reproduces the two-world result. No claim asserted ahead of evidence;
+> target) — both confirmed in code and fixed. **The full suite runs in CI on every push**;
+> demo reproduces the two-world result. No claim asserted ahead of evidence;
 > licensing **Apache-2.0 since 2026-11-21** (`LICENSE`, `NOTICE`); publication before that was not a reuse grant.
 
 ## Standing evidence (kept on purpose)
@@ -60,7 +61,9 @@ REPRO.md                 environment, seeds, canonical scenarios
 ```bash
 uv venv --python 3.12 .venv
 uv pip install -e '.[dev]'
-.venv/bin/pytest -q          # 77 tests incl. ASP cross-check (fresh checkout, 2026-11-21)
+.venv/bin/pytest -q          # full suite (incl. ASP cross-check)
+.venv/bin/python scripts/research-gates.py   # every documented result, pinned
+.venv/bin/python scripts/law-conformance.py  # the law vs attribution, random grid
 .venv/bin/python scripts/demo.py
 .venv/bin/python scripts/recoverability.py
 ```
@@ -95,6 +98,19 @@ Observable log = what a camera measures, identity-free. Oracle log = labelled
 truth, evaluation only. Actions apply only to visible balls, so no hidden
 action exists. Splits by episode and physical config, never by neighbouring
 frames. Full rules in the pre-registration.
+
+## The law (v0.3)
+
+Identifiability of an intervention is **per-event observer coverage**:
+the intervention is identifiable iff its event location at the event step is
+outside the blind region `o ∩ o2(t)`, with the observer held fixed across
+counterfactuals. Measured across place (30/30 out of sample), time (11/11, both
+flips), frame (30/30 covariant, bodies-only control flips 5 of 22), noise
+(100/100 to σ = 6, breakpoint σ\* = 15), rich physics (gravity, a hidden
+in-blind collision, three-collision episodes) and the observer's own self-model
+(a wrong model loses 3 of 4 task events). Honest ratio: two supported claims,
+two contradicted, seven falsified predictions kept on the record. Statement,
+envelope and falsification log: `docs/LAW.md`; code: `psychopomp/law.py`.
 
 ## v0.2 gate
 

@@ -18,9 +18,11 @@ Schema ``psychopomp.observation/1``::
      "evidence": "OBSERVED",
      "seq": 3}
 
-The concrete Physis connector (its ingest/observation schema) is **NOT
-MEASURED** here: it must be read from a physis-next branch checkout before
-claiming compatibility. This module defines the producer side only.
+The consumer side is **measured absent** (2026-11-22): `physis ingest` is a
+closed 12-source connector registry with per-source parsers and byte ceilings,
+and there is no generic JSONL ingress or `import` subcommand. See
+`docs/2026-11-22-R-P1.7-ingest-measurement.md`. This module is the producer side
+only, and no compatibility is claimed.
 """
 from __future__ import annotations
 
