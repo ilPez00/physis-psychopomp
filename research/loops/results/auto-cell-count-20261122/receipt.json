@@ -1,0 +1,21 @@
+{
+  "card": "R-P1.32",
+  "date": "2026-11-22",
+  "status": "PASS — all four predictions upheld",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.32-auto-cell-count.md",
+  "hypothesis": "3e855a8f-3e04-4b8f-886d-a29b53a01277 (Supported)",
+  "module": "psychopomp/selfmodel.estimate_blind_cells_auto (4 new tests)",
+  "command": ".venv/bin/python scripts/auto-cell-count-prereg.py",
+  "measured": {
+    "true_cells": [[44.0, 60.0], [70.0, 78.0]],
+    "auto_full_corpus": [[44.2, 59.8], [70.3, 77.8]],
+    "auto_sparse_corpus": [[44.2, 59.8]],
+    "auto_single_world": [[46.3, 53.8]],
+    "agents": {"auto-count full": "+0.5 -> 3/4 (oracle)", "given n_cells=2": "+0.5 -> 3/4", "auto-count sparse": "0.0 -> 2/4"},
+    "regret": {"auto-count sparse": 1}
+  },
+  "finding": "the blind cells and their count are both recoverable from the observer's own crossings, so no structural prior is needed; but self-knowledge requires coverage - a corpus that never crossed a cell yields a confidently incomplete model (cost 1 of 4) with nothing marking it incomplete",
+  "limits": "two cells, disjoint, ordered along x, noise-free; a cell never crossed is invisible by construction (that is P4, not a bug); count recovered from x-clustering only",
+  "tests": "140 passed",
+  "gates": 18
+}

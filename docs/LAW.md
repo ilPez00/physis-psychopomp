@@ -149,8 +149,14 @@ never more. **Multi-cell** blind sets are recovered per cell (two cells to withi
 errs optimistically: it *drops* a cell rather than merging them, costing 1 of 4
 task events. Every self-model error measured here points the same way.
 
+The **count** is recoverable too (R-P1.32): clustering the crossing bounds gives
+the same answer as being told, so no structural prior is needed — and an agent
+using the auto count plans at the oracle score. What self-knowledge *does* need is
+**coverage**: a corpus that never crossed a cell yields a confidently incomplete
+model (cost 1 of 4 events) with nothing in the evidence marking it incomplete.
+
 Code: `psychopomp/selfmodel.py`; limits: disjoint cells ordered along `x`, known
-step, noise-free, `n_cells` supplied rather than estimated.
+step, noise-free.
 
 ## The loop closes: calibrate, then plan (measured)
 

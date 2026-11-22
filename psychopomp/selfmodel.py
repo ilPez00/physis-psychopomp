@@ -190,3 +190,58 @@ def estimate_blind_cells(episodes: Iterable, step: float, n_cells: int) -> Tuple
             samples=dict(samples),
         ))
     return tuple(cells)
+
+
+def estimate_blind_cells_auto(episodes: Iterable, step: float) -> Tuple[BlindEstimate, ...]:
+    """Recover the blind cells **and their count** from the crossing evidence.
+
+    Clusters separated by more than `2·step` are distinct cells; the count is
+    whatever the evidence supports. `BlindEstimate.samples` carries the crossing
+    counts so a caller can see how thin the coverage was — nothing here can invent
+    a cell the corpus never crossed, and nothing pretends the model is complete.
+    """
+    left_in: list = []
+    right_out: list = []
+    bottom_in: list = []
+    top_out: list = []
+    samples = {"left": 0, "right": 0, "bottom": 0, "top": 0}
+
+    for episode in episodes:
+        for event in episode.observable_log():
+            if event.kind not in CROSSINGS:
+                continue
+            side = event.attrs.get("side")
+            pos = event.attrs.get("pos")
+            if pos is None:
+                continue
+            if event.kind == "enter_occ" and side == "left":
+                left_in.append(pos[0] + step)
+                samples["left"] += 1
+            elif event.kind == "exit_occ" and side == "right":
+                right_out.append(pos[0] - step)
+                samples["right"] += 1
+            elif event.kind == "enter_occ" and side == "bottom":
+                bottom_in.append((pos[0], pos[1] + step))
+                samples["bottom"] += 1
+            elif event.kind == "exit_occ" and side == "top":
+                top_out.append((pos[0], pos[1] - step))
+                samples["top"] += 1
+
+    left_clusters = _cluster(left_in, 2 * step)
+    right_clusters = _cluster(right_out, 2 * step)
+    n_cells = min(len(left_clusters), len(right_clusters))
+    if n_cells == 0:
+        return ()
+
+    cells = []
+    for k in range(n_cells):
+        x0, x1 = min(left_clusters[k]), max(right_clusters[k])
+        ys_bottom = [y for x, y in bottom_in if x0 - step <= x <= x1 + step]
+        ys_top = [y for x, y in top_out if x0 - step <= x <= x1 + step]
+        cells.append(BlindEstimate(
+            step=step, x0=x0, x1=x1,
+            y0=min(ys_bottom) if ys_bottom else None,
+            y1=max(ys_top) if ys_top else None,
+            samples=dict(samples),
+        ))
+    return tuple(cells)

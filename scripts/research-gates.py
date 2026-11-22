@@ -36,6 +36,8 @@ GATES = [
     ("scripts/bayes-vs-minimax-prereg.py", 1,
      "P3 misplaced confident prior is worse than minimax",
      "R-P1.26: flat prior = hedge, honest prior = oracle; the misplaced-prior prediction was falsified (documented negative)"),
+    ("scripts/auto-cell-count-prereg.py", 0, "prereg run: PASS",
+     "R-P1.32: the cell count is recoverable; no structural prior needed; a corpus that never crosses a cell costs 1 of 4"),
     ("scripts/multi-cell-selfmodel-prereg.py", 1,
      "P2 the gap is known visible (two-cell) and not (one-cell): FALSIFIED",
      "R-P1.31: multi-cell recovery + wrong cell count costs 1 of 4; the wrong-count mechanism dropped a cell (documented negative)"),

@@ -137,3 +137,54 @@ def test_wrong_cell_count_abstains_rather_than_inventing_geometry():
     cells = estimate_blind_cells(islands_corpus(), STEP, n_cells=4)
     assert len(cells) == 4
     assert all(cell.as_rect() is None for cell in cells)
+
+
+def single_cell_corpus():
+    eps = []
+    for i, lane in enumerate((40.0, 44.0, 48.0, 52.0, 56.0, 60.0)):
+        cfg = SimConfig(steps=400, o=O, o2=O2)
+        start, v = ((10.0, 3.0) if i % 2 == 0 else (95.0, -3.0))
+        eps.append(run(cfg, 0, episode=i, init=Init(
+            x=(start, PARKED[0]), y=(lane, PARKED[1]), v=((v, 0.0), (0.0, 0.0)))))
+    for i, column in enumerate((47.0, 50.0, 53.0)):
+        cfg = SimConfig(steps=400, o=O, o2=O2)
+        start, v = ((10.0, 3.0) if i % 2 == 0 else (95.0, -3.0))
+        eps.append(run(cfg, 0, episode=100 + i, init=Init(
+            x=(column, PARKED[0]), y=(start, PARKED[1]), v=((0.0, v), (0.0, 0.0)))))
+    return eps
+
+
+def test_auto_count_recovers_two_cells_and_does_not_invent_one():
+    from psychopomp.selfmodel import estimate_blind_cells_auto
+
+    two = estimate_blind_cells_auto(islands_corpus(), STEP)
+    assert len(two) == 2, two
+    truth = ((O_ISLANDS[0], O_ISLANDS[1]), (EXTRA_ISLAND[0], EXTRA_ISLAND[1]))
+    for cell, (tx0, tx1) in zip(two, truth):
+        assert 0.0 <= cell.x0 - tx0 <= STEP
+        assert 0.0 <= tx1 - cell.x1 <= STEP
+
+    one = estimate_blind_cells_auto(single_cell_corpus(), STEP)
+    assert len(one) == 1, one
+    assert 0.0 <= one[0].x0 - O2[0] <= STEP
+
+
+def test_a_corpus_that_never_crosses_a_cell_under_reports_it():
+    # the sparse corpus never reaches the island, so the auto count is 1: the
+    # model is incomplete and nothing in the evidence says so
+    from psychopomp.selfmodel import estimate_blind_cells_auto
+
+    sparse = []
+    for i, lane in enumerate((38.0, 42.0, 46.0, 50.0)):
+        # 180 steps of travel = 54 units from x=10 -> reaches 64, crossing cell 0
+        # and stopping before the island at 70
+        cfg = SimConfig(steps=180, o=O_ISLANDS, o2=O2_WIDE, extra_o=(EXTRA_ISLAND,))
+        sparse.append(run(cfg, 0, episode=300 + i, init=Init(
+            x=(10.0, PARKED[0]), y=(lane, PARKED[1]), v=((3.0, 0.0), (0.0, 0.0)))))
+    for i, column in enumerate((45.0, 50.0, 55.0)):
+        cfg = SimConfig(steps=200, o=O_ISLANDS, o2=O2_WIDE, extra_o=(EXTRA_ISLAND,))
+        sparse.append(run(cfg, 0, episode=400 + i, init=Init(
+            x=(column, PARKED[0]), y=(10.0, PARKED[1]), v=((0.0, 3.0), (0.0, 0.0)))))
+    cells = estimate_blind_cells_auto(sparse, STEP)
+    assert len(cells) == 1                      # the island is missing
+    assert cells[0].as_rect() is not None       # cell 0 is complete
