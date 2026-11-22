@@ -195,3 +195,20 @@ def test_bodies_only_transform_is_not_covariant():
     _, i2, k2 = transform_scene(cfg, init, kick, "rot180")
     ep = run(cfg, 0, episode=0, init=i2, kicks=(k2,))   # occluders NOT transformed
     assert attribute(ep, [true, None], cfg, 0, i2)["unique"] is False
+
+
+def test_a_narrow_occluder_can_be_relocated_off_the_events():
+    # R-P1.21: o2 narrower than o means the blind window can be *moved* inside
+    # it, so a chosen drift strictly beats staying still (agency matters).
+    tasks = (42.0, 48.0)
+    body_x0 = tuple(x - 27.0 for x in tasks)      # at task x on step 90
+    cfg0 = SimConfig(steps=200, o2=(46.0, 54.0, 35.0, 65.0), n_balls=2)
+    cfg1 = SimConfig(steps=200, o2=(46.0, 54.0, 35.0, 65.0),
+                     o2_velocity=(1.0, 0.0), n_balls=2)
+    init = Init(x=body_x0, y=(45.0, 45.0), v=((3.0, 0.0), (3.0, 0.0)))
+    outcomes = []
+    for cfg in (cfg0, cfg1):
+        ep = run(cfg, 0, episode=0, init=init, kicks=(Kick(90, 1, (0.0, 1.5)),))
+        true = Intervention(t=90, ball=1, dv=(0.0, 1.5))
+        outcomes.append(attribute(ep, [true, None], cfg, 0, init)["unique"])
+    assert outcomes == [False, True]     # task 48 covered when static, free once moved

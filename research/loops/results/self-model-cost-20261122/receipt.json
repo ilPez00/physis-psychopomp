@@ -1,0 +1,32 @@
+{
+  "card": "R-P1.21",
+  "date": "2026-11-22",
+  "status": "P1/P2/P5 upheld, P3 falsified, P4 upheld off-boundary (1 boundary cell excluded under R-P1.12's standing rule)",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.21-self-model-cost.md",
+  "hypothesis": "ad1b14aa-1714-459c-a186-408fe6ce25d6 (candidate, supporting evidence 0.7)",
+  "command": ".venv/bin/python scripts/self-model-cost-prereg.py",
+  "design": {
+    "tasks_x": [42, 46, 48, 52],
+    "event_step": 90,
+    "o2": [46, 54, 35, 65],
+    "drifts": [-1.0, -0.5, 0.0, 0.5, 1.0],
+    "belief_errors": [0, -10, 10, -20, 20],
+    "bodies": "one per task point, all y=45, v=(3,0), lockstep (no collisions)"
+  },
+  "measured": {
+    "drift_scores": {"-1.0": "3/4", "-0.5": "1/4", "0.0": "2/4 (boundary cell)", "0.5": "3/4", "1.0": "4/4"},
+    "planner_choice": {"0": "+1.0 (4/4, cost 0)", "-10": "-0.5 (1/4, cost 3)", "10": "0.0 (2/4, cost 2)", "-20": "0.0 (2/4, cost 2)", "20": "0.0 (2/4, cost 2)"},
+    "static": "2/4",
+    "optimum": "4/4"
+  },
+  "finding": "identifiability depends on the observer's self-model: a wrong occluder model can move the blind spot onto the events and lose 3 of 4. Cost tracks which wrong motion is chosen (the ranking flip), not the error magnitude: |delta|=10 costs 3, |delta|=20 costs 2",
+  "falsified": "P3 — no tested delta was free, so 'some self-model errors cost nothing' is wrong in this grid",
+  "boundary_exclusion": {
+    "cell": "drift 0.0, task x=46",
+    "sim_x": 45.99999999999987,
+    "blind_x0": 46.0,
+    "rule": "R-P1.12 standing boundary rule (1e-6), same 1e-13 accumulation artifact as R-P1.11"
+  },
+  "design_defect_caught": "first version had 4 task points and 2 bodies, silently mixing 'tied' with 'never tested'; fixed to one body per task point (amendment 1)",
+  "tests": "123 passed"
+}
