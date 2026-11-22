@@ -1,0 +1,18 @@
+{
+  "card": "R-P1.36",
+  "date": "2026-11-22",
+  "status": "FALSIFIED (L1/L2/L3); L4 upheld — learned arm stopped by its own rule",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.36-learned-edge.md",
+  "hypothesis": "25350618-b65c-43b6-8661-6a2f3ecb55da (Contradicted)",
+  "command": "PYTHONPATH=. python3 scripts/learned-edge-prereg.py (host python: numpy; project venv stays stdlib-only)",
+  "model": "12 -> 24 -> 1 ReLU MLP, Adam, 400 epochs, 4000 training rows (4 edges x 200 corpora x 5 sigmas)",
+  "held_out": {
+    "0.3": {"deterministic_pessimistic": 0.09, "learned": 0.30, "control": 0.29, "deterministic_mae": 0.145, "learned_mae": 0.091},
+    "1.0": {"deterministic_pessimistic": 0.53, "learned": 0.61, "control": 0.65, "deterministic_mae": 0.198, "learned_mae": 0.201},
+    "1.5": {"deterministic_pessimistic": 0.61, "learned": 0.68, "control": 0.74, "deterministic_mae": 0.302, "learned_mae": 0.307}
+  },
+  "finding": "the learned correction optimises the wrong quantity: it halves mean absolute error at low noise while tripling the pessimism rate, and it cannot beat its own shuffled control, so it is not learning anything that transfers. For a conservative self-model, average accuracy is the wrong objective.",
+  "consequence": "the headroom measured in R-P1.35 is not closable by a generic regressor; a containment-encoding (one-sided/quantile) loss would be a different card, not a retune",
+  "tests": "142 passed",
+  "gates": 21
+}

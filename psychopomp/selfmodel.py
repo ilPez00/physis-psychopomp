@@ -329,3 +329,31 @@ def estimate_polygon_point_inside(halfplanes: Dict[int, dict],
     x, y = point
     return all(h["normal"][0] * x + h["normal"][1] * y <= h["offset"]
                for h in halfplanes.values())
+
+
+def collect_edge_bounds(episodes: Iterable, step: float) -> Dict[str, list]:
+    """Raw per-edge crossing bounds, as evidence for an estimator or a model.
+
+    Returns `{"x0": [...], "x1": [...], "y0": [...], "y1": [...]}` where each entry
+    is already corrected to the one-step bound the rect estimator would use. Exposed
+    so a learned correction can read exactly what the deterministic estimator reads
+    (R-P1.36) without re-implementing the event scan.
+    """
+    bounds: Dict[str, list] = {"x0": [], "x1": [], "y0": [], "y1": []}
+    for episode in episodes:
+        for event in episode.observable_log():
+            if event.kind not in CROSSINGS:
+                continue
+            side = event.attrs.get("side")
+            pos = event.attrs.get("pos")
+            if pos is None:
+                continue
+            if event.kind == "enter_occ" and side == "left":
+                bounds["x0"].append(pos[0] + step)
+            elif event.kind == "exit_occ" and side == "right":
+                bounds["x1"].append(pos[0] - step)
+            elif event.kind == "enter_occ" and side == "bottom":
+                bounds["y0"].append(pos[1] + step)
+            elif event.kind == "exit_occ" and side == "top":
+                bounds["y1"].append(pos[1] - step)
+    return bounds
