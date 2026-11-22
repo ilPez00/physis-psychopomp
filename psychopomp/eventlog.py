@@ -69,12 +69,24 @@ class EventLog:
     def __len__(self) -> int:
         return len(self.events)
 
+    def canonical(self) -> List[Event]:
+        """Events in a label-free order, with `seq` renumbered to match.
+
+        Insertion order follows the simulator's body loop, so it encodes body
+        index — a relabelling of two identical bodies changes the sequence even
+        though every event is identity-free (R-P1.39). A log is a *set*; this is
+        the order the rest of the program reads, so that channel does not exist.
+        """
+        key = lambda e: (e.t, e.kind, e.subjects,
+                         json.dumps(e.attrs, sort_keys=True, default=str))
+        return [replace(e, seq=i) for i, e in enumerate(sorted(self.events, key=key))]
+
     def __iter__(self) -> Iterator[Event]:
-        return iter(self.events)
+        return iter(self.canonical())
 
     def to_jsonl(self, path: str | Path) -> None:
         with open(path, "w") as f:
-            for e in self.events:
+            for e in self:
                 f.write(
                     json.dumps(
                         {

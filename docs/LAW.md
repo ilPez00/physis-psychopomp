@@ -202,11 +202,11 @@ it — as a *set*. With identity evidence (`SimConfig.identity_marker`), the tag
 resolves the ambiguity; with the same markers **occluded**, zero are emitted and the
 ambiguity returns; a second vantage restores it (R-P1.39, 4/4).
 
-One leak was found on the way and closed: the observable log is appended in
-body-index order, so a relabelling changes the event **sequence**. The export
-contract now sorts canonically, and a test pins that a relabelling exports
-identically — the raw `EventLog` still carries that order, named rather than
-silently changed.
+One leak was found on the way and **closed at the source**: the observable log was
+appended in body-index order, so a relabelling changed the event **sequence**.
+`EventLog` now iterates canonically and renumbers `seq` to match, so the log is a
+set in the estimator, in attribution and in the export contract; two tests pin it,
+and the identity card re-run shows sequence equality for the relabelled pair.
 
 ## How to use it
 
