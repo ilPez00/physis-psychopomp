@@ -41,9 +41,14 @@ geometry for the membership form — all six task points on a diamond predicted
 exactly, its bounding box wrong on all four corners, and 180° scene covariance
 unchanged. Curved shapes are approximated by polygons to the step tolerance.
 
-The **self-model estimator, however, is rectangle-shaped**: on the same diamond it
-returns no estimate at all, because polygon-caused crossings carry no edge label.
-The law generalises; the estimator does not — that limit is named, not hidden.
+The **self-model estimator** needed one labelling fix to follow: polygon crossings
+now carry their edge and outward normal (R-P1.34), and the estimator recovers all
+four edges to within **0.21** on the same diamond. Where its optimism comes from is
+now measured rather than assumed: **it is which side of the bound you take, not the
+shape of the occluder** — the same "tightest bound" rule is *inside* the truth for
+a rectangle's `x ≥ x0` and *outside* it for a polygon's `n·x ≤ d`. Always taking
+the inner side is optimistic for every geometry, and predicts the diamond's centre
+and all four corners correctly (5/5).
 
 Also out of scope, by construction and not by omission: more than two observers, observers whose motion responds to
 the world, degraded object identity, and every learned arm (blocked: the

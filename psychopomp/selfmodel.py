@@ -245,3 +245,58 @@ def estimate_blind_cells_auto(episodes: Iterable, step: float) -> Tuple[BlindEst
             samples=dict(samples),
         ))
     return tuple(cells)
+
+
+# --- polygon estimation from labelled crossings (R-P1.34) -------------------
+#
+# A polygon edge is a half-plane `n·x <= d`. A crossing of that edge gives a point
+# p within one step of the line, on the **outside**: d <= n·p. Taking the tightest
+# bound (min n·p) therefore puts the estimate outside the true polygon — the
+# opposite of what the same rule does for a rectangle's `x >= x0`. Subtracting the
+# one-step penetration along the normal gives the tightest **inner** bound instead.
+
+
+def estimate_polygon_halfplanes(episodes: Iterable, step: float,
+                                inner: bool = False) -> Dict[int, dict]:
+    """Per-edge half-plane estimates from labelled polygon crossings.
+
+    Returns `{edge_index: {"normal": (nx, ny), "offset": d, "samples": n}}`.
+    `inner=False` takes the tightest outside bound (pessimistic for polygons);
+    `inner=True` subtracts the one-step penetration (optimistic, like the rect
+    estimator).
+    """
+    per_edge: Dict[int, list] = {}
+    for episode in episodes:
+        for event in episode.observable_log():
+            if event.kind not in CROSSINGS:
+                continue
+            edge = event.attrs.get("edge")
+            normal = event.attrs.get("normal")
+            pos = event.attrs.get("pos")
+            vel = event.attrs.get("v")
+            if edge is None or normal is None or pos is None:
+                continue
+            nx, ny = normal
+            projection = nx * pos[0] + ny * pos[1]
+            penetration = 0.0
+            if vel is not None:
+                speed = (vel[0] ** 2 + vel[1] ** 2) ** 0.5
+                if speed > 1e-12:
+                    towards = abs(nx * vel[0] + ny * vel[1]) / speed
+                    penetration = step * towards
+            per_edge.setdefault(int(edge), []).append((projection, penetration, (nx, ny)))
+
+    out: Dict[int, dict] = {}
+    for edge, samples in per_edge.items():
+        best = min(samples, key=lambda s: s[0])
+        offset = best[0] - (best[1] if inner else 0.0)
+        out[edge] = {"normal": best[2], "offset": offset, "samples": len(samples)}
+    return out
+
+
+def estimate_polygon_point_inside(halfplanes: Dict[int, dict],
+                                  point: Tuple[float, float]) -> bool:
+    """Membership in the estimated polygon: inside every half-plane."""
+    x, y = point
+    return all(h["normal"][0] * x + h["normal"][1] * y <= h["offset"]
+               for h in halfplanes.values())

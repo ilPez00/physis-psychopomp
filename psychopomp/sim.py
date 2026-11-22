@@ -130,6 +130,44 @@ def inside(cfg: SimConfig, x: float, y: float) -> bool:
     return inside_rect(cfg.o, x, y)
 
 
+def crossed_poly_edge(poly: Sequence[Tuple[float, float]],
+                      px: float, py: float, cx: float, cy: float):
+    """Which polygon edge the segment (p -> c) crosses, and its outward normal.
+
+    Returns `(index, (nx, ny))` or None. The outward normal points away from the
+    polygon centroid, so an observer can name the edge it was blocked by instead
+    of reporting an unlabelled `sweep` (R-P1.34).
+    """
+    n = len(poly)
+    best = None
+    for i in range(n):
+        x0, y0 = poly[i]
+        x1, y1 = poly[(i + 1) % n]
+        d1 = (x1 - x0) * (py - y0) - (y1 - y0) * (px - x0)
+        d2 = (x1 - x0) * (cy - y0) - (y1 - y0) * (cx - x0)
+        if (d1 > 0) == (d2 > 0):
+            continue
+        t = d1 / (d1 - d2)
+        if not 0.0 <= t <= 1.0:
+            continue
+        best = i
+    if best is None:
+        return None
+    x0, y0 = poly[best]
+    x1, y1 = poly[(best + 1) % n]
+    ex, ey = x1 - x0, y1 - y0
+    norm = math.hypot(ex, ey)
+    if norm < 1e-12:
+        return None
+    nx, ny = -ey / norm, ex / norm
+    cxm = sum(v[0] for v in poly) / n
+    cym = sum(v[1] for v in poly) / n
+    mx, my = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    if nx * (mx - cxm) + ny * (my - cym) < 0:
+        nx, ny = -nx, -ny
+    return best, (nx, ny)
+
+
 def inside_polygon(poly: Sequence[Tuple[float, float]], x: float, y: float) -> bool:
     """Ray-casting point-in-polygon; works for convex and non-convex shapes."""
     inside = False
@@ -444,8 +482,17 @@ def run(
                 # the occluder that actually hid the body, not always the first
                 rect = transition_rect(config, j, tr.x[j - 1], tr.y[j - 1],
                                        tr.x[j], tr.y[j], entering=False)
-                # no crossing: the occluder moved off the body (a sweep)
+                # no rectangle crossing: either a polygon edge or a sweep
                 side = "sweep" if rect is None else _exit_side(rect, tr.x[j], tr.y[j])
+                edge = None
+                if rect is None:
+                    for poly in config.poly_o:
+                        found = crossed_poly_edge(poly, tr.x[j - 1], tr.y[j - 1],
+                                                  tr.x[j], tr.y[j])
+                        if found is not None:
+                            edge = found
+                            side = f"poly{found[0]}"
+                            break
                 # `pos` is the ball's position at the first step it is visible
                 # again: observable, and the only coordinate pair that can
                 # distinguish two relabeled worlds with equal velocities
@@ -455,6 +502,7 @@ def run(
                     "v": v,
                     "pos": [round(tr.x[j], 6), round(tr.y[j], 6)],
                     "dt": config.dt,
+                    **({} if edge is None else {"edge": edge[0], "normal": list(edge[1])}),
                     # First TRACK_SAMPLES visible steps after the exit: the ball is
                     # visible and its positions are observable, and averaging a
                     # least-squares velocity over them costs the sensor noise by
@@ -470,6 +518,15 @@ def run(
                                        tr.x[j], tr.y[j], entering=True)
                 side = ("sweep" if rect is None else
                         _enter_side(rect, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j]))
+                edge = None
+                if rect is None:
+                    for poly in config.poly_o:
+                        found = crossed_poly_edge(poly, tr.x[j - 1], tr.y[j - 1],
+                                                  tr.x[j], tr.y[j])
+                        if found is not None:
+                            edge = found
+                            side = f"poly{found[0]}"
+                            break
                 if side == "corner":
                     raise AssertionError("corner entry is not supported; pick axis crossings")
                 attrs = {
@@ -477,6 +534,7 @@ def run(
                     "v": v,
                     "pos": [round(tr.x[j - 1], 6), round(tr.y[j - 1], 6)],
                     "dt": config.dt,
+                    **({} if edge is None else {"edge": edge[0], "normal": list(edge[1])}),
                     "track": [[round(tr.x[s], 6), round(tr.y[s], 6)]
                               for s in range(max(0, j - TRACK_SAMPLES), j)],
                 }

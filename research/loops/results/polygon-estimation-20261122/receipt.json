@@ -1,0 +1,20 @@
+{
+  "card": "R-P1.34",
+  "date": "2026-11-22",
+  "status": "PASS — all four predictions upheld",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.34-polygon-estimation.md",
+  "hypothesis": "1de8a2d3-1804-4243-a1f8-0b92d6c395c3 (Supported)",
+  "instrument": "polygon crossings labelled side='poly<edge>' + normal; selfmodel.estimate_polygon_halfplanes(inner=bool)",
+  "command": ".venv/bin/python scripts/polygon-estimation-prereg.py",
+  "measured": {
+    "edges": 4,
+    "true_offsets": {"0": 23.33, "1": 94.05, "2": -12.02, "3": -82.73},
+    "raw_offsets_err": {"0": 0.0, "1": 0.0, "2": -0.0, "3": 0.0},
+    "inner_offsets_err": {"0": -0.21, "1": -0.21, "2": -0.21, "3": -0.21},
+    "inner_predictions": "5/5 (centre + four corners)"
+  },
+  "finding": "optimism is not a property of rectangles but of which side of the bound you take: the same tightest-bound rule is inside the truth for a rectangle's x >= x0 and outside it for a polygon's n.x <= d. Always taking the inner side is optimistic for every geometry, recovering the diamond's four edges to 0.21 and predicting all five points.",
+  "caveat": "the raw rule was accidentally exact (0.00 error) in this corpus, so its pessimism had no prediction consequence here; the card establishes the signs, not a demonstrated cost",
+  "tests": "142 passed",
+  "gates": 20
+}

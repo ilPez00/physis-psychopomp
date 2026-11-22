@@ -36,6 +36,8 @@ GATES = [
     ("scripts/bayes-vs-minimax-prereg.py", 1,
      "P3 misplaced confident prior is worse than minimax",
      "R-P1.26: flat prior = hedge, honest prior = oracle; the misplaced-prior prediction was falsified (documented negative)"),
+    ("scripts/polygon-estimation-prereg.py", 0, "prereg run: PASS",
+     "R-P1.34: edges recovered to 0.21; outside-bound pessimism, inner-bound optimism, 5/5 points"),
     ("scripts/rotated-occluder-prereg.py", 1,
      "P4 the rect estimator makes PESSIMISTIC errors on corners",
      "R-P1.33: law + bbox + covariance hold on a rotated occluder; the rect estimator abstains (documented negative)"),
