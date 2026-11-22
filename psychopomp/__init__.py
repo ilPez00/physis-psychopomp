@@ -1,9 +1,10 @@
-"""Psychopomp v0.7.1 — CPU research instrument.
+"""Psychopomp v0.8 — CPU research instrument.
 
 Persistent, provenance-bearing world states -> temporal reasoning ->
 falsifiable constraints on learned representations.
 
-v0.7 adds coverage-gated identity evidence and closes an ordering leak in the
+v0.8 adds marker reliability, so identity identifiability is 1-(1-p)^N.
+v0.7 added coverage-gated identity evidence and closes an ordering leak in the
 export contract. v0.6 added the planner (`planning.plan_coverage`, `plan_hedged`) pinned to the
 published card numbers. v0.5 exposes the self-model API: blind-region estimation (rect, multi-cell, and
 from the evidence's own count), polygon half-planes from labelled edges, and
@@ -22,4 +23,4 @@ event log, an event-calculus possible-world filter, counterfactual attribution,
 and structure-preserving shuffled-rule controls. No neural components.
 """
 
-__version__ = "0.7.1"
+__version__ = "0.8.0"

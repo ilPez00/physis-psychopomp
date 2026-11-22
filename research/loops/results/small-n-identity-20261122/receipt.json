@@ -1,0 +1,20 @@
+{
+  "cards": ["R-P1.40", "R-P1.41"],
+  "date": "2026-11-22",
+  "status": "R-P1.40 PASS but VACUOUS; R-P1.41 S1 upheld 12/12, S2-S4 falsified by a units error",
+  "prereg": ["docs/2026-11-22-PREREG-R-P1.40-marker-reliability.md", "docs/2026-11-22-PREREG-R-P1.41-small-N.md"],
+  "hypotheses": ["17f62d1b-a69f-41af-af89-c37e1d206279", "93308e52-d070-49b7-9823-9aa8a738a5f6"],
+  "instrument": "SimConfig.marker_reliability with its own deterministic stream",
+  "small_n_cells": {
+    "A": {"N": 2, "p0.6_predicted": 0.84, "p0.6_measured": 0.845, "p0.3_predicted": 0.51, "p0.3_measured": 0.505},
+    "B": {"N": 4, "p0.6": "0.974 vs 0.980", "p0.3": "0.760 vs 0.728"},
+    "C": {"N": 6, "p0.6": "0.996 vs 0.995", "p0.3": "0.882 vs 0.860"}
+  },
+  "finding": "identity identifiability is 1 - (1-p)^N with N the total marker opportunities across visible bodies and p the per-opportunity reliability: coverage sets N, reliability sets p, and the two compose in the exponent. One chance per body already gives N=2.",
+  "defects": [
+    "R-P1.40 sat in the saturated regime (N=56), so its four predictions were unfalsifiable as built; recorded as vacuous rather than as evidence",
+    "R-P1.41's S2/S3/S4 stated N as slots per body while the measured quantity counts markers across both bodies (2,4,6) - a units error in the prereg, corrected in the card, with S1 (which uses the measured N) as the substantive check"
+  ],
+  "tests": "152 passed",
+  "gates": 24
+}

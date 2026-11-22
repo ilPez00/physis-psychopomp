@@ -208,6 +208,19 @@ appended in body-index order, so a relabelling changed the event **sequence**.
 set in the estimator, in attribution and in the export contract; two tests pin it,
 and the identity card re-run shows sequence equality for the relabelled pair.
 
+## Identity has a formula, not just a story (measured)
+
+With identity evidence of reliability `p` and `N` marker opportunities across the
+observer's visible bodies, the relabelling is resolvable with probability
+**`1 − (1−p)^N`** (R-P1.41: 12/12 cells within 0.06 at `N = 2, 4, 6`, e.g.
+`p = 0.6, N = 2 → 0.840` predicted, **0.845** measured). **Coverage sets `N`,
+reliability sets `p`, and the two compose in the exponent** — one chance per body
+already gives `N = 2`, and the fully hidden case is `N = 0`, hence 0 at every `p`.
+
+The first attempt to test this (R-P1.40) sat at `N = 56`, where the formula predicts
+≈ 1 for every `p` — it passed and tested nothing, and is recorded as **vacuous**
+rather than as evidence.
+
 ## How to use it
 
 ```python

@@ -63,6 +63,10 @@ class SimConfig:
     # so the identity-free log and every prior number are unchanged.
     identity_marker: bool = False
     marker_period: int = 10
+    # Per-opportunity marker reliability (R-P1.40): each visible marker fires with
+    # this probability, drawn from its own deterministic stream so `1.0` reproduces
+    # R-P1.39 exactly and the draws do not disturb the sensor-noise streams.
+    marker_reliability: float = 1.0
     # Start a body already occluded (R-P1.39 case 3): models an observer that was
     # created with something hidden, so zero identity evidence exists for it.
     # Off by default; the init-observable guard still applies otherwise.
@@ -462,6 +466,7 @@ def run(
     # silently re-rolls every later draw, so pinned cross-process numbers move
     # whenever the log schema grows (measured 2026-11-21).
     track_rng = random.Random((seed * 1000033 + episode * 104729 + 29) % (2**63))
+    marker_rng = random.Random((seed * 1000037 + episode * 130363 + 41) % (2**63))
 
     def emit(log: EventLog, kind: str, t: int, subjects: Tuple[str, ...],
              attrs: dict, observable: bool) -> None:
@@ -560,6 +565,9 @@ def run(
         for i, tr in enumerate(trajs):
             for step in range(0, len(tr.visible), config.marker_period):
                 if step >= len(tr.visible) or not tr.visible[step]:
+                    continue
+                if config.marker_reliability < 1.0 and \
+                        marker_rng.random() >= config.marker_reliability:
                     continue
                 attrs = {"tag": f"B{i}" if i else "A",
                          "pos": [round(tr.x[step], 6), round(tr.y[step], 6)]}
