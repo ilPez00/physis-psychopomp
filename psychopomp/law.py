@@ -30,6 +30,8 @@ inference.
 """
 from __future__ import annotations
 
+import json
+import sys
 from typing import Optional, Tuple
 
 from .sim import SimConfig, inside_rect, occluder2_at
@@ -97,3 +99,44 @@ ENVELOPE = {
     "frame_symmetries_verified": 5,                        # R-P1.18
     "boundary_tolerance": BOUNDARY_TOL,                    # R-P1.11, R-P1.12
 }
+
+
+# --- command-line surface (an identifiability oracle other tools can call) ----
+#
+#   python -m psychopomp.law '{"config": {"o2": [50,70,35,65]},
+#                              "point": [55, 50], "t": 60}'
+#
+# or the same JSON on stdin. Prints one JSON object, exit 0. Kept tiny on
+# purpose: the value is that another process (aion, a renderer, a policy) can
+# ask the law a question without importing the research instrument.
+
+_TUPLE_FIELDS = ("o", "o2", "o2_velocity", "accel")
+
+
+def _config_from(spec: dict) -> SimConfig:
+    data = dict(spec)
+    for key in _TUPLE_FIELDS:
+        if key in data and isinstance(data[key], list):
+            data[key] = tuple(data[key])
+    return SimConfig(**data)
+
+
+def main(argv: list) -> int:
+    raw = argv[1] if len(argv) > 1 else sys.stdin.read()
+    spec = json.loads(raw)
+    cfg = _config_from(spec.get("config", {}))
+    point = tuple(spec["point"])
+    t = int(spec.get("t", 0))
+    print(json.dumps({
+        "identifiable": predict_identifiable(cfg, point, t),
+        "on_boundary": on_boundary(cfg, point, t),
+        "blind_region": blind_region(cfg, t),
+        "envelope": {"noise_full_identification_upto_sigma":
+                     ENVELOPE["noise_full_identification_upto_sigma"],
+                     "noise_breakpoint_sigma": ENVELOPE["noise_breakpoint_sigma"]},
+    }))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

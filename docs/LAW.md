@@ -44,6 +44,8 @@ match them).
 | noise σ ≤ 6 | **100/100** identification | R-P1.14, R-P1.15 |
 | noise σ = 10 | 94% | R-P1.16 |
 | noise σ = 15 | 84% — breakpoint σ\\* | R-P1.16 |
+| noise σ = 20 | 81% | R-P1.16 |
+| noise σ = 30 | 71% | R-P1.16 |
 | noise σ = 40 | 61% (covered events stay at 50% throughout) | R-P1.16 |
 | gravity | rule holds; closed-form position off by 39.8 units | R-P1.19 |
 | one or three collisions, one hidden | rule holds | R-P1.20 |

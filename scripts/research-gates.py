@@ -31,6 +31,9 @@ GATES = [
     ("scripts/self-model-cost-prereg.py", 1,
      "P3 and can be free (discrete loss): FALSIFIED",
      "R-P1.21: wrong self-model costs 3 of 4; no error is free (documented negative)"),
+    ("scripts/gravity-hidden-prereg.py", 1,
+     "P4 the kicked body's coverage class is geometry-independent: FALSIFIED",
+     "R-P1.23: gravity AND a hidden contact now both tested; P4 was a self-inconsistent prediction (documented negative)"),
 ]
 
 

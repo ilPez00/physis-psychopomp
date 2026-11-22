@@ -38,3 +38,33 @@ def test_envelope_is_data_that_matches_its_sources():
     assert ENVELOPE["noise_breakpoint_sigma"] == 15.0
     assert acc[15.0] == 0.84 < 0.90 <= acc[10.0]                 # breakpoint definition
     assert ENVELOPE["noise_full_identification_upto_sigma"] == 6.0
+
+
+def test_law_is_callable_from_the_command_line():
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    spec = json.dumps({"config": {"o2": [50, 70, 35, 65]}, "point": [55, 50], "t": 60})
+    out = subprocess.run([sys.executable, "-m", "psychopomp.law", spec],
+                         cwd=root, capture_output=True, text=True, check=True)
+    payload = json.loads(out.stdout)
+    assert payload["identifiable"] is False
+    assert payload["blind_region"] == [50, 60.0, 35.0, 65.0]
+    assert payload["envelope"]["noise_breakpoint_sigma"] == 15.0
+
+
+def test_the_documented_envelope_matches_the_documented_numbers():
+    # docs/LAW.md quotes the envelope; if one moves without the other, the doc
+    # becomes a claim the code does not support.
+    from pathlib import Path
+
+    text = (Path(__file__).resolve().parent.parent / "docs" / "LAW.md").read_text()
+    for sigma, accuracy in ENVELOPE["noise_accuracy"].items():
+        # the doc states percentages ("94%"), the module states fractions
+        assert f"{round(accuracy * 100)}%" in text, f"{sigma} accuracy missing from LAW.md"
+    assert str(int(ENVELOPE["noise_full_identification_upto_sigma"])) in text
+    assert str(int(ENVELOPE["noise_breakpoint_sigma"])) in text
+    assert "boundary" in text.lower()
