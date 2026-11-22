@@ -5,7 +5,8 @@ hypotheses, rank the hypotheses by how well a re-simulation reproduces the
 observable log. Every candidate is a counterfactual (provenance
 ``counterfactual:v0.1``); only the observed episode is an execution.
 
-Distance: per kind (enter/exit), velocity distances between aligned events,
+Distance: per observable kind (kick, enter/exit, wall bounce), velocity
+distances between aligned events,
 plus penalties for side or count mismatches and a light time displacement.
 With a deterministic simulator the true hypothesis is at exactly 0.
 
@@ -23,7 +24,11 @@ from .interventions import COUNTERFACTUAL_SOURCE, Intervention
 from .sim import Init, Kick, SimConfig, SimEpisode, run
 
 Hypothesis = Optional[Intervention]
-KINDS = ("enter_occ", "exit_occ")
+# Every observable kind the log can carry, not only occlusion crossings: a
+# world with no occlusion has an empty crossing signature, and an instrument
+# that reads only crossings would call every hypothesis identical there
+# (measured 2026-11-22, R-P1.9 run 1).
+KINDS = ("kick", "enter_occ", "exit_occ", "wall_bounce")
 PENALTY = 10.0
 
 
@@ -39,8 +44,10 @@ def signature(ep: SimEpisode) -> List[tuple]:
     events = [e for e in ep.observable_log() if e.kind in KINDS]
     out = []
     for e in events:
-        v = e.attrs.get("v")
-        p = e.attrs.get("pos")
+        # a kick reports its velocity change, a crossing its measured velocity;
+        # both are observable and neither carries an identity
+        v = e.attrs.get("dv") if e.kind == "kick" else e.attrs.get("v")
+        p = e.attrs.get("pos") or e.attrs.get("x")
         out.append(
             (e.kind, e.t, e.attrs.get("side"),
              tuple(v) if v else None, tuple(p) if p else None)

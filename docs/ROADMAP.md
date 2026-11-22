@@ -13,9 +13,9 @@ outcomes. Repo state measured 2026-11-21 at `3b3335d` (+2 local tests pending).
 | **A2 result** (pre-contact position channel) | **landed**: deterministic top-1 **1.00** vs **0.25** chance on the parallel family; endpoint-only probe 0.00 | `docs/2026-11-21-PLAN-audit-followups.md` §P4; `scripts/probes.py` |
 | **A3** (observation-noise experiments) | **blocked with a measurement**: at noise/gap ratio ≤ 0.4 the observables do not determine the answer (exact Bayes ties); at ≥ 1 a trivial statistic wins; `track(3)` samples make the feasibility set **empty** (velocity noise amplified 1/dt). Binding constraint = position noise vs the 2-unit gap | `docs/2026-11-21-PLAN-round9.md` §W2–W3 |
 | License | **Apache-2.0 + NOTICE** landed (portfolio audit) | `cca8220`, `3b3335d` |
-| Tests | **75 upstream green**, +2 local (IMP-7 multi-contact / re-crossing) = 77 | `pytest -q` |
-| Perspectives (mission core) | **absent**: no frame/observer module (`psychopomp/` has sim, eventlog, epec, controls, asp, fixtures, probes) | file list |
-| GPU arms | unjustified by A3; node offline | round 9; omo last seen 5d |
+| Tests | **113 green** | `pytest -q` |
+| Perspectives (mission core) | **present** (`perspective.py`, `camera.py`, `attribution.py`). A4 run 1: frame normalization adds **no** predictive value (H1 falsified). R-P1.9: a second *observer with a different blind spot* does (unique vs null-tie) | `2026-11-21-A4-run-1-results.md`, `2026-11-22-PLAN-R-P1.9-multi-observer.md` |
+| GPU arms | **unjustified by A3/R-P1.1** (no deterministic headroom on this family). Availability is no longer the blocker: omo answers over ssh 2026-11-22 (16 cores, `/dev/kfd` present). The blocker is the measurement, not the machine | round 9; ssh omo-ts 2026-11-22 |
 
 Consequences fixed now:
 
@@ -35,12 +35,16 @@ Consequences fixed now:
 | R-P1.4 | Model arms: deterministic world-coords · deterministic normalized observer-relative · EC filter · matched shuffled control. Learned only if deterministic baselines leave headroom. | recoverability + probes table with means/sd; headroom = the only licence to train | open |
 | R-P1.5 | Interventions: paired kick/no-kick episodes; labels OBSERVED / INFERRED / COUNTERFACTUAL / REFUTED; no simulated event may become an observation. | log-schema test forbidding promotion of simulated events; paired-episode diff test | **done** (`psychopomp/interventions.py` + 5 tests, plan `2026-11-21-PLAN-R-P1.5-interventions.md`): pairs identical pre-kick, diverge post-kick; counterfactual provenance; hidden kick is a no-op; `ObservationLedger` refuses non-`sim:*` events |
 | R-P1.6 | **A4 preregistration** before any run: hypotheses, exact baselines (including A2's 1.00), thresholds, seeds, leakage checks, negative controls, compute budget. Preserve A2/A3 records. | new dated file; old claims untouched | **done** (`2026-11-21-PREREG-A4-perspectives.md`): H1–H3 with falsifiers, 4 matched arms, ceiling exclusion rule, 5 seeds × 6 episodes, CPU budget, claim registered at prior 0.4 |
-| R-P1.7 | Integration spec for Physis (observable log → typed observations with provenance; IMP-4). | round-trip query on a fixture in a Physis world | **producer side done** (`psychopomp/export.py` + 4 tests, plan `2026-11-21-PLAN-R-P1.7-export-contract.md`): lossless, identity-free, counterfactual-refusing, deterministic JSONL (`psychopomp.observation/1`). Live Physis ingest compatibility **NOT MEASURED** (needs a physis-next branch checkout) |
+| R-P1.7 | Integration spec for Physis (observable log → typed observations with provenance; IMP-4). | round-trip query on a fixture in a Physis world | **producer side done** (`psychopomp/export.py` + 4 tests, plan `2026-11-21-PLAN-R-P1.7-export-contract.md`): lossless, identity-free, counterfactual-refusing, deterministic JSONL (`psychopomp.observation/1`). Live Physis ingest **measured absent** (`2026-11-22-R-P1.7-ingest-measurement.md`): `physis ingest` is a closed 12-source connector registry with per-source parsers, no generic JSONL ingress — consumer side does not exist, so the gate is **not met** |
+| R-P1.9 | **Multi-observer occlusion**: is a blind spot a property of the world or of the observer set? Second observer's own occluder (`SimConfig.o2`); blind region = `o ∩ o2`. | four observer sets over one world: single/same reproduce the null-tie, overlap/disjoint make a hidden kick identifiable, same-blind-spot control unchanged, trajectories invariant | **done** (`psychopomp/sim.py` `o2`/`observable`, `tests/test_multi_observer.py`, plan+results `2026-11-22-PLAN-R-P1.9-multi-observer.md`, receipt `research/loops/results/multi-observer-20261122/`): hidden kick ties with null under one observer (ambiguity 2, d=0.00) and is **unique with margin 22.00 / 10.00** under two; same blind spot changes nothing; hidden step fraction 0.331 = 0.331 > 0.164 > 0.000; 113 tests green |
 | R-P1.8 | **Counterfactual attribution**: given an observed episode and declared intervention hypotheses, rank which one explains it; ambiguity reported, never guessed. | bench: truth unique top-1 on both lane families, permuted-score control at/below chance, hidden-kick ambiguity test-pinned | **done** (`psychopomp/attribution.py`, 8 tests, plan+results `2026-11-21-PLAN-R-P1.8-counterfactual-attribution.md`, receipt `research/loops/results/attribution-20261121/`): 12/12 unique top-1 both classes, margins 7.94/17.20, control 0/12, ambiguity size 1.00 |
 
 ## Dependencies and stop rules
 
 `R-P1.0 → R-P1.1 → R-P1.2 → R-P1.3 → R-P1.4 → R-P1.5 → R-P1.6 → R-P1.7`
+
+R-P1.8 and R-P1.9 depend on R-P1.5 (interventions) and R-P1.3 (camera), not on
+R-P1.7: the consumer side is absent, so integration cannot gate research.
 
 - No GPU arm until R-P1.4 shows headroom **and** omo is reachable (offline
   2026-11-20, 5 days).

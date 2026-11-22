@@ -1,0 +1,38 @@
+{
+  "card": "R-P1.9",
+  "date": "2026-11-22",
+  "status": "PASS (after an instrument fix; run 1 recorded, not discarded)",
+  "runs": [
+    {
+      "run": 1,
+      "result": "P1/P3/P4 upheld; P2 FALSIFIED (disjoint cell scored ambiguity 3, d(null)=0); P5 FALSIFIED (log differs 4 vs 0 events)",
+      "diagnosis": "signature read only occlusion crossings, so an occlusion-free world had an empty signature; P5 was mis-stated (a second observer must change the log)"
+    },
+    {
+      "run": 2,
+      "result": "all five upheld",
+      "cells": {
+        "single": {"blind": [40.0, 60.0, 35.0, 65.0], "hidden_step_fraction": 0.331, "visible_kick": "unique, margin 26.05", "hidden_kick": "tie with null, ambiguity 2"},
+        "same": {"blind": [40.0, 60.0, 35.0, 65.0], "hidden_step_fraction": 0.331, "visible_kick": "unique, margin 26.05", "hidden_kick": "tie with null, ambiguity 2"},
+        "overlap": {"blind": [50.0, 60.0, 35.0, 65.0], "hidden_step_fraction": 0.164, "visible_kick": "unique, margin 31.00", "hidden_kick": "unique, margin 22.00"},
+        "disjoint": {"blind": null, "hidden_step_fraction": 0.0, "visible_kick": "unique, margin 10.00", "hidden_kick": "unique, margin 10.00"}
+      }
+    }
+  ],
+  "commands": [
+    {"cmd": ".venv/bin/pytest -q", "result": "113 passed"},
+    {"cmd": ".venv/bin/python scripts/multi-observer-bench.py", "result": "PASS — P1..P5 all UPHELD"},
+    {"cmd": ".venv/bin/python scripts/attribution-bench.py", "result": "PASS — 12/12 unique both families, control 0/12, margins 30.57"}
+  ],
+  "findings": [
+    "an identifiability limit can be a property of the observer set, not of the world: adding a vantage point with a different blind spot turns a null-tie into a unique answer with margin 10-22",
+    "a second observer that shares the first blind spot changes nothing: coverage overlap, not observer count, is the variable",
+    "an attribution signature restricted to occlusion crossings cannot score any hypothesis in a world without occlusion (empty signature) — measured, then fixed",
+    "crossing-side labels assumed a single occluder; a transition caused by the second one raised 'corner entry is not supported'"
+  ],
+  "limits": [
+    "two observers modelled as two visibility masks: no parallax, no per-observer noise, no non-convex occluders, max two observers",
+    "attribution remains noise-free and finite-hypothesis",
+    "no registered claim: instrument card; the mechanism claim is left to a later prereg with seeds and a shuffled control"
+  ]
+}
