@@ -102,11 +102,38 @@ the sandbox (`permission.rejected: shell`), so the emitted rows could not be
 observed either. Guessing the row shape from the query surface would have been the
 same error as quoting a benchmark without a receipt.
 
-## Not established here (do not take these as claims)
+## Physis's row shape — now measured (2026-11-22)
 
-- **Physis's own observation row shape.** Not read from its Rust log writer; the
-  field names above are the producer's, and the mapping is the consumer's to define.
-  `physis subject` / `series` / `values` show the *query* surface, not the writer.
+Read from `~/dev/physis-next-candidate` (`crates/physis-kernel/src/observation.rs`):
+
+```rust
+pub struct Observation {
+    pub seq: u64,                    // assigned by the store, under a cross-process lock
+    pub at: DateTime<Utc>,           // chrono, UTC
+    pub duration_ms: Option<u64>,    // None = an instant
+    pub source: ObservationSource,   // free-form bucket; new sources are new strings
+    pub subject: String,
+    pub body: String,                // FLAT on purpose: "structure is imposed later"
+    pub produced_by: Option<String>, // watcher walk-back address
+}
+```
+
+Two consequences that make this easy:
+
+1. **`body` is a flat `String`**, so `props` goes in as serialized JSON text — no
+   schema change on their side, and their own comment says structure is imposed later.
+2. **`source` is a free-form bucket**, so `"psychopomp"` is a legal source with no
+   upstream change.
+
+Append path: `physis_store::append_observations(paths, items)` assigns `seq` and
+refuses a **torn log** rather than deleting evidence. Log path:
+`StorePaths::observations()` → `<root>/observations.jsonl`.
+
+The importer proposal built on this (CLI variant, module, dedup key, acceptance
+test) is `docs/notes/2026-11-22-physis-import-patch-plan.md` — **uncompiled**, and
+labelled so.
+
+## Not established here (do not take these as claims)
 - **Bitemporal semantics.** Physis records corrections and supersession; this
   contract says nothing about how repeated ingestion of a corrected re-run should
   fold, because the producer never revises — it only appends.
