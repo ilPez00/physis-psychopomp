@@ -15,9 +15,10 @@ Validity conditions, measured not assumed:
 
 - noise: 100/100 identification up to ``sigma = 6``; accuracy decays from 0.94 at
   ``sigma = 10`` to 0.61 at ``sigma = 40`` (breakpoint ``sigma* = 15``);
-- geometry: axis-aligned rectangular occluders inside a square box, possibly
-  several per observer (the blind set is then a union: non-convex, even
-  disconnected — R-P1.25);
+- geometry: occluders are axis-aligned rectangles — possibly several per
+  observer, so the blind set can be a union, non-convex or disconnected
+  (R-P1.25) — **or static polygons**, membership by ray casting, so a rotated
+  occluder is ordinary geometry rather than a special case (R-P1.33);
 - observers: one or two, the second may translate at constant velocity;
 - physics: constant velocity or constant acceleration, elastic equal-mass
   collisions; the *contact structure must be identical across hypotheses*
@@ -37,7 +38,7 @@ import json
 import sys
 from typing import Optional, Tuple
 
-from .sim import SimConfig, inside_rect, occluder2_at
+from .sim import SimConfig, inside_polygon, inside_rect, occluder2_at
 
 Rect = Tuple[float, float, float, float]
 BOUNDARY_TOL = 1e-6
@@ -94,11 +95,28 @@ def boundary_distance(config: SimConfig, point: Tuple[float, float],
                for c in cells)
 
 
+def is_blind(config: SimConfig, point: Tuple[float, float], t: int = 0) -> bool:
+    """The law in its general membership form (works for polygons too).
+
+    Blind means **every** observer is blocked: observer 1 by any of its own
+    blockers (rectangles, extra rectangles, polygons), observer 2 by its moving
+    rectangle. This needs no shape intersection, so a rotated occluder is no
+    special case (R-P1.33).
+    """
+    x, y = point
+    blocked1 = (inside_rect(config.o, x, y)
+                or any(inside_rect(rect, x, y) for rect in config.extra_o)
+                or any(inside_polygon(poly, x, y) for poly in config.poly_o))
+    if not blocked1:
+        return False
+    second = occluder2_at(config, t)
+    return second is None or inside_rect(second, x, y)
+
+
 def predict_identifiable(config: SimConfig, point: Tuple[float, float],
                          t: int = 0) -> bool:
-    """The law: identifiable iff the event location is outside every blind cell."""
-    return not any(inside_rect(cell, point[0], point[1])
-                   for cell in blind_cells(config, t))
+    """The law: identifiable iff the event location is not blind."""
+    return not is_blind(config, point, t)
 
 
 def on_boundary(config: SimConfig, point: Tuple[float, float], t: int = 0) -> bool:

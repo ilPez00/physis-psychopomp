@@ -83,3 +83,36 @@ def test_blind_set_can_be_a_union_and_the_gap_is_identifiable():
     envelope = blind_region(cfg)
     assert envelope[0] <= 65.0 <= envelope[1]                    # bbox DOES cover it
     assert not on_boundary(cfg, (65.0, 45.0))
+
+
+DIAMOND = ((75.0, 42.0), (83.0, 50.0), (75.0, 58.0), (67.0, 50.0))
+
+
+def test_polygon_occluders_are_membership_not_bounding_box():
+    # R-P1.33: a rotated occluder is ordinary geometry for the membership form,
+    # while its bounding box would call the corners blind
+    from psychopomp.law import is_blind
+
+    cfg = SimConfig(o=(40.0, 60.0, 35.0, 65.0), o2=(30.0, 92.0, 20.0, 90.0),
+                    poly_o=(DIAMOND,))
+    assert is_blind(cfg, (75.0, 50.0)) is True        # inside the diamond
+    assert is_blind(cfg, (69.0, 44.0)) is False       # corner: in bbox, out of poly
+    assert is_blind(cfg, (81.0, 56.0)) is False
+    assert is_blind(cfg, (64.0, 50.0)) is False       # outside both
+    assert predict_identifiable(cfg, (69.0, 44.0)) is True
+    # a non-convex polygon is handled by the same test: an L with a notch
+    elbow = ((65.0, 35.0), (75.0, 35.0), (75.0, 39.0), (69.0, 39.0),
+             (69.0, 45.0), (65.0, 45.0))
+    cfg2 = SimConfig(o=(40.0, 60.0, 35.0, 65.0), poly_o=(elbow,))
+    assert is_blind(cfg2, (66.0, 36.0)) is True       # inside the L
+    assert is_blind(cfg2, (73.0, 43.0)) is False      # the notch
+
+
+def test_scene_symmetry_transforms_polygons_too():
+    from psychopomp.perspective import transform_scene
+    from psychopomp.sim import Init
+
+    cfg = SimConfig(poly_o=(DIAMOND,))
+    init = Init(x=(10.0, 20.0), y=(45.0, 45.0), v=((3.0, 0.0), (3.0, 0.0)))
+    rotated, _, _ = transform_scene(cfg, init, None, "rot180")
+    assert rotated.poly_o[0] == tuple((100.0 - x, 100.0 - y) for x, y in DIAMOND)

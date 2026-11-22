@@ -46,6 +46,10 @@ class SimConfig:
     # Extra blockers for the FIRST observer (R-P1.25). The blind set becomes
     # (o ∪ extra_o) ∩ o2, i.e. a union of rects: non-convex, even disconnected.
     extra_o: Tuple[Tuple[float, float, float, float], ...] = ()
+    # Static polygon blockers for the first observer (R-P1.33): each is a tuple of
+    # (x, y) vertices, membership by ray casting (convex or not). Rotated occluders
+    # are expressible this way without changing the physics.
+    poly_o: Tuple[Tuple[Tuple[float, float], ...], ...] = ()
     o2: Optional[Tuple[float, float, float, float]] = None
     # Second observer drift, world units per second (R-P1.17). The occluder
     # translates rigidly and folds inside the box, so it reflects at the walls
@@ -69,6 +73,9 @@ class SimConfig:
         x0, x1, y0, y1 = self.o
         assert self.r > 0 and 0 < x0 < x1 < self.W - self.r, "occluder x-range"
         assert 0 < y0 < y1 < self.H - self.r, "occluder y-range"
+        for poly in self.poly_o:
+            assert len(poly) >= 3, "a polygon needs at least three vertices"
+            assert poly == tuple(poly) and len(poly) == len(set(poly)), "degenerate polygon"
         for a0, a1, b0, b1 in self.extra_o:
             assert 0 < a0 < a1 < self.W - self.r, "extra occluder x-range"
             assert 0 < b0 < b1 < self.H - self.r, "extra occluder y-range"
@@ -123,6 +130,20 @@ def inside(cfg: SimConfig, x: float, y: float) -> bool:
     return inside_rect(cfg.o, x, y)
 
 
+def inside_polygon(poly: Sequence[Tuple[float, float]], x: float, y: float) -> bool:
+    """Ray-casting point-in-polygon; works for convex and non-convex shapes."""
+    inside = False
+    n = len(poly)
+    for i in range(n):
+        x0, y0 = poly[i]
+        x1, y1 = poly[(i + 1) % n]
+        if (y0 > y) != (y1 > y):
+            x_cross = (x1 - x0) * (y - y0) / (y1 - y0) + x0
+            if x < x_cross:
+                inside = not inside
+    return inside
+
+
 def observable(cfg: SimConfig, x: float, y: float, t: int = 0) -> bool:
     """Visible to at least one observer at step `t`.
 
@@ -130,9 +151,9 @@ def observable(cfg: SimConfig, x: float, y: float, t: int = 0) -> bool:
     body is hidden only when every observer is blocked. The second observer moves
     with `t`.
     """
-    blocked1 = inside_rect(cfg.o, x, y) or any(
-        inside_rect(rect, x, y) for rect in cfg.extra_o
-    )
+    blocked1 = (inside_rect(cfg.o, x, y)
+                or any(inside_rect(rect, x, y) for rect in cfg.extra_o)
+                or any(inside_polygon(poly, x, y) for poly in cfg.poly_o))
     if not blocked1:
         return True
     second = occluder2_at(cfg, t)

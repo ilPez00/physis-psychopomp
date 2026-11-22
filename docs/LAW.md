@@ -36,8 +36,16 @@ blocker — so it can be non-convex or disconnected, and the law is membership, 
 envelope: a point in the gap between two blind islands is identifiable even
 though it sits inside their bounding box (`R-P1.25`, 17/17 scored cells).
 
-Also out of scope, by construction and not by omission: rotated or curved
-occluders (they would need polygon membership), more than two observers, observers whose motion responds to
+**Rotated occluders are in scope** (R-P1.33): a static polygon is ordinary
+geometry for the membership form — all six task points on a diamond predicted
+exactly, its bounding box wrong on all four corners, and 180° scene covariance
+unchanged. Curved shapes are approximated by polygons to the step tolerance.
+
+The **self-model estimator, however, is rectangle-shaped**: on the same diamond it
+returns no estimate at all, because polygon-caused crossings carry no edge label.
+The law generalises; the estimator does not — that limit is named, not hidden.
+
+Also out of scope, by construction and not by omission: more than two observers, observers whose motion responds to
 the world, degraded object identity, and every learned arm (blocked: the
 deterministic arms are at 100/100 on the uncovered family, so a model could only
 match them).

@@ -1,0 +1,20 @@
+{
+  "card": "R-P1.33",
+  "date": "2026-11-22",
+  "status": "P1/P2/P3 upheld, P4 falsified (estimator abstains rather than over-covering)",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.33-rotated-occluders.md",
+  "hypothesis": "148b49eb-ed9c-426e-9de3-df607fde6574 (Contradicted on its estimator clause)",
+  "instrument": "SimConfig.poly_o polygon blockers (ray casting), law.is_blind membership form, transform_scene for polygons",
+  "command": ".venv/bin/python scripts/rotated-occluder-prereg.py",
+  "measured": {
+    "points": {"(75,50)": "tie (law, measured)", "four corners": "unique (law, measured) vs tie (bbox rule)", "(64,50)": "unique"},
+    "bbox_errors": 4,
+    "scene_covariance_rot180": "unchanged",
+    "estimator_rect": null,
+    "crossing_labels": {"sided": 8, "sweep": 15}
+  },
+  "finding": "the law generalises to rotated occluders as plain membership with no new apparatus, and a bounding box fails on all four corners; the rect self-model estimator does not generalise at all - it returns None because polygon-caused crossings carry no edge label. The limit is representational, not directional: one-signed optimism was not tested on non-rect geometry.",
+  "next": "shape-aware estimation needs crossing normals for polygon edges (the sim knows which edge was crossed but does not label it) - a labelling change plus a polygon fit, not new physics",
+  "tests": "142 passed",
+  "gates": 19
+}

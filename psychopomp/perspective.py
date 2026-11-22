@@ -218,6 +218,9 @@ def transform_scene(config: SimConfig, init: Init, kick: Optional[Kick],
         o=scene_rect(name, config.o, size),
         o2=None if config.o2 is None else scene_rect(name, config.o2, size),
         o2_velocity=_rot_point(name, config.o2_velocity),
+        extra_o=tuple(scene_rect(name, r, size) for r in config.extra_o),
+        poly_o=tuple(tuple(scene_point(name, v, size) for v in poly)
+                     for poly in getattr(config, "poly_o", ())),
     )
     pts = [scene_point(name, (x, y), size) for x, y in zip(init.x, init.y)]
     new_init = Init(
