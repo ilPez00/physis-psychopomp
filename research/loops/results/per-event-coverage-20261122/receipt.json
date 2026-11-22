@@ -1,0 +1,46 @@
+{
+  "card": "R-P1.11 + R-P1.12",
+  "date": "2026-11-22",
+  "status": "R-P1.11 29/30 (H1 falsified at threshold, boundary artifact diagnosed); R-P1.12 30/30 PASS",
+  "prereg": [
+    "docs/2026-11-22-PREREG-R-P1.11-per-event-coverage.md",
+    "docs/2026-11-22-PREREG-R-P1.12-boundary-free-grid.md"
+  ],
+  "hypothesis": "9624cc4a-5167-42b3-9f1a-39f131542a9d (Supported)",
+  "command": ".venv/bin/python scripts/per-event-coverage-prereg.py",
+  "rule": "an intervention is identifiable iff its event location is not inside the blind region o intersect o2; aggregate blind area is a proxy and carries no independent information",
+  "run_1_r_p1_11": {
+    "grid": {"seeds_x0": [20, 24, 28, 32, 34], "observer_sets": ["ov-a", "ov-b", "ov-c"], "lanes": [45, 51], "cells": 30},
+    "per_cell_match": "29/30",
+    "measured_unique": 14,
+    "analytic_unique": 13,
+    "miss": {
+      "cell": "ov-c, x0=20, lane y=51",
+      "sim_x_at_step_60": 41.99999999999992,
+      "analytic_x": 42.0,
+      "cause": "float accumulation of v*dt sixty times lands 1.4e-14 below the blind boundary; the analytic prediction used exact 42.0",
+      "verdict": "prediction arithmetic, not the rule"
+    },
+    "control_range": [0.29, 0.41]
+  },
+  "run_2_r_p1_12": {
+    "grid": {"seeds_x0": [19, 23, 27, 31, 35], "observer_sets": ["bv-a", "bv-b", "bv-c"], "lanes": [45, 51], "cells": 30},
+    "boundary_exclusions": 0,
+    "per_cell_match": "30/30",
+    "measured_unique": 13,
+    "analytic_unique": 13,
+    "rates": {"bv-a": {"y45": "3/5", "y51": "2/5"}, "bv-b": {"y45": "2/5", "y51": "1/5"}, "bv-c": {"y45": "5/5", "y51": "0/5"}},
+    "same_area_opposite_outcome": {"blind_area": 540, "lane_y45": "5/5 unique", "lane_y51": "0/5 unique"},
+    "control_range": [0.29, 0.41]
+  },
+  "scope_limits": [
+    "constant-velocity bodies, rectangular occluders, one intervention, noise-free observations, finite declared hypotheses",
+    "says nothing about degraded observations, moving observers, non-convex occluders, or learned inference",
+    "boundary cells (event within 1e-6 of a blind edge) are excluded by a rule declared before the run; they are decided by accumulation order, not by the rule"
+  ],
+  "tests": "115 passed",
+  "store_actions": [
+    "hypothesis 9624cc4a evidence supporting weight 0.9 (R-P1.11 29/30 + R-P1.12 30/30)",
+    "hypothesis 9624cc4a transitioned to Supported"
+  ]
+}

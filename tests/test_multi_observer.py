@@ -80,3 +80,15 @@ def test_identifiability_tracks_event_location_not_blind_area():
         else:
             assert scores[str(None)] == 0.0 == scores[str(HIDDEN_KICK)]
             assert len(out["ambiguity"]) == 2
+
+
+def test_per_event_coverage_rule_on_a_boundary_free_cell():
+    # R-P1.12: bv-c blinds only lane y=51 (x in [40.5,60], y in [46.5,65]).
+    # Same blind area for both lanes, opposite outcome: coverage is per event.
+    cfg = SimConfig(steps=200, o2=(40.5, 60.5, 46.5, 70.0))
+    init = Init(x=(23.0, 27.0), y=(45.0, 51.0), v=((3.0, 0.0), (3.0, 0.0)))
+    for lane, expect_unique in ((0, True), (1, False)):
+        true = Intervention(t=60, ball=lane, dv=(0.0, 1.5))
+        ep = run(cfg, 23, init=init, kicks=(Kick(60, lane, (0.0, 1.5)),))
+        out = attribute(ep, [true, None], cfg, 23, init)
+        assert out["unique"] is expect_unique
