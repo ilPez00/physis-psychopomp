@@ -1,0 +1,26 @@
+{
+  "card": "R-P1.8",
+  "date": "2026-11-22",
+  "status": "PASS",
+  "commands": [
+    {
+      "cmd": ".venv/bin/pytest -q",
+      "result": "107 passed"
+    },
+    {
+      "cmd": ".venv/bin/python scripts/attribution-bench.py",
+      "result": "PASS — lanes 3.0/3.0: unique top-1 12/12, truth-in-ambiguity 12/12, excluded 0/12, ambiguity size 1.00, margin 7.94, permuted control 0/12. lanes 3.0/2.0: same, margin 17.20."
+    }
+  ],
+  "findings": [
+    "signature must be canonical under simultaneous identity-free events; a positional sort fabricates distinctions",
+    "signature must include positions; velocities alone cannot separate kick timing",
+    "identity-free is not permutation-symmetric: distinct lanes are distinguishable by path geometry",
+    "the only irreducible ambiguity is a skipped intervention (ball hidden when kicked); reported as a set"
+  ],
+  "limits": [
+    "noise-free construction: exact-zero distance breaks under degradation (out of card scope)",
+    "finite declared hypothesis set; open hypothesis generation is not attempted"
+  ],
+  "notes": "no registered claim: instrument card. Commit: see git log for docs/2026-11-21-PLAN-R-P1.8-counterfactual-attribution.md."
+}
