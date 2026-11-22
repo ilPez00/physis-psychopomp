@@ -69,6 +69,20 @@ One JSON line per observable event:
 
 Route 2 is the smaller change and the one this contract is written for.
 
+## Where this has been raised with the owner
+
+A note for the physis-next side was written on 2026-11-22 at
+`~/dev/physis-next/docs/notes/2026-11-22-psychopomp-observations-ingest.md`
+(uncommitted, so it sits in that working tree rather than in their history). It
+carries the same four open questions as the list below, plus the acceptance test.
+
+Two attempts to answer them from here are recorded so nobody repeats them: the
+release tree at `1.8.7` has `crates/` trimmed to three crates, so the store writer is
+not in that checkout; and `physis observe .` in a scratch directory was refused by
+the sandbox (`permission.rejected: shell`), so the emitted rows could not be
+observed either. Guessing the row shape from the query surface would have been the
+same error as quoting a benchmark without a receipt.
+
 ## Not established here (do not take these as claims)
 
 - **Physis's own observation row shape.** Not read from its Rust log writer; the
