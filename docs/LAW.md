@@ -217,9 +217,16 @@ observer's visible bodies, the relabelling is resolvable with probability
 reliability sets `p`, and the two compose in the exponent** — one chance per body
 already gives `N = 2`, and the fully hidden case is `N = 0`, hence 0 at every `p`.
 
-The first attempt to test this (R-P1.40) sat at `N = 56`, where the formula predicts
-≈ 1 for every `p` — it passed and tested nothing, and is recorded as **vacuous**
-rather than as evidence.
+The formula assumes **independent** drops. With a **bursty** channel the same
+marginal drop rate resolves fewer relabellings — measured deficits up to **+0.312**
+at `N = 4, b = 0.4`, shrinking to **+0.052** at `N = 12` (R-P1.42). So correlation
+costs identifiability, and more chances dilute a burst (when the burst covers the
+whole window, the `N` chances collapse into one draw: 0.618 measured against
+`1−b = 0.600`).
+
+The first attempt to test the independent case (R-P1.40) sat at `N = 56`, where the
+formula predicts ≈ 1 for every `p` — it passed and tested nothing, and is recorded
+as **vacuous** rather than as evidence.
 
 ## How to use it
 

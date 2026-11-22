@@ -1,0 +1,22 @@
+{
+  "card": "R-P1.42",
+  "date": "2026-11-22",
+  "status": "B1/B2 upheld, B3 falsified as written (its mechanism confirmed)",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.42-bursty-markers.md",
+  "hypothesis": "4a41b25a-8ea1-4ce2-8a93-7fa191ba8478 (Supported)",
+  "instrument": "SimConfig.marker_outage_prob / marker_outage_len (block outage)",
+  "command": ".venv/bin/python scripts/bursty-markers-prereg.py",
+  "measured": {
+    "bursty_vs_independent_at_matched_drop_rate": {
+      "N4_b0.2": {"bursty": 0.833, "independent": 0.995, "deficit": 0.162},
+      "N4_b0.4": {"bursty": 0.618, "independent": 0.930, "deficit": 0.312},
+      "N8_b0.4": {"bursty": 0.845, "independent": 0.993, "deficit": 0.148},
+      "N12_b0.4": {"bursty": 0.948, "independent": 1.000, "deficit": 0.052}
+    },
+    "collapse_at_N4_b0.4": {"measured": 0.618, "one_draw_1_minus_b": 0.6, "two_draws": 0.84}
+  },
+  "finding": "1-(1-p)^N holds only for independent loss; bursty loss at the same marginal drop rate costs up to 0.312 resolvability, the deficit shrinks with more opportunities (+0.312 at N=4 to +0.052 at N=12), and a burst covering the window collapses the N chances into a single draw. Independence is itself a coverage-like resource - which is what a second vantage buys.",
+  "falsified": "B3's expression (1-b)^2 was wrong; the claim it made is what the data shows",
+  "tests": "157 passed",
+  "gates": 27
+}

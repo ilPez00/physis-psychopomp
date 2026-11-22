@@ -67,6 +67,10 @@ class SimConfig:
     # this probability, drawn from its own deterministic stream so `1.0` reproduces
     # R-P1.39 exactly and the draws do not disturb the sensor-noise streams.
     marker_reliability: float = 1.0
+    # Correlated loss (R-P1.42): with this probability a fresh outage begins at a
+    # marker opportunity and drops the next `marker_outage_len` opportunities.
+    marker_outage_prob: float = 0.0
+    marker_outage_len: int = 2
     # Start a body already occluded (R-P1.39 case 3): models an observer that was
     # created with something hidden, so zero identity evidence exists for it.
     # Off by default; the init-observable guard still applies otherwise.
@@ -562,8 +566,19 @@ def run(
                 emit(obs, "enter_occ", j, ("ball",), attrs, True)
 
     if config.identity_marker:
-        for i, tr in enumerate(trajs):
-            for step in range(0, len(tr.visible), config.marker_period):
+        channel_down = 0
+        for step in range(0, config.steps + 1, config.marker_period):
+            outage_here = False
+            if channel_down > 0:
+                channel_down -= 1
+                outage_here = True
+            elif config.marker_outage_prob > 0.0 and \
+                    marker_rng.random() < config.marker_outage_prob:
+                channel_down = config.marker_outage_len - 1
+                outage_here = True
+            if outage_here:
+                continue
+            for i, tr in enumerate(trajs):
                 if step >= len(tr.visible) or not tr.visible[step]:
                     continue
                 if config.marker_reliability < 1.0 and \
