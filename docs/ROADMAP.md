@@ -13,7 +13,7 @@ outcomes. Repo state measured 2026-11-21 at `3b3335d` (+2 local tests pending).
 | **A2 result** (pre-contact position channel) | **landed**: deterministic top-1 **1.00** vs **0.25** chance on the parallel family; endpoint-only probe 0.00 | `docs/2026-11-21-PLAN-audit-followups.md` §P4; `scripts/probes.py` |
 | **A3** (observation-noise experiments) | **blocked with a measurement**: at noise/gap ratio ≤ 0.4 the observables do not determine the answer (exact Bayes ties); at ≥ 1 a trivial statistic wins; `track(3)` samples make the feasibility set **empty** (velocity noise amplified 1/dt). Binding constraint = position noise vs the 2-unit gap | `docs/2026-11-21-PLAN-round9.md` §W2–W3 |
 | License | **Apache-2.0 + NOTICE** landed (portfolio audit) | `cca8220`, `3b3335d` |
-| Tests | **113 green** | `pytest -q` |
+| Tests | **116 green** | `pytest -q` |
 | Perspectives (mission core) | **present** (`perspective.py`, `camera.py`, `attribution.py`). A4 run 1: frame normalization adds **no** predictive value (H1 falsified). R-P1.9: a second *observer with a different blind spot* does (unique vs null-tie) | `2026-11-21-A4-run-1-results.md`, `2026-11-22-PLAN-R-P1.9-multi-observer.md` |
 | GPU arms | **unjustified by A3/R-P1.1** (no deterministic headroom on this family). Availability is no longer the blocker: omo answers over ssh 2026-11-22 (16 cores, `/dev/kfd` present). The blocker is the measurement, not the machine | round 9; ssh omo-ts 2026-11-22 |
 
@@ -45,6 +45,36 @@ Consequences fixed now:
 | R-P1.14 | Same question, **independent realizations per σ** (100 draws), defect measured where it bites. | covered 0.5 ± 0.10 at every σ ≥ 0.1; uncovered 1.00 with separation ratio ≥ 10 | **done — SUPPORTED** (`2026-11-22-PREREG-R-P1.14-coverage-under-noise-v2.md`, `scripts/coverage-under-noise-v2.py`, receipt `research/loops/results/coverage-under-noise-20261122/`): run 1 exposed a third defect (`attribute()` pinned candidates to `episode=0`, so all realizations shared one fixed corruption → covered cell *below* chance at 0.22–0.35); after the fix, covered 0.47/0.58/0.51/0.50 at σ ≥ 0.1, uncovered **100/100** at every σ ≤ 0.5 with `d(null)/d(true)` 61.6 → 12.7, σ = 0 reproducing R-P1.12. Claim `0848d800` → **Supported**. 116 tests green |
 | R-P1.15 | **Noise envelope**: where does identification stop? σ ∈ {0.75…6}. | accuracy ≥ 0.90 to σ = 2, < 0.50 from σ = 4, linear noise term | **done — P2/P3/P4 falsified, model rewritten** (`2026-11-22-PREREG-R-P1.15-noise-envelope.md`): **no breakpoint** — accuracy 100/100 at every σ up to **6**. `d(null)` is not noise-free (27.88 → 44.85), so the two distances **add** rather than compete; the invariant is the additive margin `d(null) − d(true)` ≈ 24.8 → 20.2. Covered cell at chance throughout (P5) |
 | R-P1.16 | **The crossing**: σ ∈ {10, 15, 20, 30, 40}, predicted from the R-P1.15 margin line (zero at σ ≈ 30). | breakpoint bracketed in [15, 40]; collapse by σ = 40 | **done — P1 falsified, P2–P5 upheld** (`2026-11-22-PREREG-R-P1.16-crossing.md`, `scripts/noise-envelope.py`, receipt `research/loops/results/noise-envelope-20261122/`): accuracy **0.94 / 0.84 / 0.81 / 0.71 / 0.61**, breakpoint **σ\* = 15**, covered cell 0.47–0.58 throughout. Margin slope −0.22 (predicted −0.4…−1.2) with zero at σ ≈ 67, so the σ ≤ 6 extrapolation was wrong by 2× and the decay is gradual, not a cliff. Claim `4fdea69b` → Contradicted on its quantitative clause |
+| R-P1.17 | **Time-resolved coverage**: a moving second observer makes the blind region time-dependent; identifiability should follow coverage **at the event step**, with the observer held fixed across counterfactuals. | 2 event locations × 3 observer drifts (static, right, left) predicted per cell before the run; a kick hidden by the static occluder must become identifiable as it drifts away, and vice versa; reflection case tracked through the fold | **planned** |
+| R-P1.17 | **Time-resolved coverage**: a moving second observer makes the blind region time-dependent; identifiability should follow coverage **at the event step**, with the observer held fixed across counterfactuals. | 2+ event locations × drifts predicted per cell before the run; a kick hidden by the static occluder must become identifiable as it drifts away, and vice versa; reflection case tracked through the fold | **done — SUPPORTED** (`2026-11-22-PREREG-R-P1.17-moving-observer.md`, `scripts/moving-observer-prereg.py`, receipt `research/loops/results/moving-observer-20261122/`): **11/11** cells, both flips (x=44 tie→unique with right drift, x=55 tie→unique with left drift), folded occluder tracked through a wall reflection, σ=1.0 pattern intact (1.00 / 0.47), observer asserted fixed across counterfactuals. Found + fixed: motion-caused visibility changes have no edge crossing, so they are now labelled `sweep` instead of raising. 119 tests green |
+
+## Claim ledger — registered, with measure and status
+
+| claim | statement | measure | status |
+|---|---|---|---|
+| `9624cc4a` | an intervention is identifiable **iff** its event location is outside the blind region `o ∩ o2`; blind area is only a proxy | 29/30 out of sample, then 30/30 on a boundary-free grid (13/30 unique exactly as predicted) | **Supported** (fitness 0.613) |
+| `0848d800` | the rule survives sensor noise as a signal-detection ordering | uncovered 100/100 at σ ≤ 0.5 with `d(null)/d(true)` 61.6 → 12.7; covered at chance (0.47–0.58) | **Supported** |
+| `2661e5ab` | a *differing* blind spot is sufficient for identifiability | `overlap-450` scored 2/5 where 5/5 was required — the residual blind region still covered the event | **Contradicted** |
+| `4fdea69b` | the collapse sits near σ ≈ 30 (linear-margin extrapolation) | breakpoint σ\* = 15; decay 0.94 → 0.61 across σ = 10…40; zero-crossing ≈ 67 | **Contradicted** (mechanism clause held) |
+
+Envelope, measured end to end: **100/100 to σ = 6**, 94% at σ = 10, breakpoint
+**σ\* = 15**, 61% at σ = 40 with the covered case at chance throughout. The
+distances **add** (a counterfactual corrupts both hypotheses alike), so
+identification survives until the noise floor approaches the world's geometry.
+
+## Next axes, in order of value
+
+1. **Time-resolved coverage (R-P1.17)** — a *moving* second observer makes the
+   blind region time-dependent. The rule then predicts identifiability from
+   coverage **at the event step**, and the counterfactual must hold the observer
+   fixed (otherwise an observer change is confounded with a world change). This
+   is the cheapest test that the law is about *place and time*, not just place.
+2. **Non-convex / rotated occluders (R-P1.18)** — does the rule survive geometry
+   that is not an axis-aligned rectangle?
+3. **Moving bodies with acceleration / multi-contact (R-P1.19)** — the current
+   family is constant-velocity with elastic equal-mass collisions.
+4. **Learned arms** — still blocked: deterministic arms are at 100/100 on the
+   uncovered family, so no learned model is licensed (mission P1 §4).
 
 ## Dependencies and stop rules
 

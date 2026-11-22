@@ -1,0 +1,34 @@
+{
+  "card": "R-P1.17",
+  "date": "2026-11-22",
+  "status": "PASS — all five predictions upheld, 11/11 cells",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.17-moving-observer.md",
+  "hypothesis": "not registered (instrument extension of claim 9624cc4a to time-resolved coverage)",
+  "command": ".venv/bin/python scripts/moving-observer-prereg.py",
+  "design": {
+    "cells": 11,
+    "observer_drifts": {"static": [0.0, 0.0], "right": [1.667, 0.0], "left": [-1.667, 0.0], "folded": [12.4, 0.0]},
+    "events": {"E37": 37.0, "E44": 44.0, "E55": 55.0},
+    "prediction": "analytic from o intersect o2(t=60), folded inside the box"
+  },
+  "measured": {
+    "static": {"E37": "unique", "E44": "tie", "E55": "tie"},
+    "right": {"E37": "unique", "E44": "unique", "E55": "tie"},
+    "left": {"E37": "unique", "E44": "tie", "E55": "unique"},
+    "folded": {"E44": "unique", "E55": "tie"},
+    "noise_sigma_1.0": {"uncovered_accuracy": 1.0, "covered_accuracy": 0.47, "realizations": 100}
+  },
+  "flips": [
+    "x=44: tie (static) -> unique (drift right)",
+    "x=55: tie (static) -> unique (drift left)"
+  ],
+  "reflection": {"unfolded_x_at_t60": 114.9, "measured_x_at_t60": 45.1},
+  "defect_found": {
+    "detail": "with a moving occluder a visibility change can happen with no edge crossing (the rect sweeps onto or off a body); the side-label lookup assumed a crossing and raised StopIteration",
+    "fix": "transition_rect() returns None for motion-caused changes; those transitions are labelled 'sweep'",
+    "caught_by": "left, E55"
+  },
+  "claim_extension": "identifiability is event-local coverage in space and time: identifiable iff the event location at the event step is outside o intersect o2(t), observer held fixed across counterfactuals",
+  "not_measured": ["active perception (observers choosing motion)", "parallax/perspective", "non-convex occluders", "more than two observers"],
+  "tests": "119 passed"
+}

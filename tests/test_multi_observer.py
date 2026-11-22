@@ -1,6 +1,6 @@
 from psychopomp.attribution import attribute
 from psychopomp.interventions import Intervention
-from psychopomp.sim import Init, Kick, SimConfig, observable, run
+from psychopomp.sim import Init, Kick, SimConfig, observable, occluder2_at, run
 
 HIDDEN_KICK = Intervention(t=60, ball=0, dv=(0.0, 1.5))
 VISIBLE_KICK = Intervention(t=30, ball=0, dv=(0.0, 1.5))
@@ -107,3 +107,43 @@ def test_candidates_inherit_the_observation_episode_index():
         out = attribute(ep, [true, None], cfg, 0, init)
         scores.append([d for d, _ in out["scores"]])
     assert scores[0] != scores[1]
+
+
+def _moving_cfg(vx: float) -> SimConfig:
+    return SimConfig(steps=200, o2=(40.5, 60.5, 35.0, 65.0), o2_velocity=(vx, 0.0))
+
+
+def test_moving_observer_makes_coverage_time_resolved():
+    # R-P1.17: the same world and occluder, only the drift differs. A kick at
+    # x=44 is inside the blind region when the observer is static and outside it
+    # once the observer has drifted right by the event step.
+    init = Init(x=(26.0, 22.0), y=(45.0, 45.0), v=((3.0, 0.0), (3.0, 0.0)))
+    kick = Intervention(t=60, ball=0, dv=(0.0, 1.5))
+    results = []
+    for vx in (0.0, 1.667):
+        cfg = _moving_cfg(vx)
+        ep = run(cfg, 0, episode=0, init=init, kicks=(Kick(60, 0, (0.0, 1.5)),))
+        out = attribute(ep, [kick, None], cfg, 0, init)
+        results.append(out["unique"])
+    assert results == [False, True]
+
+
+def test_folded_occluder_stays_inside_the_box():
+    cfg = _moving_cfg(12.4)
+    for t in (0, 30, 60, 120, 199):
+        rect = occluder2_at(cfg, t)
+        assert 0.0 <= rect[0] and rect[1] <= cfg.W      # folded inside the box
+        assert rect[1] - rect[0] == 20.0                # width preserved
+    # it reflected: the position at t=60 is not the unfolded one
+    assert occluder2_at(cfg, 60)[0] != 40.5 + 12.4 * 0.1 * 60
+
+
+def test_occluder_sweeping_onto_a_body_is_labelled_sweep():
+    # body stationary inside o; the second occluder sweeps onto it, so no edge
+    # is crossed and the transition is a sweep, not a left/right/top/bottom
+    cfg = SimConfig(steps=100, o2=(20.0, 40.0, 35.0, 65.0), o2_velocity=(0.83, 0.0))
+    init = Init(x=(45.0, 90.0), y=(50.0, 90.0), v=((0.0, 0.0), (0.0, 0.0)))
+    ep = run(cfg, 0, episode=0, init=init)
+    sides = [e.attrs.get("side") for e in ep.observable_log()
+             if e.kind in ("enter_occ", "exit_occ")]
+    assert "sweep" in sides, sides

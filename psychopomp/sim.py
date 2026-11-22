@@ -44,6 +44,10 @@ class SimConfig:
     # least one observer sees it, so the blind region is o ∩ o2: what is hidden
     # is a property of the observer set, not of the world. None = one observer.
     o2: Optional[Tuple[float, float, float, float]] = None
+    # Second observer drift, world units per second (R-P1.17). The occluder
+    # translates rigidly and folds inside the box, so it reflects at the walls
+    # deterministically. (0, 0) reproduces the fixed observer exactly.
+    o2_velocity: Tuple[float, float] = (0.0, 0.0)
     r: float = 1.0
     dt: float = 0.1
     steps: int = 600
@@ -59,6 +63,8 @@ class SimConfig:
         x0, x1, y0, y1 = self.o
         assert self.r > 0 and 0 < x0 < x1 < self.W - self.r, "occluder x-range"
         assert 0 < y0 < y1 < self.H - self.r, "occluder y-range"
+        if self.o2_velocity != (0.0, 0.0):
+            assert self.o2 is not None, "o2_velocity needs a second occluder"
         if self.o2 is not None:
             a0, a1, b0, b1 = self.o2
             # a second observer's occluder may touch a wall; it only narrows
@@ -108,15 +114,43 @@ def inside(cfg: SimConfig, x: float, y: float) -> bool:
     return inside_rect(cfg.o, x, y)
 
 
-def observable(cfg: SimConfig, x: float, y: float) -> bool:
-    """Visible to at least one observer: hidden only where every occluder covers."""
+def observable(cfg: SimConfig, x: float, y: float, t: int = 0) -> bool:
+    """Visible to at least one observer at step `t`.
+
+    Hidden only where every occluder covers; the second one moves with `t`.
+    """
     if not inside_rect(cfg.o, x, y):
         return True
-    return cfg.o2 is not None and not inside_rect(cfg.o2, x, y)
+    second = occluder2_at(cfg, t)
+    return second is not None and not inside_rect(second, x, y)
 
 
-def occluders(cfg: SimConfig) -> Tuple[Tuple[float, float, float, float], ...]:
-    return (cfg.o,) if cfg.o2 is None else (cfg.o, cfg.o2)
+def _fold(value: float, lo: float, hi: float) -> float:
+    """Triangle-wave fold: keeps a translating rect inside [lo, hi], reflecting."""
+    span = hi - lo
+    if span <= 0:
+        return lo
+    p = (value - lo) % (2 * span)
+    return lo + (p if p <= span else 2 * span - p)
+
+
+def occluder2_at(cfg: SimConfig, t: int) -> Optional[Tuple[float, float, float, float]]:
+    """Second observer's occluder at step `t` (rigid translation, then folded)."""
+    if cfg.o2 is None:
+        return None
+    x0, x1, y0, y1 = cfg.o2
+    if cfg.o2_velocity == (0.0, 0.0):
+        return cfg.o2
+    dx = cfg.o2_velocity[0] * cfg.dt * t
+    dy = cfg.o2_velocity[1] * cfg.dt * t
+    nx0 = _fold(x0 + dx, 0.0, cfg.W - (x1 - x0))
+    ny0 = _fold(y0 + dy, 0.0, cfg.H - (y1 - y0))
+    return (nx0, nx0 + (x1 - x0), ny0, ny0 + (y1 - y0))
+
+
+def occluders(cfg: SimConfig, t: int = 0) -> Tuple[Tuple[float, float, float, float], ...]:
+    second = occluder2_at(cfg, t)
+    return (cfg.o,) if second is None else (cfg.o, second)
 
 
 def _enter_side(rect: Tuple[float, float, float, float],
@@ -142,6 +176,26 @@ def _exit_side(rect: Tuple[float, float, float, float], x: float, y: float) -> s
     if y < y0:
         return "bottom"
     return "top"
+
+
+def transition_rect(
+    cfg: SimConfig, t: int, px: float, py: float, cx: float, cy: float,
+    entering: bool,
+) -> Optional[Tuple[float, float, float, float]]:
+    """The occluder responsible for a visibility change, if a body crossed one.
+
+    Returns None when no rect explains the change: with a moving occluder the
+    rect can sweep onto or off a body without the body crossing an edge
+    (measured, R-P1.17).
+    """
+    for rect in occluders(cfg, t):
+        before = inside_rect(rect, px, py)
+        after = inside_rect(rect, cx, cy)
+        if entering and after and not before:
+            return rect
+        if not entering and before and not after:
+            return rect
+    return None
 
 
 def _meas_v(tr: Trajectory, dt: float, a: int, b: int) -> Optional[Vec]:
@@ -293,7 +347,10 @@ def run(
                         b.x[-1] += push * nx
                         b.y[-1] += push * ny
         for i in range(n):
-            trajs[i].visible.append(observable(config, trajs[i].x[-1], trajs[i].y[-1]))
+            # visibility at step t+1, i.e. of the position just appended
+            trajs[i].visible.append(
+                observable(config, trajs[i].x[-1], trajs[i].y[-1], t + 1)
+            )
 
     prov = Provenance(source, config.sha256(), seed, episode)
     oracle, obs = EventLog(), EventLog()
@@ -346,10 +403,10 @@ def run(
             if tr.visible[j] and not tr.visible[j - 1]:
                 v = _meas_v(tr, config.dt, j, j + 1)
                 # the occluder that actually hid the body, not always the first
-                rect = next(r for r in occluders(config)
-                            if inside_rect(r, tr.x[j - 1], tr.y[j - 1])
-                            and not inside_rect(r, tr.x[j], tr.y[j]))
-                side = _exit_side(rect, tr.x[j], tr.y[j])
+                rect = transition_rect(config, j, tr.x[j - 1], tr.y[j - 1],
+                                       tr.x[j], tr.y[j], entering=False)
+                # no crossing: the occluder moved off the body (a sweep)
+                side = "sweep" if rect is None else _exit_side(rect, tr.x[j], tr.y[j])
                 # `pos` is the ball's position at the first step it is visible
                 # again: observable, and the only coordinate pair that can
                 # distinguish two relabeled worlds with equal velocities
@@ -370,10 +427,10 @@ def run(
                 emit(obs, "exit_occ", j, ("ball",), attrs, True)
             elif tr.visible[j - 1] and not tr.visible[j]:
                 v = _meas_v(tr, config.dt, j - 2, j - 1)
-                rect = next(r for r in occluders(config)
-                            if inside_rect(r, tr.x[j], tr.y[j])
-                            and not inside_rect(r, tr.x[j - 1], tr.y[j - 1]))
-                side = _enter_side(rect, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j])
+                rect = transition_rect(config, j, tr.x[j - 1], tr.y[j - 1],
+                                       tr.x[j], tr.y[j], entering=True)
+                side = ("sweep" if rect is None else
+                        _enter_side(rect, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j]))
                 if side == "corner":
                     raise AssertionError("corner entry is not supported; pick axis crossings")
                 attrs = {
