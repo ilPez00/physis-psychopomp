@@ -1,0 +1,23 @@
+{
+  "cards": ["R-P1.26", "R-P1.27"],
+  "date": "2026-11-22",
+  "status": "R-P1.26: P1/P2/P4 upheld, P3 falsified. R-P1.27: P1/P3 falsified, P2/P4 upheld",
+  "prereg": ["docs/2026-11-22-PREREG-R-P1.26-bayes-vs-minimax.md", "docs/2026-11-22-PREREG-R-P1.27-prior-sweep.md"],
+  "hypothesis": "5511f071-6f53-468a-91f1-a6f8470d79b9 (candidate, contradicting evidence added)",
+  "commands": ["scripts/bayes-vs-minimax-prereg.py", "scripts/prior-sweep-prereg.py"],
+  "measured": {
+    "drift_scores": {"-1.0": "3/4", "-0.5": "1/4", "0.0": "2/4", "0.5": "3/4", "1.0": "4/4"},
+    "peak_costs": {"-20": 1, "-10": 1, "0": 0, "10": 0, "20": 1},
+    "peak_cost_mean": 0.6,
+    "hedge_cost": 1,
+    "oracle": "1.0 -> 4/4"
+  },
+  "finding": "flat prior lands on the hedge; an honest peaked prior beats it with zero regret; but across all five peaks the mean cost is 0.60 and the worst peak ties the hedge, so in this world minimax buys protection against a worst case the geometry never produces. R-P1.24's 'hedging pays' is narrowed accordingly in docs/LAW.md",
+  "falsifications": [
+    "P3 (R-P1.26): the misplaced prior did not cost — the prediction rested on a 2-decimal rounding of a near-tie",
+    "P1 (R-P1.27): no peak costs 2 events; the tested landscape of belief errors is benign",
+    "P3 (R-P1.27): the hedge sits above the mean, not between best and mean"
+  ],
+  "process": "R-P1.27 had no claim id in the store (second miss); scripts/prereg-checklist.py now enforces the rule from 2026-11-23 and lists earlier preregs without rewriting them",
+  "tests": "130 passed"
+}

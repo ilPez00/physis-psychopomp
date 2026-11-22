@@ -109,11 +109,16 @@ model of where that coverage is becomes part of the picture:
 - **the cost tracks the ranking flip, not the error size** (`|δ| = 10` cost 3,
   `|δ| = 20` cost 2), so "how wrong am I" is the wrong question — "does it change
   which motion I should take" is the right one;
-- **hedging pays** (R-P1.24): a minimax plan over a declared ±20 unit belief set
-  scores **3/4** against a naive worst case of **1/4**, with a regret of **1**
-  event against an oracle. The hedge picks the **opposite** drift to the
-  confident optimum (−1.0 vs +1.0) — uncertainty about your own blind spot is a
-  reason to move differently, not to observe less.
+- **hedging pays against the worst case, not against the average**
+  (R-P1.24 → R-P1.27): a minimax plan over a declared ±20 unit belief set scores
+  **3/4** against a naive worst case of **1/4**, with a regret of **1** event —
+  and it picks the **opposite** drift to the confident optimum (−1.0 vs +1.0),
+  so uncertainty about your own blind spot is a reason to move differently, not
+  to observe less. But sweeping **all five** peaked priors gives costs
+  `{1, 1, 0, 0, 1}` (**mean 0.60**), so the hedge is **above the mean** and equal
+  to the worst peak: in this world minimax is pessimism with nothing adversarial
+  to defend against. Hedging is a safety net for a worst case this geometry does
+  not produce — stated here because R-P1.24 alone read as "hedging pays".
 
 These are single-world, noise-free, minimax measurements; a Bayesian planner with
 a prior over its own error is **not** claimed.
