@@ -7,6 +7,7 @@ outcomes. Repo state measured 2026-11-21 at `3b3335d` (+2 local tests pending).
 
 ## Current state — measured, not narrated
 
+| CI | **GitHub Actions refuses to run jobs**: "recent account payments have failed or your spending limit needs to be increased" (run `45053745321`, 2026-11-22). Everything the workflow runs has been re-run **locally** and passes: `uv lock --check`, 158 tests, 28 research gates, law conformance, REPRO block, prereg checklist, recoverability / probes / demo. Billing is outside this repo's control | run 45053745321; local gate transcript in the receipt below |
 | item | state | evidence |
 |---|---|---|
 | Claims A/B | registered, bounded; A untested, B not started | `docs/2026-11-20-PREREG.md` + AMENDMENT |

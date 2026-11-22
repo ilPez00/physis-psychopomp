@@ -17,5 +17,6 @@
     "two predictions (L2 'never optimistic at L>=1', L4 'no optimistic margin at L>=1') were falsified at L=1 and widened afterwards; the quantisation argument that explains L=1 should have been stated before the run"
   ],
   "tests": "158 passed",
+  "ci": "GitHub Actions did not start the job (billing: spending limit). All workflow steps were re-run locally and pass: uv lock --check, 158 tests, 28 gates, law conformance, REPRO block, prereg checklist, recoverability/probes/demo.",
   "gates": 28
 }
