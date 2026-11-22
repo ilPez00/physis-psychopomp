@@ -83,13 +83,14 @@ def candidate_episode(
     init: Init,
     hypothesis: Hypothesis,
     episode: int = 0,
+    noise_stream: int = 0,
 ) -> SimEpisode:
     kicks: Tuple[Kick, ...] = (
         () if hypothesis is None else (Kick(hypothesis.t, hypothesis.ball, hypothesis.dv),)
     )
     return run(
         config, seed, episode=episode, init=init, kicks=kicks,
-        source=COUNTERFACTUAL_SOURCE,
+        source=COUNTERFACTUAL_SOURCE, noise_stream=noise_stream,
     )
 
 
@@ -103,8 +104,9 @@ def attribute(
 ) -> dict:
     obs_sig = signature(observed)
     scored = []
-    for h in hypotheses:
-        cand = candidate_episode(config, seed, init, h)
+    for i, h in enumerate(hypotheses):
+        # each candidate is its own realization: stream 0 is the observation's
+        cand = candidate_episode(config, seed, init, h, noise_stream=1 + i)
         scored.append((motion_distance(obs_sig, signature(cand)), h))
     scored.sort(key=lambda pair: (pair[0], str(pair[1])))
     best = scored[0][0]

@@ -202,6 +202,7 @@ def run(
     init: Optional[Init] = None,
     kicks: Sequence[Kick] = (),
     source: str = "sim:v0.2",
+    noise_stream: int = 0,
 ) -> SimEpisode:
     rng = random.Random(hash((seed, episode)) % (2**63))
     n = config.n_balls
@@ -301,7 +302,13 @@ def run(
     # PYTHONHASHSEED, which is randomised per process. Measured 2026-11-21 --
     # the noise arm scored 0.17 locally and 0.33 on CI for identical inputs.
     # The base RNG above is safe because its tuple holds ints only.
-    noise_rng = random.Random((seed * 1000003 + episode * 7919 + 17) % (2**63))
+    # `noise_stream` separates the sensor corruption of one realization from
+    # another: a counterfactual world must not inherit the observation's noise
+    # draws, or the truth is reproduced exactly under noise (measured defect,
+    # R-P1.13). Default 0 keeps every noise-free number unchanged.
+    noise_rng = random.Random(
+        (seed * 1000003 + episode * 7919 + noise_stream * 104729 + 17) % (2**63)
+    )
     # A separate stream for `track`: sharing one stream means adding an attribute
     # silently re-rolls every later draw, so pinned cross-process numbers move
     # whenever the log schema grows (measured 2026-11-21).
