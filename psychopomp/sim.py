@@ -40,6 +40,10 @@ class SimConfig:
     W: float = 100.0
     H: float = 100.0
     o: Tuple[float, float, float, float] = (40.0, 60.0, 35.0, 65.0)  # x0,x1,y0,y1
+    # Second observer's own occluder (R-P1.9). A body is observable when at
+    # least one observer sees it, so the blind region is o ∩ o2: what is hidden
+    # is a property of the observer set, not of the world. None = one observer.
+    o2: Optional[Tuple[float, float, float, float]] = None
     r: float = 1.0
     dt: float = 0.1
     steps: int = 600
@@ -55,6 +59,12 @@ class SimConfig:
         x0, x1, y0, y1 = self.o
         assert self.r > 0 and 0 < x0 < x1 < self.W - self.r, "occluder x-range"
         assert 0 < y0 < y1 < self.H - self.r, "occluder y-range"
+        if self.o2 is not None:
+            a0, a1, b0, b1 = self.o2
+            # a second observer's occluder may touch a wall; it only narrows
+            # what is hidden, so it never needs the first one's inset guard
+            assert 0 <= a0 < a1 <= self.W - self.r, "second occluder x-range"
+            assert 0 <= b0 < b1 <= self.H - self.r, "second occluder y-range"
         # one step must never cross the whole occluder (tunneling guard)
         assert self.speed * self.dt < min(x1 - x0, y1 - y0), "speed*dt vs occluder"
 
@@ -89,13 +99,29 @@ class Trajectory:
     visible: List[bool]
 
 
-def inside(cfg: SimConfig, x: float, y: float) -> bool:
-    x0, x1, y0, y1 = cfg.o
+def inside_rect(rect: Tuple[float, float, float, float], x: float, y: float) -> bool:
+    x0, x1, y0, y1 = rect
     return x0 <= x <= x1 and y0 <= y <= y1
 
 
-def _enter_side(cfg: SimConfig, px: float, py: float, cx: float, cy: float) -> str:
-    x0, x1, y0, y1 = cfg.o
+def inside(cfg: SimConfig, x: float, y: float) -> bool:
+    return inside_rect(cfg.o, x, y)
+
+
+def observable(cfg: SimConfig, x: float, y: float) -> bool:
+    """Visible to at least one observer: hidden only where every occluder covers."""
+    if not inside_rect(cfg.o, x, y):
+        return True
+    return cfg.o2 is not None and not inside_rect(cfg.o2, x, y)
+
+
+def occluders(cfg: SimConfig) -> Tuple[Tuple[float, float, float, float], ...]:
+    return (cfg.o,) if cfg.o2 is None else (cfg.o, cfg.o2)
+
+
+def _enter_side(rect: Tuple[float, float, float, float],
+                px: float, py: float, cx: float, cy: float) -> str:
+    x0, x1, y0, y1 = rect
     if px < x0 and cx >= x0 and y0 <= cy <= y1:
         return "left"
     if px > x1 and cx <= x1 and y0 <= cy <= y1:
@@ -107,8 +133,8 @@ def _enter_side(cfg: SimConfig, px: float, py: float, cx: float, cy: float) -> s
     return "corner"
 
 
-def _exit_side(cfg: SimConfig, x: float, y: float) -> str:
-    x0, x1, y0, y1 = cfg.o
+def _exit_side(rect: Tuple[float, float, float, float], x: float, y: float) -> str:
+    x0, x1, y0, y1 = rect
     if x < x0:
         return "left"
     if x > x1:
@@ -191,7 +217,7 @@ def run(
                 cx, cy = rng.uniform(config.r, config.W - config.r), rng.uniform(
                     config.r, config.H - config.r
                 )
-                if not inside(config, cx, cy) and all(
+                if observable(config, cx, cy) and all(
                     math.hypot(cx - px, cy - py) >= 6 * config.r for px, py in zip(xs, ys)
                 ):
                     break
@@ -201,8 +227,7 @@ def run(
             vs.append((config.speed * math.cos(th), config.speed * math.sin(th)))
     for px, py in zip(xs, ys):
         assert config.r <= px <= config.W - config.r and config.r <= py <= config.H - config.r
-        assert not inside(config, px, py), "init must be visible"
-
+        assert observable(config, px, py), "init must be observable"
     trajs = [
         Trajectory(x=[xs[i]], y=[ys[i]], vx=[vs[i][0]], vy=[vs[i][1]], visible=[True])
         for i in range(n)
@@ -267,7 +292,7 @@ def run(
                         b.x[-1] += push * nx
                         b.y[-1] += push * ny
         for i in range(n):
-            trajs[i].visible.append(not inside(config, trajs[i].x[-1], trajs[i].y[-1]))
+            trajs[i].visible.append(observable(config, trajs[i].x[-1], trajs[i].y[-1]))
 
     prov = Provenance(source, config.sha256(), seed, episode)
     oracle, obs = EventLog(), EventLog()
@@ -313,7 +338,11 @@ def run(
         for j in range(1, len(tr.visible)):
             if tr.visible[j] and not tr.visible[j - 1]:
                 v = _meas_v(tr, config.dt, j, j + 1)
-                side = _exit_side(config, tr.x[j], tr.y[j])
+                # the occluder that actually hid the body, not always the first
+                rect = next(r for r in occluders(config)
+                            if inside_rect(r, tr.x[j - 1], tr.y[j - 1])
+                            and not inside_rect(r, tr.x[j], tr.y[j]))
+                side = _exit_side(rect, tr.x[j], tr.y[j])
                 # `pos` is the ball's position at the first step it is visible
                 # again: observable, and the only coordinate pair that can
                 # distinguish two relabeled worlds with equal velocities
@@ -334,7 +363,10 @@ def run(
                 emit(obs, "exit_occ", j, ("ball",), attrs, True)
             elif tr.visible[j - 1] and not tr.visible[j]:
                 v = _meas_v(tr, config.dt, j - 2, j - 1)
-                side = _enter_side(config, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j])
+                rect = next(r for r in occluders(config)
+                            if inside_rect(r, tr.x[j], tr.y[j])
+                            and not inside_rect(r, tr.x[j - 1], tr.y[j - 1]))
+                side = _enter_side(rect, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j])
                 if side == "corner":
                     raise AssertionError("corner entry is not supported; pick axis crossings")
                 attrs = {
