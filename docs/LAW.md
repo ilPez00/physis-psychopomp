@@ -93,6 +93,26 @@ additive-margin model.
 | `ddf6b815` | survives rich physics (gravity, hidden and multiple contacts) | **candidate** — hidden/multi-contact supported, the conjunction gravity ∧ hidden contact untested |
 | `ad1b14aa` | wrong self-model cost is discrete in the ranking flip | **candidate** — cost measured, discreteness partly refuted |
 
+## Consequences for an observer (measured, not advised)
+
+The law is about coverage, so an observer can *choose* coverage — and its own
+model of where that coverage is becomes part of the picture:
+
+- **a wrong self-model costs** (R-P1.21): a −10 unit error in the belief about
+  one's own occluder picks the wrong drift direction and loses **3 of 4** task
+  events (4/4 → 1/4);
+- **the cost tracks the ranking flip, not the error size** (`|δ| = 10` cost 3,
+  `|δ| = 20` cost 2), so "how wrong am I" is the wrong question — "does it change
+  which motion I should take" is the right one;
+- **hedging pays** (R-P1.24): a minimax plan over a declared ±20 unit belief set
+  scores **3/4** against a naive worst case of **1/4**, with a regret of **1**
+  event against an oracle. The hedge picks the **opposite** drift to the
+  confident optimum (−1.0 vs +1.0) — uncertainty about your own blind spot is a
+  reason to move differently, not to observe less.
+
+These are single-world, noise-free, minimax measurements; a Bayesian planner with
+a prior over its own error is **not** claimed.
+
 ## How to use it
 
 ```python
