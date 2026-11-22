@@ -1,0 +1,26 @@
+{
+  "card": "R-P1.15 + R-P1.16",
+  "date": "2026-11-22",
+  "status": "R-P1.15: P2/P3/P4 falsified (no breakpoint to sigma 6, model rewritten). R-P1.16: P1 falsified, P2-P5 upheld; breakpoint sigma* = 15",
+  "prereg": [
+    "docs/2026-11-22-PREREG-R-P1.15-noise-envelope.md",
+    "docs/2026-11-22-PREREG-R-P1.16-crossing.md"
+  ],
+  "hypotheses": ["4fdea69b-7535-465c-b784-d34687d4d80a (Contradicted on its quantitative clause)"],
+  "command": ".venv/bin/python scripts/noise-envelope.py",
+  "envelope": {
+    "100/100_up_to": 6.0,
+    "rank_accuracy": {"10.0": 0.94, "15.0": 0.84, "20.0": 0.81, "30.0": 0.71, "40.0": 0.61},
+    "breakpoint_sigma_star": 15.0,
+    "covered_cell_accuracy_range": [0.47, 0.58]
+  },
+  "model_correction": {
+    "wrong": "d(null) is a noise-free structural term and the two distances compete; linear margin extrapolates to zero at sigma 30",
+    "measured": "both distances grow with sigma (additive noise floor); the invariant is the margin d(null)-d(true) = 24.8..20.2 over sigma 0.75..6, slope -0.22/unit, zero-crossing sigma ~67; collapse is gradual, not a cliff",
+    "why": "a counterfactual comparison corrupts both hypotheses alike, so the structural difference is added to a noise floor rather than compared against it"
+  },
+  "scale_note": "at sigma 40 the sensor noise is +-20 units per coordinate in a 100-unit box on a 2-unit body with 1-unit lanes: the geometry is erased, identification of an uncovered event is still 61% and a covered event is at 50%",
+  "claim_final": "identifiability of an intervention is per-event observer coverage, robust to sensor noise until the noise floor exceeds the world geometry by more than an order of magnitude",
+  "tests": "116 passed",
+  "store_actions": ["hypothesis 4fdea69b evidence contradicting + transition Contradicted (quantitative clause)"]
+}
