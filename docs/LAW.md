@@ -114,11 +114,15 @@ model of where that coverage is becomes part of the picture:
   **3/4** against a naive worst case of **1/4**, with a regret of **1** event —
   and it picks the **opposite** drift to the confident optimum (−1.0 vs +1.0),
   so uncertainty about your own blind spot is a reason to move differently, not
-  to observe less. But sweeping **all five** peaked priors gives costs
-  `{1, 1, 0, 0, 1}` (**mean 0.60**), so the hedge is **above the mean** and equal
-  to the worst peak: in this world minimax is pessimism with nothing adversarial
-  to defend against. Hedging is a safety net for a worst case this geometry does
-  not produce — stated here because R-P1.24 alone read as "hedging pays".
+  to observe less. Sweeping **all five** peaked priors at mass 0.80 gives costs
+  `{1, 1, 0, 0, 1}` (**mean 0.60**), so at that confidence the hedge is *above*
+  the mean and equal to the worst peak. But the loss is a **cliff at certainty,
+  not a gradient**: at mass 0.95 the same peaks still cost at most 1, while at
+  mass 1.00 they cost **2–3** (mean **1.80**, max **3**) — any residual weight,
+  even 5 %, rescues the choice, because the loss is a discrete ranking flip and a
+  flip needs a *pure* prior. So minimax hedging pays against an observer that is
+  **certain and wrong**, and is dominated by one that is merely **confident and
+  wrong**. Both regimes are measured; the boundary between them is a step.
 
 These are single-world, noise-free, minimax measurements; a Bayesian planner with
 a prior over its own error is **not** claimed.
