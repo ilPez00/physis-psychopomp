@@ -7,7 +7,7 @@ constraints on learned representations.
 Research instrument, not a validated architecture. **Status: v0.3 (CPU
 prototype, post-audit, one measured law).** Design:
 `docs/2026-11-20-PREREG.md`. Fix/improve plan after the first public audit:
-`docs/2026-11-20-FIXES-AND-IMPROVEMENTS.md`. **The law: `docs/LAW.md`.**
+`docs/2026-11-20-FIXES-AND-IMPROVEMENTS.md`. **The law: `docs/LAW.md`.** One-page findings and the falsification record: `docs/FINDINGS-2026-11-22.md`.
 
 Public: https://github.com/ilPez00/physis-psychopomp. License:
 **Apache-2.0** (`LICENSE`, third-party attribution in `NOTICE`), adopted
