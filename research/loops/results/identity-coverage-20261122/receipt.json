@@ -1,0 +1,25 @@
+{
+  "card": "R-P1.39",
+  "date": "2026-11-22",
+  "status": "PASS — M1-M4 upheld after two instrument fixes",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.39-identity-coverage.md",
+  "hypothesis": "f4ea6517-e052-4b00-a2dc-d4c3e9ea48fe (Supported)",
+  "instrument": "SimConfig.identity_marker / marker_period / allow_hidden_init; event kind 'marker'",
+  "command": ".venv/bin/python scripts/identity-coverage-prereg.py",
+  "measured": {
+    "cases": {
+      "1 no marker, visible": {"canonical_identical": true, "sequence_identical": false, "markers": 0},
+      "2 marker, visible": {"canonical_identical": false, "non_marker_identical": true, "markers": 56},
+      "3 marker, paths hidden": {"canonical_identical": true, "sequence_identical": true, "markers": 0},
+      "4 marker, second vantage": {"canonical_identical": false, "markers": 56}
+    }
+  },
+  "finding": "identity is coverage-gated exactly as events are: ambiguity is a property of whether evidence about identity was ever observed, not of identity itself",
+  "defects_found": [
+    "the observable log is appended in body-index order, so a relabelling changes the event SEQUENCE - an identity leak; closed at the export contract by canonical sorting, with a test, while the raw EventLog order is named rather than silently changed",
+    "the initial visibility flag was hardcoded True, so a body that started occluded emitted a marker for a body never seen"
+  ],
+  "limits": "two bodies, one marker cadence, stationary bodies in the hidden case, perfect markers only (no noisy/partial marker)",
+  "tests": "150 passed",
+  "gates": 22
+}

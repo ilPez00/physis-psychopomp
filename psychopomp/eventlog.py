@@ -15,7 +15,9 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 KINDS = frozenset(
-    {"enter_occ", "exit_occ", "wall_bounce", "ball_collide", "kick", "kick_skipped"}
+    {"enter_occ", "exit_occ", "wall_bounce", "ball_collide", "kick", "kick_skipped",
+     # identity evidence: emitted only while the body is visible (R-P1.39)
+     "marker"}
 )
 
 

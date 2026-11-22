@@ -36,6 +36,8 @@ GATES = [
     ("scripts/bayes-vs-minimax-prereg.py", 1,
      "P3 misplaced confident prior is worse than minimax",
      "R-P1.26: flat prior = hedge, honest prior = oracle; the misplaced-prior prediction was falsified (documented negative)"),
+    ("scripts/identity-coverage-prereg.py", 0, "prereg run: PASS",
+     "R-P1.39: identity is coverage-gated — 0/56/0/56 markers with set-equality following; ordering leak closed at export"),
     ("scripts/estimation-under-noise-prereg.py", 1,
      "P4 abstention preserves containment when it reports: FALSIFIED",
      "R-P1.35: containment breaks under noise (4/20 then 14/20); quantile 14->11; abstention not calibrated (documented negative). Also the card that licenses a learned arm"),

@@ -67,3 +67,42 @@ def test_multi_cell_world_keeps_the_gap_visible():
     tasks = ((42.0, 45.0), (65.0, 45.0), (74.0, 45.0))
     out = plan_coverage(cfg, tasks, DRIFTS, T_STAR)
     assert out["scores"][0.0] >= 2        # 42 and the gap are visible when static
+
+
+def test_end_to_end_logs_to_plan():
+    # R-P1.29..R-P1.32 in one call: the observer's own logs, its own estimate, its
+    # own plan — and R-P1.30 measured that this plan scores 4/4 on the task set
+    from psychopomp.planning import plan_from_evidence
+    from psychopomp.sim import Init, run
+
+    corpus = []
+    for i, lane in enumerate((44.0, 48.0, 52.0, 56.0, 40.0, 60.0)):
+        start, v = ((10.0, 3.0) if i % 2 == 0 else (95.0, -3.0))
+        corpus.append(run(SimConfig(o=O, o2=O2, steps=400), 0, episode=i,
+                          init=Init(x=(start, 3.0), y=(lane, 97.0),
+                                    v=((v, 0.0), (0.0, 0.0)))))
+    for i, column in enumerate((47.0, 50.0, 53.0)):
+        start, v = ((10.0, 3.0) if i % 2 == 0 else (95.0, -3.0))
+        corpus.append(run(SimConfig(o=O, o2=O2, steps=400), 0, episode=100 + i,
+                          init=Init(x=(column, 3.0), y=(start, 97.0),
+                                    v=((0.0, v), (0.0, 0.0)))))
+
+    out = plan_from_evidence(config(), corpus, TASKS, DRIFTS, T_STAR)
+    assert out["known"] is True
+    assert out["drift"] == 1.0
+    assert out["score"] == 4
+
+
+def test_end_to_end_abstains_on_unseen_edges():
+    # a corpus that never crosses the y edges gives a partial estimate; the plan
+    # must still be returned, flagged as optimistic by construction
+    from psychopomp.planning import plan_from_evidence
+    from psychopomp.sim import Init, run
+
+    corpus = []
+    for i, lane in enumerate((44.0, 48.0, 52.0, 56.0)):
+        corpus.append(run(SimConfig(o=O, o2=O2, steps=400), 0, episode=200 + i,
+                          init=Init(x=(10.0, 3.0), y=(lane, 97.0),
+                                    v=((3.0, 0.0), (0.0, 0.0)))))
+    out = plan_from_evidence(config(), corpus, TASKS, DRIFTS, T_STAR)
+    assert out["drift"] is None or out["known"] is False

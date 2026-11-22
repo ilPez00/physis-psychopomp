@@ -24,6 +24,7 @@ from dataclasses import replace
 from typing import Iterable, Optional, Sequence, Tuple
 
 from .law import is_blind
+from .selfmodel import estimate_blind_cells_auto
 from .sim import SimConfig
 
 Point = Tuple[float, float]
@@ -88,3 +89,45 @@ def plan_hedged(config: SimConfig, tasks: Sequence[Point],
     cases = {drift: worst_case(drift) for drift in drifts}
     drift = max(drifts, key=lambda v: (cases[v], -abs(v), -v))
     return {"drift": drift, "worst_case": cases[drift], "cases": cases}
+
+
+def plan_coverage_rects(tasks: Sequence[Point], drifts: Sequence[float], t: int,
+                        blind_rects: Sequence[Rect], dt: float) -> dict:
+    """Plan from blind **rectangles** the observer believes it has.
+
+    This is the semantic the planning cards used: a candidate drift translates the
+    believed blind region, and a task is identifiable when the translated region
+    misses it. Preferred over `plan_coverage(belief=...)` whenever the belief is an
+    estimate rather than a whole configuration, because a config's second occluder
+    clips the first and silently changes the set.
+    """
+    scores = {
+        drift: sum(1 for p in tasks
+                   if not _inside_any([_shift(r, drift, dt, t) for r in blind_rects], p))
+        for drift in drifts
+    }
+    drift = max(drifts, key=lambda v: (scores[v], -abs(v), -v))
+    return {"drift": drift, "score": scores[drift], "scores": scores}
+
+
+def plan_from_evidence(config: SimConfig, corpus, tasks: Sequence[Point],
+                       drifts: Sequence[float], t: int) -> dict:
+    """The whole chain in one call: logs -> self-model -> plan (R-P1.29..R-P1.32).
+
+    The observer hands over its own observable logs; the blind cells and their
+    count are recovered from them, and the plan is made from that estimate — no
+    ground truth. `estimate` is returned so the caller can see what the plan was
+    based on, and `known` says whether every recovered edge is determined (an
+    uncrossed edge is `None`, and a plan built on it is optimistic by construction).
+    """
+    cells = estimate_blind_cells_auto(corpus, config.dt * config.speed if
+                                      config.speed else 0.3)
+    rects = [c.as_rect() for c in cells]
+    known = bool(rects) and all(r is not None for r in rects)
+    usable = [r for r in rects if r is not None]
+    if not usable:
+        return {"drift": None, "score": None, "scores": None,
+                "estimate": rects, "known": False,
+                "reason": "the evidence determines no blind cell"}
+    plan = plan_coverage_rects(tasks, drifts, t, usable, config.dt)
+    return {**plan, "estimate": rects, "known": known}

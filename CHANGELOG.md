@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.7.0 — 2026-11-22
+
+**Identity evidence** (`SimConfig.identity_marker`, `marker_period`,
+`allow_hidden_init`): bodies emit an observable `marker` carrying their tag while
+visible. Measured (R-P1.39): identity ambiguity is **coverage-gated** — a
+relabelling is invisible in the identity-free log as a set, becomes visible once a
+marker is observed, and returns to invisible when the markers are occluded
+(0 / 56 / 0 / 56 markers across four cases, set-equality following).
+
+**Fixed on the way:** the observable log was appended in body-index order, so a
+relabelling changed the event **sequence** — an identity leak the export contract
+now closes by sorting canonically (`test_a_relabelling_exports_identically`); and
+the initial visibility flag was hardcoded `True`, so a body that started occluded
+emitted a marker for a body never seen.
+
+**Also:** `planning.plan_from_evidence` — logs → self-model → plan in one call.
+
 ## 0.6.0 — 2026-11-22
 
 **`psychopomp/planning.py`** — the arc's result as a callable planner:

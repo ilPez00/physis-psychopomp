@@ -58,6 +58,15 @@ class SimConfig:
     # Constant acceleration (R-P1.19), semi-implicit Euler. (0, 0) keeps every
     # constant-velocity number exactly as it was.
     accel: Tuple[float, float] = (0.0, 0.0)
+    # Identity evidence (R-P1.39): when on, each body emits an observable `marker`
+    # every `marker_period` steps WHILE VISIBLE, carrying its tag. Off by default,
+    # so the identity-free log and every prior number are unchanged.
+    identity_marker: bool = False
+    marker_period: int = 10
+    # Start a body already occluded (R-P1.39 case 3): models an observer that was
+    # created with something hidden, so zero identity evidence exists for it.
+    # Off by default; the init-observable guard still applies otherwise.
+    allow_hidden_init: bool = False
     r: float = 1.0
     dt: float = 0.1
     steps: int = 600
@@ -357,9 +366,15 @@ def run(
             vs.append((config.speed * math.cos(th), config.speed * math.sin(th)))
     for px, py in zip(xs, ys):
         assert config.r <= px <= config.W - config.r and config.r <= py <= config.H - config.r
-        assert observable(config, px, py), "init must be observable"
+        assert (config.allow_hidden_init or observable(config, px, py)), \
+            "init must be observable"
+    # Initial visibility must be computed, not assumed (R-P1.39): with
+    # `allow_hidden_init` a body can start occluded, and a hardcoded True used to
+    # report it as seen for one step — which emitted an identity marker for a body
+    # that was never visible.
     trajs = [
-        Trajectory(x=[xs[i]], y=[ys[i]], vx=[vs[i][0]], vy=[vs[i][1]], visible=[True])
+        Trajectory(x=[xs[i]], y=[ys[i]], vx=[vs[i][0]], vy=[vs[i][1]],
+                   visible=[observable(config, xs[i], ys[i], 0)])
         for i in range(n)
     ]
 
@@ -540,6 +555,16 @@ def run(
                 }
                 emit(oracle, "enter_occ", j, (f"b{i}",), attrs, True)
                 emit(obs, "enter_occ", j, ("ball",), attrs, True)
+
+    if config.identity_marker:
+        for i, tr in enumerate(trajs):
+            for step in range(0, len(tr.visible), config.marker_period):
+                if step >= len(tr.visible) or not tr.visible[step]:
+                    continue
+                attrs = {"tag": f"B{i}" if i else "A",
+                         "pos": [round(tr.x[step], 6), round(tr.y[step], 6)]}
+                emit(oracle, "marker", step, (f"b{i}",), attrs, True)
+                emit(obs, "marker", step, ("ball",), dict(attrs), True)
 
     for (t, i, side) in bounces:
         tr = trajs[i]

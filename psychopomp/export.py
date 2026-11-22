@@ -38,7 +38,12 @@ def observation_records(ep: SimEpisode, evidence: str = "OBSERVED") -> List[dict
     dt = ep.config.dt
     subject = f"episode:{ep.seed}:{ep.episode}"
     records = []
-    for e in ep.observable_log():
+    # Canonical order (R-P1.39): the observable log is appended in body-index
+    # order, which leaks identity through event *sequence* even when every event
+    # is identity-free. Sorting here means a consumer never receives that channel.
+    events = sorted(ep.observable_log(),
+                    key=lambda e: (e.t, e.kind, e.subjects, sorted(e.attrs.items())))
+    for e in events:
         if not e.provenance.source.startswith("sim:"):
             raise ValueError(
                 f"refusing to export a {e.provenance.source} event as an observation"

@@ -45,3 +45,21 @@ def test_export_is_deterministic_and_roundtrips(tmp_path):
     assert p1.read_bytes() == p2.read_bytes()
     assert read_observations(str(p1)) == read_observations(str(p2))
     assert all(json.loads(line)["schema"] == SCHEMA for line in p1.read_text().splitlines())
+
+
+def test_a_relabelling_exports_identically():
+    # R-P1.39: the observable log is appended in body-index order, which leaks
+    # identity through event sequence. The export must not carry that channel, so
+    # two worlds that differ only by swapping two identical bodies export the same.
+    from psychopomp.export import observation_records
+    from psychopomp.sim import Init, SimConfig, run
+
+    a = ((20.0, 45.0), (3.0, 0.0))
+    b = ((80.0, 51.0), (-3.0, 0.0))
+    cfg = SimConfig(steps=200, o=(40.0, 60.0, 35.0, 65.0), o2=(46.0, 54.0, 35.0, 65.0))
+    plain = run(cfg, 0, episode=0,
+                init=Init(x=(a[0][0], b[0][0]), y=(a[0][1], b[0][1]), v=(a[1], b[1])))
+    swapped = run(cfg, 0, episode=0,
+                  init=Init(x=(b[0][0], a[0][0]), y=(b[0][1], a[0][1]), v=(b[1], a[1])))
+    strip = lambda recs: [{k: v for k, v in r.items() if k != "seq"} for r in recs]
+    assert strip(observation_records(plain)) == strip(observation_records(swapped))

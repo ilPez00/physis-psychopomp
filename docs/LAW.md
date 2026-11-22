@@ -195,6 +195,19 @@ picks the same drift and buys nothing.
 > up to 20 units; measuring reduces the error to 0.3 and the hedge has nothing
 > left to protect against.
 
+## Identity is coverage-gated too (measured)
+
+The log is identity-free, so a relabelling of two identical bodies is invisible in
+it — as a *set*. With identity evidence (`SimConfig.identity_marker`), the tag
+resolves the ambiguity; with the same markers **occluded**, zero are emitted and the
+ambiguity returns; a second vantage restores it (R-P1.39, 4/4).
+
+One leak was found on the way and closed: the observable log is appended in
+body-index order, so a relabelling changes the event **sequence**. The export
+contract now sorts canonically, and a test pins that a relabelling exports
+identically — the raw `EventLog` still carries that order, named rather than
+silently changed.
+
 ## How to use it
 
 ```python
