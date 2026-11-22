@@ -1,0 +1,22 @@
+{
+  "card": "R-P1.29",
+  "date": "2026-11-22",
+  "status": "PASS — all four predictions upheld",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.29-self-model-inference.md",
+  "hypothesis": "cff544e7-6571-4a75-bdba-3aafb8a253a8 (Supported)",
+  "module": "psychopomp/selfmodel.py (6 tests)",
+  "command": ".venv/bin/python scripts/self-model-inference-prereg.py",
+  "measured": {
+    "true_blind_region": [46.0, 54.0, 35.0, 65.0],
+    "full_corpus_estimate": [46.3, 53.8, 35.2, 64.9],
+    "step": 0.3,
+    "samples": {"left": 4, "right": 4, "bottom": 2, "top": 2},
+    "horizontal_only": {"x0": 46.3, "x1": 53.8, "y0": null, "y1": null},
+    "errors": {"optimistic": 1, "pessimistic": 0, "where": "(46, 45) — exactly on the true edge"},
+    "clear_points_agree": 3
+  },
+  "finding": "an observer recovers its own blind region from its own log to within one step, always as a subset of the truth (conservative by construction), abstaining on edges it never crossed; errors are one-signed - it can believe it is less blind than it is, never more",
+  "limits": "single axis-aligned rect, known step, noise-free, one estimate per blind cell; multi-rect blind sets would need one estimate per cell",
+  "tests": "136 passed",
+  "gates": 15
+}

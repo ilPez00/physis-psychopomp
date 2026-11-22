@@ -127,6 +127,26 @@ model of where that coverage is becomes part of the picture:
 These are single-world, noise-free, minimax measurements; a Bayesian planner with
 a prior over its own error is **not** claimed.
 
+## Can the observer learn its own blind spot? (measured)
+
+Yes, and with a known bias (R-P1.29). From `enter_occ` / `exit_occ` crossings —
+the same observable log the law describes — a body's last-seen position bounds the
+edge it crossed to within one step. Taking the tightest bound per edge gives an
+estimate that is **contained in** the truth (correct to one step), and `None` for
+an edge no body ever crossed.
+
+```
+true            (46.0, 54.0, 35.0, 65.0)
+estimated       (46.3, 53.8, 35.2, 64.9)     # inside the truth, step 0.3
+horizontal only x known; y = None            # abstains rather than guessing
+errors          1 optimistic (on the edge), 0 pessimistic
+```
+
+Self-knowledge is **conservative by construction**: a boundary is learned only
+where a body crossed it, so an observer can believe it is *less* blind than it is,
+never more. Code: `psychopomp/selfmodel.py`; limits: single axis-aligned rect,
+known step, noise-free, one estimate per blind cell.
+
 ## How to use it
 
 ```python

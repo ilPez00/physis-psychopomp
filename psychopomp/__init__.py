@@ -1,9 +1,10 @@
-"""Psychopomp v0.3 — CPU research instrument.
+"""Psychopomp v0.4 — CPU research instrument.
 
 Persistent, provenance-bearing world states -> temporal reasoning ->
 falsifiable constraints on learned representations.
 
-v0.3 adds a measured law, not a model: identifiability of an intervention is
+v0.4 adds self-model inference and planning under self-model error.
+v0.3 added a measured law, not a model: identifiability of an intervention is
 per-event observer coverage (``psychopomp.law``), measured across place, time,
 frame, noise, rich physics and the observer's own self-model. Eight
 preregistered cards, seven falsified predictions, two supported claims — see
@@ -14,4 +15,4 @@ event log, an event-calculus possible-world filter, counterfactual attribution,
 and structure-preserving shuffled-rule controls. No neural components.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"

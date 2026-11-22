@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.0 — 2026-11-22
+
+**Self-model inference** (`psychopomp/selfmodel.py`): an observer recovers its own
+blind region from its own observable log, to within one simulation step, as a
+**subset** of the truth, and **abstains** on any edge no body crossed. Measured
+accuracy 0.3 units on all four edges; errors are one-signed (1 optimistic on an
+edge, 0 pessimistic); good enough to plan with on points ≥ 1 unit clear.
+
+**Planning under self-model error** (R-P1.21, R-P1.24, R-P1.26–R-P1.28): a wrong
+self-model loses up to 3 of 4 task events; a minimax hedge recovers 3/4 where the
+naive worst case is 1/4 and picks the *opposite* drift; a flat prior lands on the
+hedge, an honest confident prior reaches the oracle with zero regret; and the cost
+is a **cliff at certainty** (mean 0.60 / 0.60 / 1.80 across prior mass
+0.8 / 0.95 / 1.0), not a gradient — a 5 % residual weight rescues what 20 % does.
+
+**Process.** Plan tables are generated (`scripts/plan-table.py`) instead of read
+by hand — three consecutive wrong predictions came from transcription. A prereg
+checklist enforces a claim id from 2026-11-23. 14 pinned research gates.
+
 ## 0.3.0 — 2026-11-22
 
 One measured law instead of eight scattered benches. Everything below is
