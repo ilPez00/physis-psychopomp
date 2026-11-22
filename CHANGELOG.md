@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.0 — 2026-11-22
+
+**`psychopomp/planning.py`** — the arc's result as a callable planner:
+`plan_coverage` picks the observer drift whose blind region leaves the most tasks
+identifiable, optionally under a *believed* geometry; `plan_hedged` is the minimax
+version over a set of believed blind regions. Five tests pin it to the published
+numbers (drift +1.0 → 4/4; the ±20 hedge → −1.0; a −10 belief error → −0.5 with a
+measured cost of 1/4), so the planner cannot drift from the cards silently.
+
+One of those tests also documents a distinction the program keeps having to make:
+the planner predicts **1** identifiable task for drift 0.0 where the instrument
+**measured 2**, because task `x = 46` sits exactly on the blind edge and the body
+accumulates to `45.999999…`. Predicted and measured are different quantities and
+the tests now say which is which.
+
 ## 0.5.0 — 2026-11-22
 
 **Public API for the self-model** (`psychopomp/law.py`, `psychopomp/selfmodel.py`):

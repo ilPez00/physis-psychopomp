@@ -205,6 +205,15 @@ if not on_boundary(cfg, point, t):
     identifiable = predict_identifiable(cfg, point, t)
 ```
 
+Planning with the law is one call (R-P1.21–R-P1.30, pinned by tests):
+
+```python
+from psychopomp.planning import plan_coverage, plan_hedged
+out = plan_coverage(config, tasks, drifts, t)              # law-optimal drift
+out = plan_coverage(config, tasks, drifts, t, belief=...)  # what a wrong self-model picks
+out = plan_hedged(config, tasks, drifts, t, belief_rects)  # minimax over uncertainty
+```
+
 `on_boundary` is not optional politeness: at a blind edge the answer is decided
 by floating-point accumulation order (a ball at `42.000000000000004` versus
 `41.99999999999992` are on opposite sides of the predicate). Excluding those

@@ -31,4 +31,4 @@ def test_the_version_is_one_answer_everywhere():
     cited = re.search(r"^version: (\S+)", citation, re.MULTILINE).group(1)
     assert declared == psychopomp.__version__
     assert declared == cited
-    assert declared == "0.5.0"
+    assert declared == "0.6.0"

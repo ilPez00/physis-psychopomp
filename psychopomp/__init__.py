@@ -1,9 +1,10 @@
-"""Psychopomp v0.5 — CPU research instrument.
+"""Psychopomp v0.6 — CPU research instrument.
 
 Persistent, provenance-bearing world states -> temporal reasoning ->
 falsifiable constraints on learned representations.
 
-v0.5 exposes the self-model API: blind-region estimation (rect, multi-cell, and
+v0.6 adds the planner (`planning.plan_coverage`, `plan_hedged`) pinned to the
+published card numbers. v0.5 exposes the self-model API: blind-region estimation (rect, multi-cell, and
 from the evidence's own count), polygon half-planes from labelled edges, and
 `law.is_blind` membership for every occluder shape. Two learned arms were tried and
 rejected; the deterministic inner bound remains the best self-model here.
@@ -20,4 +21,4 @@ event log, an event-calculus possible-world filter, counterfactual attribution,
 and structure-preserving shuffled-rule controls. No neural components.
 """
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
