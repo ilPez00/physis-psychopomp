@@ -70,7 +70,25 @@ class BlindEstimate:
         return True
 
 
-def estimate_blind_region(episodes: Iterable, step: float) -> BlindEstimate:
+def _bound(values, upper: bool, quantile: Optional[float]) -> Optional[float]:
+    """Tightest bound, or a quantile bound that a single outlier cannot set."""
+    if not values:
+        return None
+    ordered = sorted(values)
+    if quantile is None:
+        return ordered[-1] if upper else ordered[0]
+    q = min(max(quantile, 0.0), 1.0)
+    index = int(q * (len(ordered) - 1))
+    return ordered[index] if not upper else ordered[min(index, len(ordered) - 1)]
+
+
+def _spread(values) -> float:
+    return (max(values) - min(values)) if values else 0.0
+
+
+def estimate_blind_region(episodes: Iterable, step: float,
+                          quantile: Optional[float] = None,
+                          max_spread: Optional[float] = None) -> BlindEstimate:
     """Tightest one-step-conservative estimate of the blind region from logs.
 
     `episodes` are `SimEpisode`s (or anything exposing `observable_log()`).
@@ -104,14 +122,25 @@ def estimate_blind_region(episodes: Iterable, step: float) -> BlindEstimate:
                 top_out.append(pos[1] - step)
                 samples["top"] += 1
 
-    return BlindEstimate(
-        step=step,
-        x0=min(left_in) if left_in else None,
-        x1=max(right_out) if right_out else None,
-        y0=min(bottom_in) if bottom_in else None,
-        y1=max(top_out) if top_out else None,
-        samples=samples,
-    )
+    def edge(values, upper: bool, direction: str) -> Optional[float]:
+        # x0 and y0 are upper bounds on the near edge, x1 and y1 lower bounds;
+        # a quantile bound trades tightness for robustness to a corrupted sample.
+        if quantile is None:
+            return min(values) if values else None
+        low = sorted(values)[int((1.0 - quantile) * (len(values) - 1))] if upper else None
+        high = sorted(values)[int(quantile * (len(values) - 1))] if not upper else None
+        return low if upper else high
+
+    def guard(values) -> bool:
+        if quantile is None or max_spread is None:
+            return True
+        return _spread(values) <= max_spread
+
+    x0 = edge(left_in, True, "x0") if guard(left_in) else None
+    x1 = edge(right_out, False, "x1") if guard(right_out) else None
+    y0 = edge(bottom_in, True, "y0") if guard(bottom_in) else None
+    y1 = edge(top_out, False, "y1") if guard(top_out) else None
+    return BlindEstimate(step=step, x0=x0, x1=x1, y0=y0, y1=y1, samples=samples)
 
 
 # --- multi-cell self-models (R-P1.31) --------------------------------------

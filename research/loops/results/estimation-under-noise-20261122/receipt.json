@@ -1,0 +1,20 @@
+{
+  "card": "R-P1.35",
+  "date": "2026-11-22",
+  "status": "P2/P3 upheld, P1/P4 falsified",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.35-estimation-under-noise.md",
+  "hypothesis": "3a807034-97ea-46a5-918b-13bd700c23c1 (Contradicted: abstention clause)",
+  "command": ".venv/bin/python scripts/estimation-under-noise-prereg.py",
+  "measured": {
+    "shipped_mean_abs_error": {"0.0": 0.2, "0.1": 0.193, "0.3": 0.182, "1.0": 0.22},
+    "shipped_pessimistic_realizations": {"0.0": 0, "0.1": 0, "0.3": 4, "1.0": 14},
+    "robust_pessimistic_sigma1": 11,
+    "abstaining_reported_and_contained_sigma1": [9, 5],
+    "realizations": 20
+  },
+  "finding": "the containment guarantee is a property of exact evidence: under noise the estimate turns pessimistic (4/20 at sigma 0.3, 14/20 at sigma 1.0). A quantile bound softens it (14 -> 11) and a spread threshold only withholds reports without making them honest (5/9 contained). Mean error is non-monotone because the one-step quantisation dominates; the tail is where the noise shows.",
+  "headroom": "first measured headroom in the program: at sigma 1.0 the deterministic estimator is pessimistic in 70% of realizations, so it is not at ceiling and mission P1 section 4 licenses a learned arm. omo is reachable (ports 22/11434 open; Ollama by IP, non-interactive ssh hangs at the Tailscale handshake).",
+  "next": "learned edge regressor over crossing bounds, with a deterministic baseline and a shuffled control, now justified by this table",
+  "tests": "142 passed",
+  "gates": 21
+}
