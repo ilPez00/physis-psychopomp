@@ -43,6 +43,9 @@ class SimConfig:
     # Second observer's own occluder (R-P1.9). A body is observable when at
     # least one observer sees it, so the blind region is o ∩ o2: what is hidden
     # is a property of the observer set, not of the world. None = one observer.
+    # Extra blockers for the FIRST observer (R-P1.25). The blind set becomes
+    # (o ∪ extra_o) ∩ o2, i.e. a union of rects: non-convex, even disconnected.
+    extra_o: Tuple[Tuple[float, float, float, float], ...] = ()
     o2: Optional[Tuple[float, float, float, float]] = None
     # Second observer drift, world units per second (R-P1.17). The occluder
     # translates rigidly and folds inside the box, so it reflects at the walls
@@ -66,6 +69,9 @@ class SimConfig:
         x0, x1, y0, y1 = self.o
         assert self.r > 0 and 0 < x0 < x1 < self.W - self.r, "occluder x-range"
         assert 0 < y0 < y1 < self.H - self.r, "occluder y-range"
+        for a0, a1, b0, b1 in self.extra_o:
+            assert 0 < a0 < a1 < self.W - self.r, "extra occluder x-range"
+            assert 0 < b0 < b1 < self.H - self.r, "extra occluder y-range"
         if self.o2_velocity != (0.0, 0.0):
             assert self.o2 is not None, "o2_velocity needs a second occluder"
         if self.o2 is not None:
@@ -120,9 +126,14 @@ def inside(cfg: SimConfig, x: float, y: float) -> bool:
 def observable(cfg: SimConfig, x: float, y: float, t: int = 0) -> bool:
     """Visible to at least one observer at step `t`.
 
-    Hidden only where every occluder covers; the second one moves with `t`.
+    An observer is blocked when the point is inside ANY of its own rects; the
+    body is hidden only when every observer is blocked. The second observer moves
+    with `t`.
     """
-    if not inside_rect(cfg.o, x, y):
+    blocked1 = inside_rect(cfg.o, x, y) or any(
+        inside_rect(rect, x, y) for rect in cfg.extra_o
+    )
+    if not blocked1:
         return True
     second = occluder2_at(cfg, t)
     return second is not None and not inside_rect(second, x, y)
@@ -152,8 +163,10 @@ def occluder2_at(cfg: SimConfig, t: int) -> Optional[Tuple[float, float, float, 
 
 
 def occluders(cfg: SimConfig, t: int = 0) -> Tuple[Tuple[float, float, float, float], ...]:
+    """Every blocker in play at step `t`: observer 1's rects, then observer 2's."""
+    first = (cfg.o,) + tuple(cfg.extra_o)
     second = occluder2_at(cfg, t)
-    return (cfg.o,) if second is None else (cfg.o, second)
+    return first if second is None else first + (second,)
 
 
 def _enter_side(rect: Tuple[float, float, float, float],

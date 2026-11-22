@@ -31,8 +31,13 @@ trajectory differences, which coverage also governs: 12/12 unique top-1 on both
 lane families with nine declared hypotheses, permuted-score control 0/12
 (`R-P1.8`). Both results come from the same geometry; neither implies the other.
 
-Also out of scope, by construction and not by omission: non-rectangular or
-rotated occluders, more than two observers, observers whose motion responds to
+The blind set may be **several rectangles** — an observer with more than one
+blocker — so it can be non-convex or disconnected, and the law is membership, not
+envelope: a point in the gap between two blind islands is identifiable even
+though it sits inside their bounding box (`R-P1.25`, 17/17 scored cells).
+
+Also out of scope, by construction and not by omission: rotated or curved
+occluders (they would need polygon membership), more than two observers, observers whose motion responds to
 the world, degraded object identity, and every learned arm (blocked: the
 deterministic arms are at 100/100 on the uncovered family, so a model could only
 match them).

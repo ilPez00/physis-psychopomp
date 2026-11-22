@@ -68,3 +68,18 @@ def test_the_documented_envelope_matches_the_documented_numbers():
     assert str(int(ENVELOPE["noise_full_identification_upto_sigma"])) in text
     assert str(int(ENVELOPE["noise_breakpoint_sigma"])) in text
     assert "boundary" in text.lower()
+
+
+def test_blind_set_can_be_a_union_and_the_gap_is_identifiable():
+    # R-P1.25: two islands with a gap. The law is membership, so a point inside
+    # the bounding box but outside every cell is identifiable.
+    cfg = SimConfig(o2=(30.0, 92.0, 20.0, 90.0), extra_o=((70.0, 85.0, 35.0, 65.0),))
+    from psychopomp.law import blind_cells
+
+    cells = blind_cells(cfg)
+    assert len(cells) == 2, cells
+    assert predict_identifiable(cfg, (65.0, 45.0)) is True      # in the gap
+    assert predict_identifiable(cfg, (75.0, 45.0)) is False     # inside the island
+    envelope = blind_region(cfg)
+    assert envelope[0] <= 65.0 <= envelope[1]                    # bbox DOES cover it
+    assert not on_boundary(cfg, (65.0, 45.0))

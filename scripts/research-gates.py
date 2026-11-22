@@ -31,6 +31,8 @@ GATES = [
     ("scripts/self-model-cost-prereg.py", 1,
      "P3 and can be free (discrete loss): FALSIFIED",
      "R-P1.21: wrong self-model costs 3 of 4; no error is free (documented negative)"),
+    ("scripts/non-convex-prereg.py", 0, "prereg run: PASS",
+     "R-P1.25: non-convex blind sets — the gap is identifiable, 0 mismatches on 17 cells"),
     ("scripts/hedged-planning-prereg.py", 0, "prereg run: PASS",
      "R-P1.24: hedged plan 3/4 vs naive worst 1/4, regret 1, hedge flips the drift"),
     ("scripts/gravity-hidden-prereg.py", 1,

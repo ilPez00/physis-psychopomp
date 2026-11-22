@@ -15,7 +15,9 @@ Validity conditions, measured not assumed:
 
 - noise: 100/100 identification up to ``sigma = 6``; accuracy decays from 0.94 at
   ``sigma = 10`` to 0.61 at ``sigma = 40`` (breakpoint ``sigma* = 15``);
-- geometry: axis-aligned rectangular occluders inside a square box;
+- geometry: axis-aligned rectangular occluders inside a square box, possibly
+  several per observer (the blind set is then a union: non-convex, even
+  disconnected — R-P1.25);
 - observers: one or two, the second may translate at constant velocity;
 - physics: constant velocity or constant acceleration, elastic equal-mass
   collisions; the *contact structure must be identical across hypotheses*
@@ -24,7 +26,8 @@ Validity conditions, measured not assumed:
 - the predicate is decided by float arithmetic at the boundary: an event within
   1e-6 of a blind edge is *excluded*, never predicted (R-P1.11/R-P1.12).
 
-Out of scope: non-rectangular or rotated occluders, more than two observers,
+Out of scope: rotated or curved occluders (would need polygon membership),
+more than two observers,
 observers whose motion depends on the world, degraded identity, learned
 inference.
 """
@@ -40,16 +43,40 @@ Rect = Tuple[float, float, float, float]
 BOUNDARY_TOL = 1e-6
 
 
-def blind_region(config: SimConfig, t: int = 0) -> Optional[Rect]:
-    """The region no observer can see at step `t`, or None if every point is seen."""
+def blind_cells(config: SimConfig, t: int = 0) -> Tuple[Rect, ...]:
+    """The blind set at step `t` as a union of rectangles (authoritative).
+
+    An observer is blocked when the point is inside any of its own rects, so the
+    blind set is `(o ∪ extra_o) ∩ o2(t)` — a union, which may be disconnected or
+    L-shaped (R-P1.25). Membership, not the bounding box, is what the law means.
+    """
+    first = (config.o,) + tuple(config.extra_o)
     second = occluder2_at(config, t)
     if second is None:
-        return config.o
-    x0 = max(config.o[0], second[0])
-    x1 = min(config.o[1], second[1])
-    y0 = max(config.o[2], second[2])
-    y1 = min(config.o[3], second[3])
-    return None if x0 >= x1 or y0 >= y1 else (x0, x1, y0, y1)
+        return tuple(first)
+    cells = []
+    for rect in first:
+        x0 = max(rect[0], second[0])
+        x1 = min(rect[1], second[1])
+        y0 = max(rect[2], second[2])
+        y1 = min(rect[3], second[3])
+        if x0 < x1 and y0 < y1:
+            cells.append((x0, x1, y0, y1))
+    return tuple(cells)
+
+
+def blind_region(config: SimConfig, t: int = 0) -> Optional[Rect]:
+    """The **envelope** of the blind set, for display; None when nothing is blind.
+
+    Use :func:`blind_cells` for membership — with several cells the envelope
+    contains points that are not blind (R-P1.25 P1), so a membership test
+    written against this rect is wrong.
+    """
+    cells = blind_cells(config, t)
+    if not cells:
+        return None
+    return (min(c[0] for c in cells), max(c[1] for c in cells),
+            min(c[2] for c in cells), max(c[3] for c in cells))
 
 
 def boundary_distance(config: SimConfig, point: Tuple[float, float],
@@ -59,32 +86,35 @@ def boundary_distance(config: SimConfig, point: Tuple[float, float],
     Cells within ``BOUNDARY_TOL`` of an edge are decided by floating-point
     accumulation order and must be excluded from any prediction (R-P1.11).
     """
-    blind = blind_region(config, t)
-    if blind is None:
+    cells = blind_cells(config, t)
+    if not cells:
         return None
     x, y = point
-    return min(abs(x - blind[0]), abs(x - blind[1]),
-               abs(y - blind[2]), abs(y - blind[3]))
+    return min(min(abs(x - c[0]), abs(x - c[1]), abs(y - c[2]), abs(y - c[3]))
+               for c in cells)
 
 
 def predict_identifiable(config: SimConfig, point: Tuple[float, float],
                          t: int = 0) -> bool:
-    """The law: identifiable iff the event location is outside the blind region."""
-    blind = blind_region(config, t)
-    return blind is None or not inside_rect(blind, point[0], point[1])
+    """The law: identifiable iff the event location is outside every blind cell."""
+    return not any(inside_rect(cell, point[0], point[1])
+                   for cell in blind_cells(config, t))
 
 
 def on_boundary(config: SimConfig, point: Tuple[float, float], t: int = 0) -> bool:
     """True when the point sits on a blind perimeter within the declared tolerance."""
-    blind = blind_region(config, t)
-    if blind is None:
+    cells = blind_cells(config, t)
+    if not cells:
         return False
     x, y = point
-    on_x_edge = (abs(x - blind[0]) <= BOUNDARY_TOL or abs(x - blind[1]) <= BOUNDARY_TOL) \
-        and blind[2] <= y <= blind[3]
-    on_y_edge = (abs(y - blind[2]) <= BOUNDARY_TOL or abs(y - blind[3]) <= BOUNDARY_TOL) \
-        and blind[0] <= x <= blind[1]
-    return on_x_edge or on_y_edge
+    for c in cells:
+        on_x = (abs(x - c[0]) <= BOUNDARY_TOL or abs(x - c[1]) <= BOUNDARY_TOL) \
+            and c[2] <= y <= c[3]
+        on_y = (abs(y - c[2]) <= BOUNDARY_TOL or abs(y - c[3]) <= BOUNDARY_TOL) \
+            and c[0] <= x <= c[1]
+        if on_x or on_y:
+            return True
+    return False
 
 
 # Measured validity envelope (source card in parentheses). Data, not prose, so a

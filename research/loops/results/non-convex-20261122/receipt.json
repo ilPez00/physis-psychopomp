@@ -1,0 +1,32 @@
+{
+  "card": "R-P1.25",
+  "date": "2026-11-22",
+  "status": "PASS — P1-P5 upheld after two check fixes; 17 scored cells, 0 mismatches",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.25-non-convex.md",
+  "hypothesis": "90821d05-3b09-4cd4-969c-29902fa94efb (Supported)",
+  "commands": [
+    ".venv/bin/python scripts/non-convex-prereg.py",
+    ".venv/bin/python scripts/law-conformance.py"
+  ],
+  "instrument_change": "SimConfig.extra_o: extra blockers for observer 1, so the blind set is (o union extra_o) intersect o2 - a union of rects, optionally disconnected",
+  "measured": {
+    "gap_point_identifiable_inside_envelope": {"point": [65.0, 45.0], "envelope": [40, 85, 35, 65], "identifiable": true},
+    "islands_blind_points": [[75.0, 45.0], [85.0, 45.0]],
+    "stacked_cell_blind_on_own_lane": {"point": [50.0, 75.0], "identifiable": false},
+    "scored": 17,
+    "boundary_excluded": 1,
+    "mismatches": 0
+  },
+  "conformance_with_union_worlds": {"seed_default": "157 scored, 100 identifiable / 57 not, 0 mismatches", "seed_11": "237 scored, 152 / 85, 0 mismatches"},
+  "check_fixes": [
+    "P4 counted scored == 18 but the standing boundary rule requires excluding the edge cell; corrected to scored + boundary == total",
+    "P5 demanded the single-rect control differ from its own bounding box (impossible); now applies to multi-cell shapes"
+  ],
+  "prereg_defects_found": [
+    "first grid placed the island at y 70-85 while events were on y=45, so the island was invisible to the measurement",
+    "o2 ended at x=70, clipping the island to a line",
+    "bodies started inside blockers"
+  ],
+  "scope_remaining": "rotated or curved occluders need polygon membership - a real boundary, not an oversight",
+  "tests": "130 passed"
+}

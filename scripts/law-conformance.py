@@ -59,9 +59,12 @@ def make_cell(family: str, rng: random.Random, want_covered: bool):
         o2 = random_rect(rng)
         drift = rng.choice((-2.0, -1.0, 0.0, 1.0, 2.0))
         accel = (0.0, 0.0) if family == "A" else rng.choice(((0.0, 0.0), (0.0, -0.5)))
+        # a third of the cells get a second blocker for observer 1, so the blind
+        # set is a union (non-convex / disconnected) in the bulk gate too
+        extra = ((random_rect(rng),) if rng.random() < 0.34 else ())
         try:
             cfg = SimConfig(steps=200, o=o, o2=o2, o2_velocity=(drift, 0.0),
-                            accel=accel, n_balls=2)
+                            accel=accel, extra_o=extra, n_balls=2)
         except AssertionError:
             continue
         t = rng.randrange(20, 181)
