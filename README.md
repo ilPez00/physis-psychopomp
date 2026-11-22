@@ -7,7 +7,7 @@ constraints on learned representations.
 Research instrument, not a validated architecture. **Status: v0.3 (CPU
 prototype, post-audit, one measured law).** Design:
 `docs/2026-11-20-PREREG.md`. Fix/improve plan after the first public audit:
-`docs/2026-11-20-FIXES-AND-IMPROVEMENTS.md`. **The law: `docs/LAW.md`.** One-page findings and the falsification record: `docs/FINDINGS-2026-11-22.md`.
+`docs/2026-11-20-FIXES-AND-IMPROVEMENTS.md`. **The law: `docs/LAW.md`.** Feeding the export into a Physis world: `docs/INTEGRATION-CONTRACT.md`. One-page findings and the falsification record: `docs/FINDINGS-2026-11-22.md`.
 
 Public: https://github.com/ilPez00/physis-psychopomp. License:
 **Apache-2.0** (`LICENSE`, third-party attribution in `NOTICE`), adopted
@@ -115,40 +115,15 @@ envelope and falsification log: `docs/LAW.md`; code: `psychopomp/law.py`.
 ## v0.2 gate
 
 CPU deliverables pass; the audit's pre-GPU demands are covered by
-`scripts/recoverability.py`. GPU phase (three matched arms, ≥3 seeds, on omo)
-is **not scheduled** — omo availability unconfirmed. Nothing here claims
+`scripts/recoverability.py`. GPU phase (three matched arms, ≥3 seeds)
+is **not scheduled**. Nothing here claims
 Claim A or Claim B evidence yet.
-
-## Commit + push to air's USB storage — always
-
-Work in this repo is not saved until it is in **three** places, not two: a
-commit on the local branch, that commit on `origin` (GitHub `ilPez00`), **and a
-`git bundle` on air's USB stick** (`/dev/sdb1`, 29.8 G exfat, mounted on air at
-`/mnt/sdb1`). The stick is the off-machine copy that survives a dead node and a
-dead NAS; `origin` alone is not enough.
-
-`fleet-sync` does this — run it at the end of any session that touched files,
-and after any multi-file edit wave:
-
-```bash
-fleet-sync            # commit + push + bundle to the NAS and to air's stick
-```
-
-When the stick is mounted on air, the bundle is pushed there by the same run
-(tier `air-usb`). When it is not mounted, that tier is **skipped with a log
-line — never faked, never filled onto `/` instead**. Do not substitute a tarball
-of the working tree: the portable, restorable, verifiable artifact is
-`git bundle create <repo>.bundle --all`, and `git clone <repo>.bundle` must
-restore it.
-
-Details and the rest of the storage tiers: `~/.config/agents/SYNC.md`.
-
 
 ## Verified 2026-11-21
 
-Fresh public checkout/release, run on a clean host (pansa, 12-core Linux):
+Fresh public checkout/release, run on a clean host:
 
-- `uv venv` + `uv pip install -e ".[dev]"` + `pytest -q`: **75 passed** (README previously said 28 — stale).
+- `uv venv` + `uv pip install -e ".[dev]"` + `pytest -q`: **152 passed** (re-verified 2026-11-22).
 - `scripts/demo.py`: PASS — straight world=1/no contact; off-axis world=2, hidden contact required.
 
 Method + full logs: portfolio audit verification log (private hub); reproduction commands in this README.
