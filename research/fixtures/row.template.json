@@ -1,0 +1,9 @@
+{
+  "_comment": "EXAMPLE ONLY — the consumer declares its own row shape. Keys starting with _ are annotations and are never emitted; unknown fields are refused rather than emitted blank.",
+  "subject": "psychopomp:{{subject}}",
+  "kind": "{{kind}}",
+  "at": "{{at}}",
+  "props": "{{props}}",
+  "source": "{{provenance.source}}",
+  "seq": "{{seq}}"
+}

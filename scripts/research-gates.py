@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import re
+import shlex
 import subprocess
 import sys
 
@@ -36,6 +37,8 @@ GATES = [
     ("scripts/bayes-vs-minimax-prereg.py", 1,
      "P3 misplaced confident prior is worse than minimax",
      "R-P1.26: flat prior = hedge, honest prior = oracle; the misplaced-prior prediction was falsified (documented negative)"),
+    ("scripts/to-physis-rows.py --template research/fixtures/row.template.json research/fixtures/observation-v1.sample.jsonl", 0, "5 rows",
+     "row export onto a declared template: typed substitution, refusal on unknown fields"),
     ("scripts/export-contract-check.py", 0, "export contract: PASS",
      "integration contract: schema, canonical order, identity-free, deterministic, counterfactual-refusing"),
     ("scripts/small-n-identity-prereg.py", 1,
@@ -80,7 +83,9 @@ GATES = [
 
 
 def run(script: str) -> tuple[int, str]:
-    proc = subprocess.run([sys.executable, script], capture_output=True, text=True)
+    # a gate may carry arguments (e.g. a template + fixture path)
+    proc = subprocess.run([sys.executable, *shlex.split(script)],
+                          capture_output=True, text=True)
     return proc.returncode, proc.stdout + proc.stderr
 
 

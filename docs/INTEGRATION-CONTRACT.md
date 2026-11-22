@@ -69,6 +69,25 @@ One JSON line per observable event:
 
 Route 2 is the smaller change and the one this contract is written for.
 
+## Route 0 — no upstream change needed: map onto their shape yourself
+
+If the owner's row shape is known, `psychopomp/rows.py` (CLI:
+`scripts/to-physis-rows.py`) converts these records onto **any** row template:
+
+```
+.venv/bin/python scripts/to-physis-rows.py --template row.json export.jsonl
+```
+
+A value that is exactly `"{{field}}"` becomes that field's typed value; `{{field}}`
+inside a longer string is formatted; keys starting with `_` are annotations and are
+never emitted; **an unknown field is an error, not a blank** — a silently missing
+column is worse than a refusal. Rows are copies, so no row shares structure with the
+source record.
+
+This exists so the consumer's shape is *declared by the consumer* rather than guessed
+here. A sample template is at `research/fixtures/row.template.json` and is marked
+EXAMPLE ONLY.
+
 ## Where this has been raised with the owner
 
 A note for the physis-next side was written on 2026-11-22 at

@@ -1,4 +1,4 @@
-"""Psychopomp v0.8.1 — CPU research instrument.
+"""Psychopomp v0.9 — CPU research instrument.
 
 Persistent, provenance-bearing world states -> temporal reasoning ->
 falsifiable constraints on learned representations.
@@ -23,4 +23,4 @@ event log, an event-calculus possible-world filter, counterfactual attribution,
 and structure-preserving shuffled-rule controls. No neural components.
 """
 
-__version__ = "0.8.1"
+__version__ = "0.9.0"
