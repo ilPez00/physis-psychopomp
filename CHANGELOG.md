@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.1 — 2026-11-22
+
+**Integration contract, producer side machine-checked.** `docs/INTEGRATION-CONTRACT.md`
+states what `psychomomp.observation/1` guarantees and what a consumer must do, and
+`scripts/export-contract-check.py` asserts every one of those guarantees against a
+real export (schema string, canonical order, `seq` as index, identity-free subjects,
+no oracle fields, deterministic, relabelling-invariant, counterfactual-refusing). A
+sample fixture is committed at `research/fixtures/observation-v1.sample.jsonl`.
+
+The consumer side is **absent by measurement** (no generic ingress in `physis
+ingest`); the document names the two routes for its owner and, separately, what is
+**not** established here — Physis's own row shape, its bitemporal folding, units,
+and chunking.
+
 ## 0.7.0 — 2026-11-22
 
 **Identity evidence** (`SimConfig.identity_marker`, `marker_period`,

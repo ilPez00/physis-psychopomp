@@ -63,3 +63,21 @@ def test_a_relabelling_exports_identically():
                   init=Init(x=(b[0][0], a[0][0]), y=(b[0][1], a[0][1]), v=(b[1], a[1])))
     strip = lambda recs: [{k: v for k, v in r.items() if k != "seq"} for r in recs]
     assert strip(observation_records(plain)) == strip(observation_records(swapped))
+
+
+def test_export_is_canonical_and_schema_versioned():
+    # docs/INTEGRATION-CONTRACT.md: schema string, canonical order, seq as index
+    import json
+
+    from psychopomp.export import SCHEMA, observation_records
+    from psychopomp.sim import Init, SimConfig, run
+
+    cfg = SimConfig(steps=120, o=(40.0, 60.0, 35.0, 65.0), o2=(46.0, 54.0, 35.0, 65.0))
+    ep = run(cfg, 0, episode=0, init=Init(x=(20.0, 80.0), y=(45.0, 51.0),
+                                          v=((3.0, 0.0), (-3.0, 0.0))))
+    records = observation_records(ep)
+    assert all(r["schema"] == SCHEMA for r in records)
+    assert [r["seq"] for r in records] == list(range(len(records)))
+    keys = [(r["at"], r["kind"], json.dumps(r["props"], sort_keys=True), r["subject"])
+            for r in records]
+    assert keys == sorted(keys)

@@ -36,6 +36,8 @@ GATES = [
     ("scripts/bayes-vs-minimax-prereg.py", 1,
      "P3 misplaced confident prior is worse than minimax",
      "R-P1.26: flat prior = hedge, honest prior = oracle; the misplaced-prior prediction was falsified (documented negative)"),
+    ("scripts/export-contract-check.py", 0, "export contract: PASS",
+     "integration contract: schema, canonical order, identity-free, deterministic, counterfactual-refusing"),
     ("scripts/small-n-identity-prereg.py", 1,
      "S2 N=1 is linear in p: FALSIFIED",
      "R-P1.41: the identity formula holds 12/12 at small N; S2-S4 fell to a units error (N counts both bodies)"),
