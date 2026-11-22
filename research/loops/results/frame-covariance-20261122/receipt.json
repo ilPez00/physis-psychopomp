@@ -1,0 +1,29 @@
+{
+  "card": "R-P1.18",
+  "date": "2026-11-22",
+  "status": "PASS — all four predictions upheld (30/30 covariant, control sensitive)",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.18-frame-covariance.md",
+  "hypothesis": "not registered in the store (process miss, recorded in the prereg results)",
+  "command": ".venv/bin/python scripts/frame-covariance-prereg.py",
+  "design": {
+    "symmetries": ["identity", "rot90", "rot180", "reflect-v", "reflect-h"],
+    "cells": 30,
+    "events": {"E37": 37.0, "E44": 44.0, "E55": 55.0},
+    "drifts": {"static": [0.0, 0.0], "right": [1.667, 0.0]},
+    "control": "bodies (init, velocities, kick) transformed, occluders held fixed"
+  },
+  "verdicts": {
+    "P1": "UPHELD — 30/30 outcomes invariant under whole-scene symmetry",
+    "P2": "UPHELD — blind(sym(world)) == sym(blind(world)) to 1e-9, area preserved",
+    "P3": "UPHELD — bodies-only control sensitive: 5 flips of 22 buildable cells, 2 unbuildable (body starts inside an occluder)",
+    "P4": "UPHELD — d(true)=0.00 and d(null) identical across frames to 1e-6 (28.30 / 10.00 / 0.00 by cell)"
+  },
+  "example_maps": {
+    "rot90": {"blind_before": [40.5, 60.0, 35.0, 65.0], "blind_after": [35.0, 65.0, 40.0, 59.498]},
+    "control_flips": ["rot90 static E37 unique->tie", "rot180 right E55 tie->unique", "reflect-h right E44 unique->tie"]
+  },
+  "claim": "identifiability is frame-covariant: unchanged by any exact symmetry of the world that carries the observers with it, because coverage is a geometric predicate on a transformed (event, occluders) pair",
+  "settles": "A4's H1 falsification is the correct answer to the wrong invariance question: A4 transformed bodies while holding observers fixed (5/22 cells flip, 2 unbuildable), which compares different worlds, not viewpoints",
+  "tests": "122 passed",
+  "out_of_scope": ["non-square box", "rotations that are not multiples of 90 degrees", "continuous rotation sweeps"]
+}

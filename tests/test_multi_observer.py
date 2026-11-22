@@ -147,3 +147,51 @@ def test_occluder_sweeping_onto_a_body_is_labelled_sweep():
     sides = [e.attrs.get("side") for e in ep.observable_log()
              if e.kind in ("enter_occ", "exit_occ")]
     assert "sweep" in sides, sides
+
+
+def test_scene_symmetries_are_exact_and_area_preserving():
+    from psychopomp.perspective import SYMMETRIES, scene_point, scene_rect
+    rect = (40.0, 60.5, 35.0, 65.0)
+    area = lambda r: (r[1] - r[0]) * (r[3] - r[2])
+    for sym in SYMMETRIES:
+        mapped = scene_rect(sym, rect)
+        assert abs(area(mapped) - area(rect)) < 1e-12
+        assert 0.0 <= mapped[0] and mapped[1] <= 100.0
+    # involutions return the original
+    for sym in ("rot180", "reflect-v", "reflect-h"):
+        p = scene_point(sym, scene_point(sym, (37.0, 45.0)))
+        assert abs(p[0] - 37.0) < 1e-12 and abs(p[1] - 45.0) < 1e-12
+    # rot90 four times is the identity
+    p = (37.0, 45.0)
+    for _ in range(4):
+        p = scene_point("rot90", p)
+    assert abs(p[0] - 37.0) < 1e-9 and abs(p[1] - 45.0) < 1e-9
+
+
+def test_identifiability_is_covariant_under_whole_scene_symmetry():
+    from psychopomp.perspective import SYMMETRIES, transform_scene
+    cfg = SimConfig(steps=200, o2=(40.5, 60.5, 35.0, 65.0))
+    init = Init(x=(26.0, 22.0), y=(45.0, 45.0), v=((3.0, 0.0), (3.0, 0.0)))
+    kick = Kick(60, 0, (0.0, 1.5))
+    true = Intervention(t=60, ball=0, dv=(0.0, 1.5))
+    outcomes = set()
+    for sym in SYMMETRIES:
+        c, i, k = transform_scene(cfg, init, kick, sym)
+        ep = run(c, 0, episode=0, init=i, kicks=(k,))
+        outcomes.add(attribute(ep, [true, None], c, 0, i)["unique"])
+    assert outcomes == {False}, outcomes       # covered event: tie in every frame
+
+
+def test_bodies_only_transform_is_not_covariant():
+    # A4's implicit comparison: moving the bodies without the observers changes
+    # the world, so identifiability must be able to change.
+    from psychopomp.perspective import transform_scene
+    cfg = SimConfig(steps=200, o2=(40.5, 60.5, 35.0, 65.0), o2_velocity=(1.667, 0.0))
+    init = Init(x=(26.0, 22.0), y=(45.0, 45.0), v=((3.0, 0.0), (3.0, 0.0)))
+    kick = Kick(60, 0, (0.0, 1.5))
+    true = Intervention(t=60, ball=0, dv=(0.0, 1.5))
+    ep0 = run(cfg, 0, episode=0, init=init, kicks=(kick,))
+    assert attribute(ep0, [true, None], cfg, 0, init)["unique"] is True   # baseline
+    _, i2, k2 = transform_scene(cfg, init, kick, "rot180")
+    ep = run(cfg, 0, episode=0, init=i2, kicks=(k2,))   # occluders NOT transformed
+    assert attribute(ep, [true, None], cfg, 0, i2)["unique"] is False

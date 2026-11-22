@@ -31,12 +31,13 @@ pinned by tests.
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 import random
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 from .eventlog import Event, EventLog
-from .sim import SimEpisode
+from .sim import Init, Kick, SimConfig, SimEpisode
 
 Vec = Tuple[float, float]
 
@@ -168,6 +169,81 @@ def transform_observable(ep: SimEpisode, frame: Frame, inverse: bool = False) ->
             attrs["track"] = [point(p) for p in attrs["track"]]
         out.add(Event(e.kind, e.t, e.subjects, attrs, e.observable, e.provenance, e.seq))
     return out
+
+
+# --- scene symmetries (R-P1.18) -------------------------------------------
+#
+# A frame that moves the observers *with* the world. All five maps send the
+# square box [0, W] x [0, H] to itself (W == H required) and map axis-aligned
+# rectangles to axis-aligned rectangles, so constant velocity, elastic walls and
+# rectangular occluders are exactly equivariant. A non-square box or a rotation
+# that is not a multiple of 90 degrees is out of scope by construction.
+
+SceneSymmetry = str
+SYMMETRIES = ("identity", "rot90", "rot180", "reflect-v", "reflect-h")
+
+
+def scene_point(name: SceneSymmetry, p: Vec, size: float = 100.0) -> Vec:
+    x, y = p
+    if name == "identity":
+        return (x, y)
+    if name == "rot90":
+        return (y, size - x)
+    if name == "rot180":
+        return (size - x, size - y)
+    if name == "reflect-v":
+        return (x, size - y)
+    if name == "reflect-h":
+        return (size - x, y)
+    raise ValueError(f"unknown symmetry {name!r}; expected one of {SYMMETRIES}")
+
+
+def scene_rect(name: SceneSymmetry, rect: Tuple[float, float, float, float],
+               size: float = 100.0) -> Tuple[float, float, float, float]:
+    x0, x1, y0, y1 = rect
+    a = scene_point(name, (x0, y0), size)
+    b = scene_point(name, (x1, y1), size)
+    return (min(a[0], b[0]), max(a[0], b[0]), min(a[1], b[1]), max(a[1], b[1]))
+
+
+def transform_scene(config: SimConfig, init: Init, kick: Optional[Kick],
+                    name: SceneSymmetry) -> Tuple[SimConfig, Init, Optional[Kick]]:
+    """Apply a box symmetry to the whole scene: bodies, both occluders, kick."""
+    if name == "identity":
+        return config, init, kick
+    size = config.W
+    assert config.W == config.H, "scene symmetries require a square box"
+    cfg = replace(
+        config,
+        o=scene_rect(name, config.o, size),
+        o2=None if config.o2 is None else scene_rect(name, config.o2, size),
+        o2_velocity=_rot_point(name, config.o2_velocity),
+    )
+    pts = [scene_point(name, (x, y), size) for x, y in zip(init.x, init.y)]
+    new_init = Init(
+        x=tuple(p[0] for p in pts),
+        y=tuple(p[1] for p in pts),
+        v=tuple(_rot_point(name, v) for v in init.v),
+    )
+    new_kick = None if kick is None else Kick(
+        kick.t, kick.ball, _rot_point(name, kick.dv)
+    )
+    return cfg, new_init, new_kick
+
+
+def _rot_point(name: SceneSymmetry, v: Vec) -> Vec:
+    x, y = v
+    if name == "identity":
+        return (x, y)
+    if name == "rot90":
+        return (y, -x)
+    if name == "rot180":
+        return (-x, -y)
+    if name == "reflect-v":
+        return (x, -y)
+    if name == "reflect-h":
+        return (-x, y)
+    raise ValueError(f"unknown symmetry {name!r}")
 
 
 def _rounded(p: Vec) -> list:
