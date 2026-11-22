@@ -1,0 +1,18 @@
+{
+  "card": "R-P1.24",
+  "date": "2026-11-22",
+  "status": "PASS — all four predictions upheld",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.24-hedged-planning.md",
+  "hypothesis": "bfaab7be-b2d1-4e92-aabb-48233357f7cc (Supported)",
+  "command": ".venv/bin/python scripts/hedged-planning-prereg.py",
+  "measured": {
+    "drift_scores": {"-1.0": "3/4", "-0.5": "1/4", "0.0": "2/4", "0.5": "3/4", "1.0": "4/4"},
+    "naive": {"-20": "0.0 -> 2/4", "-10": "-0.5 -> 1/4", "0": "+1.0 -> 4/4", "10": "0.0 -> 2/4", "20": "0.0 -> 2/4"},
+    "hedged": "-1.0 -> 3/4",
+    "oracle": "+1.0 -> 4/4",
+    "regret": 1
+  },
+  "finding": "uncertainty about your own blind spot is not a reason to observe less but to move differently: the hedged plan recovered 3 of 4 task events where a confidently wrong plan kept 1, at a cost of 1 event against an oracle. The hedge picks the opposite drift to the confident optimum.",
+  "limits": "one world, one belief set (+/-20), one task time, one drift grid, noise-free; minimax hardening, not a decision-theoretic optimum. A Bayesian planner with a prior over the error is not claimed.",
+  "tests": "129 passed"
+}
