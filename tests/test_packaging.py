@@ -32,3 +32,20 @@ def test_the_version_is_one_answer_everywhere():
     assert declared == psychopomp.__version__
     assert declared == cited
     assert declared == "0.10.0"
+
+
+def test_uv_lock_carries_the_project_version():
+    # Bumped the version twice without regenerating the lock; CI caught it both
+    # times, ten seconds in. This makes the failure local and immediate.
+    import re
+
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    declared = re.search(r'^version = "([^"]+)"',
+                         (root / "pyproject.toml").read_text(), re.M).group(1)
+    lock = (root / "uv.lock").read_text()
+    block = re.search(r'\[\[package\]\]\nname = "psychopomp"\nversion = "([^"]+)"', lock)
+    assert block is not None, "uv.lock has no psychopomp package entry"
+    assert block.group(1) == declared, (
+        f"uv.lock says {block.group(1)} but pyproject says {declared}: run `uv lock`")
