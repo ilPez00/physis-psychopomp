@@ -62,3 +62,21 @@ def test_crossing_side_is_labelled_against_the_occluder_that_hid_the_body():
     kinds = [(e.kind, e.attrs.get("side")) for e in ep.observable_log()
              if e.kind in ("enter_occ", "exit_occ")]
     assert ("enter_occ", "left") in kinds
+
+
+def test_identifiability_tracks_event_location_not_blind_area():
+    # R-P1.10: the same observer set (overlap-450, blind x >= 45) resolves a
+    # kick at x=42 and ties at x=46. Blind area is a proxy, not the variable.
+    cfg = SimConfig(steps=200, o2=(45.0, 65.0, 35.0, 65.0))
+    visible_init = Init(x=(24.0, 28.0), y=(45.0, 51.0), v=((3.0, 0.0), (3.0, 0.0)))
+    blind_init = Init(x=(28.0, 32.0), y=(45.0, 51.0), v=((3.0, 0.0), (3.0, 0.0)))
+    for init, expect_unique in ((visible_init, True), (blind_init, False)):
+        ep = run(cfg, 0, init=init, kicks=(Kick(HIDDEN_KICK.t, HIDDEN_KICK.ball, HIDDEN_KICK.dv),))
+        out = attribute(ep, [HIDDEN_KICK, None], cfg, 0, init)
+        scores = {str(h): d for d, h in out["scores"]}
+        assert out["unique"] is expect_unique
+        if expect_unique:
+            assert scores[str(None)] > 0.0 and out["margin"] > 0.0
+        else:
+            assert scores[str(None)] == 0.0 == scores[str(HIDDEN_KICK)]
+            assert len(out["ambiguity"]) == 2

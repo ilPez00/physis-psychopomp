@@ -1,0 +1,35 @@
+{
+  "card": "R-P1.10",
+  "date": "2026-11-22",
+  "status": "FAIL — H1 falsified (prereg threshold), H2/H3/H4 supported",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.10-multi-observer-claim.md",
+  "hypothesis": "2661e5ab-01a3-426f-a19b-3c5cae433f06 (Contradicted)",
+  "command": ".venv/bin/python scripts/multi-observer-prereg.py",
+  "design": {
+    "cells": 25,
+    "seeds_x0": [24, 26, 28, 30, 32],
+    "observer_sets": ["single", "same", "overlap-450", "overlap-300", "disjoint"],
+    "blind_areas": {"single": 600, "same": 600, "overlap-450": 450, "overlap-300": 300, "disjoint": 0},
+    "candidates": ["kick@60 (true, hidden under o)", "none", "kick@30 (visible decoy)"],
+    "control": "permuted score values, 200 draws per cell, uniform among tied minima"
+  },
+  "measured": {
+    "unique_correct": {"single": 0, "same": 0, "overlap-450": 2, "overlap-300": 5, "disjoint": 5},
+    "hidden_step_fraction": {"single": 0.331, "same": 0.331, "overlap-450": 0.249, "overlap-300": 0.167, "disjoint": 0.0},
+    "control_range": [0.295, 0.41],
+    "ceiling_exclusions": 0
+  },
+  "verdicts": {
+    "H1": "FALSIFIED — required 5/5 in every strict-coverage geometry; overlap-450 scored 2/5",
+    "H2": "SUPPORTED — same == single on all seeds and all four metrics",
+    "H3": "SUPPORTED as written (0,0,2,5,5; hidden fraction monotone) but blind area is a proxy",
+    "H4": "SUPPORTED — control 0.295-0.410 vs 1/3 +-0.15"
+  },
+  "diagnosis": "failures are exactly the seeds whose event location (x >= 46) stays inside the residual blind region [45,60]; x in {42,44} resolve. Identifiability is per-event coverage, not aggregate blind area.",
+  "not_claimed": "the per-event-coverage reformulation was derived after seeing the failures; it needs its own prereg on a fresh geometry grid (R-P1.11)",
+  "amendments_before_verdict": [
+    "seed set x0 {36,40} put ball 1 inside the occluder at t=0 -> seeds became {24,26,28,30,32}",
+    "permuted control tie rule: lexicographic -> uniform among tied minima"
+  ],
+  "tests": "114 passed"
+}
