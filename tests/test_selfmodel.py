@@ -94,3 +94,46 @@ def test_blind_estimate_round_trips_a_rect():
     assert est.as_rect() == (46.0, 54.0, 35.0, 65.0)
     assert est.blind_membership((50.0, 50.0)) is True
     assert est.blind_membership((45.0, 50.0)) is False
+
+
+O_ISLANDS = (40.0, 60.0, 35.0, 65.0)
+EXTRA_ISLAND = (70.0, 78.0, 35.0, 65.0)
+O2_WIDE = (30.0, 92.0, 20.0, 90.0)
+
+
+def islands_corpus():
+    """Bodies crossing both blind cells, horizontally and vertically."""
+    eps = []
+    for i, lane in enumerate((38.0, 42.0, 46.0, 50.0, 54.0, 58.0, 72.0, 76.0)):
+        cfg = SimConfig(steps=400, o=O_ISLANDS, o2=O2_WIDE,
+                        extra_o=(EXTRA_ISLAND,))
+        start, v = ((10.0, 3.0) if i % 2 == 0 else (95.0, -3.0))
+        eps.append(run(cfg, 0, episode=i, init=Init(
+            x=(start, PARKED[0]), y=(lane, PARKED[1]), v=((v, 0.0), (0.0, 0.0)))))
+    for i, column in enumerate((45.0, 50.0, 55.0, 72.0, 76.0)):
+        cfg = SimConfig(steps=400, o=O_ISLANDS, o2=O2_WIDE,
+                        extra_o=(EXTRA_ISLAND,))
+        start, v = ((10.0, 3.0) if i % 2 == 0 else (95.0, -3.0))
+        eps.append(run(cfg, 0, episode=200 + i, init=Init(
+            x=(column, PARKED[0]), y=(start, PARKED[1]), v=((0.0, v), (0.0, 0.0)))))
+    return eps
+
+
+def test_two_cells_are_recovered_separately():
+    from psychopomp.selfmodel import estimate_blind_cells
+
+    cells = estimate_blind_cells(islands_corpus(), STEP, n_cells=2)
+    assert len(cells) == 2
+    truth = [(O_ISLANDS[0], O_ISLANDS[1]), (EXTRA_ISLAND[0], EXTRA_ISLAND[1])]
+    for cell, (tx0, tx1) in zip(cells, truth):
+        assert cell.x0 is not None and cell.x1 is not None
+        assert 0.0 <= cell.x0 - tx0 <= STEP
+        assert 0.0 <= tx1 - cell.x1 <= STEP
+
+
+def test_wrong_cell_count_abstains_rather_than_inventing_geometry():
+    from psychopomp.selfmodel import estimate_blind_cells
+
+    cells = estimate_blind_cells(islands_corpus(), STEP, n_cells=4)
+    assert len(cells) == 4
+    assert all(cell.as_rect() is None for cell in cells)

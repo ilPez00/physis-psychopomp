@@ -144,8 +144,13 @@ errors          1 optimistic (on the edge), 0 pessimistic
 
 Self-knowledge is **conservative by construction**: a boundary is learned only
 where a body crossed it, so an observer can believe it is *less* blind than it is,
-never more. Code: `psychopomp/selfmodel.py`; limits: single axis-aligned rect,
-known step, noise-free, one estimate per blind cell.
+never more. **Multi-cell** blind sets are recovered per cell (two cells to within
+0.2, R-P1.31), and a **wrong cell count** — a structural self-model error — also
+errs optimistically: it *drops* a cell rather than merging them, costing 1 of 4
+task events. Every self-model error measured here points the same way.
+
+Code: `psychopomp/selfmodel.py`; limits: disjoint cells ordered along `x`, known
+step, noise-free, `n_cells` supplied rather than estimated.
 
 ## The loop closes: calibrate, then plan (measured)
 

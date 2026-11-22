@@ -112,3 +112,81 @@ def estimate_blind_region(episodes: Iterable, step: float) -> BlindEstimate:
         y1=max(top_out) if top_out else None,
         samples=samples,
     )
+
+
+# --- multi-cell self-models (R-P1.31) --------------------------------------
+#
+# An observer with more than one blocker has a blind set that is a union of
+# rectangles (R-P1.25). The same crossing evidence recovers it, provided the
+# observer knows HOW MANY blockers it has — that is a structural prior about its
+# own hardware, and getting it wrong is a new kind of self-model error (see
+# R-P1.31's P4), not a geometric one.
+
+
+def _cluster(values, tolerance: float):
+    """Greedy 1-D clustering: split where consecutive values differ by > tolerance."""
+    out = []
+    for value in sorted(values):
+        if out and value - out[-1][-1] <= tolerance:
+            out[-1].append(value)
+        else:
+            out.append([value])
+    return out
+
+
+def estimate_blind_cells(episodes: Iterable, step: float, n_cells: int) -> Tuple[BlindEstimate, ...]:
+    """Estimate each blind cell separately, given how many blockers there are.
+
+    Cells are assumed disjoint and ordered along `x` (the testbed geometry); the
+    k-th cluster of left-entry bounds is paired with the k-th cluster of
+    right-exit bounds. `y` edges are assigned by whether the crossing's `x` falls
+    inside the cell's estimated `x`-range.
+    """
+    left_in: list = []
+    right_out: list = []
+    bottom_in: list = []
+    top_out: list = []
+    samples = {"left": 0, "right": 0, "bottom": 0, "top": 0}
+
+    for episode in episodes:
+        for event in episode.observable_log():
+            if event.kind not in CROSSINGS:
+                continue
+            side = event.attrs.get("side")
+            pos = event.attrs.get("pos")
+            if pos is None:
+                continue
+            if event.kind == "enter_occ" and side == "left":
+                left_in.append(pos[0] + step)
+                samples["left"] += 1
+            elif event.kind == "exit_occ" and side == "right":
+                right_out.append(pos[0] - step)
+                samples["right"] += 1
+            elif event.kind == "enter_occ" and side == "bottom":
+                bottom_in.append((pos[0], pos[1] + step))
+                samples["bottom"] += 1
+            elif event.kind == "exit_occ" and side == "top":
+                top_out.append((pos[0], pos[1] - step))
+                samples["top"] += 1
+
+    left_clusters = _cluster(left_in, 2 * step)
+    right_clusters = _cluster(right_out, 2 * step)
+    if len(left_clusters) < n_cells or len(right_clusters) < n_cells:
+        # not enough evidence for the claimed structure: abstain rather than
+        # invent cells
+        return tuple(
+            BlindEstimate(step=step, samples=dict(samples)) for _ in range(n_cells)
+        )
+
+    xs = [(min(left_clusters[k]), max(right_clusters[k])) for k in range(n_cells)]
+    cells = []
+    for x0, x1 in xs:
+        ys_bottom = [y for x, y in bottom_in if x0 - step <= x <= x1 + step]
+        ys_top = [y for x, y in top_out if x0 - step <= x <= x1 + step]
+        cells.append(BlindEstimate(
+            step=step, x0=x0, x1=x1,
+            y0=min(ys_bottom) if ys_bottom else None,
+            y1=max(ys_top) if ys_top else None,
+            samples=dict(samples),
+        ))
+    return tuple(cells)

@@ -1,0 +1,18 @@
+{
+  "card": "R-P1.31",
+  "date": "2026-11-22",
+  "status": "P1/P3/P4 upheld, P2 falsified (mechanism)",
+  "prereg": "docs/2026-11-22-PREREG-R-P1.31-multi-cell-selfmodel.md",
+  "hypothesis": "011fd125-ed0c-496b-919e-36cd5fafedb7 (Supported)",
+  "command": ".venv/bin/python scripts/multi-cell-selfmodel-prereg.py",
+  "measured": {
+    "true_cells": [[44.0, 60.0, 35.0, 65.0], [70.0, 78.0, 35.0, 65.0]],
+    "two_cell_estimate": [[44.2, 59.8, 35.2, 64.9], [70.3, 77.8, 35.2, 64.9]],
+    "one_cell_estimate": [[44.2, 59.8, 35.2, 64.9]],
+    "plans": {"two-cell": "+0.5 -> 3/4 (oracle)", "one-cell": "0.0 -> 2/4", "oracle": "+0.5 -> 3/4"}
+  },
+  "finding": "all self-model errors in this instrument are optimistic: the geometric estimate is a subset of the truth, and a wrong cell count DROPS a cell rather than merging them. An observer believes it is less blind than it is, never more; the structural-prior error costs 1 of 4 task events.",
+  "limits": "two cells, disjoint, ordered along x, one lane band, noise-free; n_cells is supplied rather than estimated",
+  "tests": "138 passed",
+  "gates": 17
+}
