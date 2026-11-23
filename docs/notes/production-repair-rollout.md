@@ -78,7 +78,11 @@ than a missing log abort before the condition callback. A test shows that the
 existing lock callback can compare exact rows and refuse a same-length change.
 This slice does not add an approval payload or apply command.
 
-Canonical Physis-next at `e4bb2695a8` contains append-only `Runtime::retract`
-and `Runtime::revoke`, separate from the historical `removed:rel|…` test.
-Source existence is not a recovery receipt: test both on a `host` assertion
-before treating them as the writer's correction path.
+Canonical Physis-next's append-only `Runtime::retract` and `Runtime::revoke`
+are separate from the historical `removed:rel|…` test. At writer-branch
+`b17a83045c`, a fresh-world runtime test retracts the exact `host` assertion
+behind the R-P1.55 false edge. On reopen, the edge disappears; revoking the
+retraction restores it. The original byte prefix and both history rows stay
+intact. `cargo test --locked -j 2 -p physis-runtime --test retraction_revoke`
+passed six tests. This validates runtime recovery for the fixture, not
+production recovery permissions or the future writer's approval transaction.

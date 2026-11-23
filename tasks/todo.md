@@ -148,8 +148,9 @@ One writer at a time; a delegate's claim is not a gate.
 - [x] **Writer foundation:** Physis-next `1da2aefeab` fails closed before
   appending to unreadable or unterminated observation logs.
 - [ ] **Writer staging:** one evidence adapter and predicate; preview and
-  approval pin exact world, state and edge; real two-process apply and
-  exact-row retraction/revoke rehearsal. No live target until release gates.
+  approval pin exact world, state and edge; real two-process apply. Runtime
+  exact-row retraction/revoke rehearsal passed for the host fixture at
+  Physis-next `b17a83045c`; staging permissions and the apply flow are untested.
 - [ ] **Ranking headroom:** freeze held-out cases and matched deterministic,
   no-repair and shuffled controls; train offline only if headroom is measured.
   See [rollout](../docs/notes/production-repair-rollout.md).
