@@ -45,6 +45,8 @@ GATES = [
      "R-P1.47: exact finite law/state gains, signed resolves 8/8, passive/magnitude/shuffled resolve none"),
     ("scripts/active-exit-prereg.py", 0, "prereg run: PASS",
      "R-P1.48: 24/24 analytic exits, 8/8 calibration rejects, signed resolves 8/8 and three controls resolve none"),
+    ("scripts/turnover-discovery.py", 0, "turnover discovery: PASS",
+     "C3: the one-probe loop and receipt transfer to the turnover pair — 4/4 resolved post-disturbance, 4/4 passive abstentions"),
     ("scripts/turnover-identity-prereg.py", 0, "prereg run: PASS",
      "R-P1.49: complete turnover, feedback recovers 3/3 vs open-loop 0/3 at +2 on both roles; +1 and sham tie"),
     ("scripts/active-discovery.py", 0, "discovery run: PASS",
