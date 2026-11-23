@@ -245,6 +245,10 @@ decision or reveals a failure the current verifier misses.
    their proposed revisions. No write on absent, duplicate or altered evidence.
    Reopen the hypothesis ledger separately and compare actual revisions; a
    proposed update alone does not close B3.
+   Turnover transfer is not a copy of this: `turnover_evidence` produces integer
+   load readings, not observable events, so `psychopomp.observation/1` has no
+   shape for it yet. Decide whether a scalar-evidence record belongs in the
+   schema before claiming the loop transfers.
 3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
    validation before tests. Add ordered readback, mixed overlap and same-key
    conflict controls, including concurrent writers. Cold-check the importer

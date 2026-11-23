@@ -78,9 +78,12 @@ One writer at a time; a delegate's claim is not a gate.
   link hypotheses/revision; reopen and recompute from receipt IDs. Compare to
   A4 across both laws and verify no unsupported update. Depends on A4/B2.
   **Store replay measured:** eight executed rows imported and replayed by
-  exact producer key and store seq at importer `62c3a18a0`. Read-only revision
-  proposals bind two case-scoped rival UUIDs to the verified row; durable
-  hypothesis writes and reopened revision history still open.
+  exact producer key and store seq at importer `62c3a18a0`. Revision proposals
+  bind two rivals to the verified row; applying them at `40f8a80e`/`3fc720f1`
+  produced opposite polarities on the same cited evidence, and `replay --at`
+  shows no belief before the transition and `Supported` after.
+  **Still open:** transfer to the turnover pair, and any check that the
+  UUID-to-law assignment is right.
 - [ ] **Checkpoint B:** End-to-end replay from clean checkouts, exact refs and
   run instructions; record CI and bundle states separately.
 

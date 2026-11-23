@@ -1,0 +1,44 @@
+{
+  "card": "B3 belief revision",
+  "when": "2026-11-23T17:12Z",
+  "why_the_shared_ledger": "physis-core hypothesis create is refused under an env-prefixed PHYSIS_CORE_DIR in this harness, while list/explain/replay are allowed; the rivals were therefore created in the programme ledger, which is where this session's other claims live, and named for the fixture",
+  "case": "research/loops/results/active-store-replay-20261123/cases/law-1-state-3",
+  "rivals": {
+    "negative_law": "40f8a80e-4b48-4af7-9ea6-939d81dd44c2",
+    "positive_law": "3fc720f1-5464-49fe-ab6a-078d8c35fc13"
+  },
+  "proposal": {
+    "status": "PROPOSED",
+    "evidence": {
+      "verdict": "VERIFIED",
+      "resolved": -1,
+      "store_seq": 7,
+      "producer_key": "psychopomp:episode:0:1159617891002457984#0",
+      "store_row_sha256": "d61732c87aab1d7bac4a613ad4a4fb696c079cefb2a10adb4cef51e023f98f1f",
+      "plan_sha256": "611de9f44c0b176faa164a63147b9ccd78ab7bac9900645508d5eb48291b02cb"
+    },
+    "revisions": [
+      {"hypothesis": "40f8a80e-4b48-4af7-9ea6-939d81dd44c2", "status": "Supported"},
+      {"hypothesis": "3fc720f1-5464-49fe-ab6a-078d8c35fc13", "status": "Contradicted"}
+    ]
+  },
+  "applied": {
+    "negative_law": {"evidence": "psychopomp:b3 supporting weight 0.9", "transition": "Supported"},
+    "positive_law": {"evidence": "psychopomp:b3 contradicting weight 0.9", "transition": "Contradicted"}
+  },
+  "readback_fresh_processes": {
+    "explain_negative": "supported (Confidence: 0.50, Coherence: 0.50, Fitness: 0.61); SUPPORTING EVIDENCE (1) cites producer key, store seq 7, row sha256 d61732c8…, plan sha256 611de9f4…, conf 0.90",
+    "explain_positive": "contradicted (Confidence: 0.50, Coherence: 0.50, Fitness: 0.29); CONTRADICTING EVIDENCE (1) cites the same row and plan, conf 0.90",
+    "replay_before": "[40f8a80e…] is known but had no recorded belief at 2026-11-23 17:11:00 UTC",
+    "replay_after": "Belief at 2026-11-23 17:12:30 UTC for [40f8a80e…]: Supported",
+    "replay_current_positive": "Belief at 2026-11-23 17:12:02 UTC for [3fc720f1…]: Contradicted"
+  },
+  "what_this_proves": "a verified store row drove two opposite, traceable revisions in a separate ledger, and the temporal record distinguishes before from after rather than exposing a single mutable status",
+  "what_this_does_not_prove": [
+    "that the UUID-to-law assignment is right: the caller asserts it, and the ledger cannot check it",
+    "that the store row is authentic beyond exact key, payload and digest matching",
+    "transfer to the turnover pair, which is a different fixture and remains untested",
+    "that the proposal was written before the transition: both were in one session, and the ordering is recorded here only by timestamps and this receipt"
+  ],
+  "control": "the positive rival received contradicting polarity for the same evidence, so the pair is not symmetric; a proposal is refused outright when the store row is missing, duplicated or altered (tests/test_active_belief_proposal.py, tests/test_durable_discovery.py)"
+}

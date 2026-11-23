@@ -68,7 +68,36 @@ from the stored reading and proposes `Supported` for one rival and
 `Contradicted` for the other. A refusal produces no revision.
 
 `PROPOSED` is not a persisted revision or an authorization. The caller must
-verify the UUID-to-law assignments in the target ledger. Next: record both
-updates in an isolated ledger, reopen it, and read back both the evidence and
-revision. Shuffled decisions remain controls, not history. Importer hardening
-stays on its own branch.
+verify the UUID-to-law assignments in the target ledger. Shuffled decisions
+remain controls, not history. Importer hardening stays on its own branch.
+
+## Applied and reopened
+
+Rivals `40f8a80e` (negative law) and `3fc720f1` (positive law) were created in
+the programme ledger, because a `physis-core` write is refused under an
+env-prefixed `PHYSIS_CORE_DIR` in this harness while reads are allowed. The
+proposal for `law-1-state-3` was produced first and is recorded verbatim in
+[`belief-revision.json`](../../research/loops/results/active-store-replay-20261123/belief-revision.json),
+then applied: supporting evidence to the negative rival, contradicting evidence
+to the positive one, both citing producer key
+`psychopomp:episode:0:1159617891002457984#0`, store seq **7**, row sha256
+`d61732c8…` and plan sha256 `611de9f4…`.
+
+Reopened in fresh processes:
+
+| check | result |
+|---|---|
+| `hypothesis explain 40f8a80e` | `supported`, SUPPORTING EVIDENCE (1), conf 0.90 |
+| `hypothesis explain 3fc720f1` | `contradicted`, CONTRADICTING EVIDENCE (1), conf 0.90 |
+| `replay --subject 40f8a80e --at 17:11:00Z` | *known but had no recorded belief* |
+| `replay --subject 40f8a80e --at 17:12:30Z` | `Belief … Supported` |
+
+So the revision is a **temporal record**, not a mutable status: the ledger
+distinguishes before from after, and both rivals carry the same cited evidence
+with opposite polarity.
+
+What this does not establish: that the UUID-to-law assignment is correct (the
+caller asserts it and the ledger cannot check it), that the store row is
+authentic beyond exact key/payload/digest matching, that the proposal was
+written before the transition (one session; the ordering is this receipt), or
+that any of it transfers to the turnover pair — a different fixture, untested.
