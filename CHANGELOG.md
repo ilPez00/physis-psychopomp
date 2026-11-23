@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Verification now reproduces the locked Python environment from a clean checkout
+  and fails if a required tool is missing. New preregs must declare their claim
+  UUID before the first section.
+- R-P1.46 tests shared, independent and complementary marker delivery at equal
+  marginal reliability. See the [evidence audit](docs/notes/2026-11-23-p1-evidence-audit.md)
+  for corrections to the scope and verdicts of R-P1.43–45 below.
+
 ## 0.8.1 — 2026-11-22
 
 **Integration contract, producer side machine-checked.** `docs/INTEGRATION-CONTRACT.md`

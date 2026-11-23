@@ -7,16 +7,16 @@ outcomes. Repo state measured 2026-11-21 at `3b3335d` (+2 local tests pending).
 
 ## Current state — measured, not narrated
 
-| CI | **GitHub Actions refuses to run jobs**: "recent account payments have failed or your spending limit needs to be increased" (run `45053745321`, 2026-11-22). Everything the workflow runs has been re-run **locally** and passes: `uv lock --check`, 158 tests, 28 research gates, law conformance, REPRO block, prereg checklist, recoverability / probes / demo. Billing is outside this repo's control | run 45053745321; local gate transcript in the receipt below |
 | item | state | evidence |
 |---|---|---|
+| CI | **Hosted CI not verified** (billing; zero steps on baseline `45092968840`). Local command uses the same locked environment setup and nine gate steps. | `scripts/verify-all.py`, `.github/workflows/ci.yml` |
 | Claims A/B | registered, bounded; A untested, B not started | `docs/2026-11-20-PREREG.md` + AMENDMENT |
 | **A2 result** (pre-contact position channel) | **landed**: deterministic top-1 **1.00** vs **0.25** chance on the parallel family; endpoint-only probe 0.00 | `docs/2026-11-21-PLAN-audit-followups.md` §P4; `scripts/probes.py` |
 | **A3** (observation-noise experiments) | **blocked with a measurement**: at noise/gap ratio ≤ 0.4 the observables do not determine the answer (exact Bayes ties); at ≥ 1 a trivial statistic wins; `track(3)` samples make the feasibility set **empty** (velocity noise amplified 1/dt). Binding constraint = position noise vs the 2-unit gap | `docs/2026-11-21-PLAN-round9.md` §W2–W3 |
 | License | **Apache-2.0 + NOTICE** landed (portfolio audit) | `cca8220`, `3b3335d` |
-| Tests | **158 green** | `pytest -q` |
+| Tests | Run from the locked dev environment | `.venv/bin/python -m pytest -q` |
 | **Self-model** | **recoverable + conservative** — `psychopomp/selfmodel.py` estimates the observer's own blind region from its own observable log: within one step, a subset of the truth, abstaining on uncrossed edges; 1 optimistic error, 0 pessimistic | `docs/LAW.md`, R-P1.29 |
-| **Law** | **consolidated, callable, CI-pinned** — `docs/LAW.md` (statement, envelope, falsification log), `psychopomp/law.py`, `scripts/law-conformance.py` (random stratified grid vs attribution: 0 mismatches), `scripts/research-gates.py` (seven documented outcomes pinned, fails only on drift); CLI surface `python -m psychopomp.law '<json>'` | `docs/LAW.md` |
+| **Law** | Point-model predicate, scoped to declared intervention tasks; research runner checks expected outcomes, including negatives. | `docs/LAW.md`, `scripts/law-conformance.py`, `scripts/research-gates.py` |
 | Perspectives (mission core) | **present** (`perspective.py`, `camera.py`, `attribution.py`). A4 run 1: frame normalization adds **no** predictive value (H1 falsified). R-P1.9: a second *observer with a different blind spot* does (unique vs null-tie) | `2026-11-21-A4-run-1-results.md`, `2026-11-22-PLAN-R-P1.9-multi-observer.md` |
 | Learned arms | **tested and rejected** (R-P1.36): a numpy MLP correction trained on crossing-bound statistics is *worse* than the deterministic inner bound at every held-out σ (0.61 vs 0.53 pessimism at σ=1.0), does not beat its shuffled control (0.61 vs 0.65), and trades the conservative tail for mean accuracy (MAE 0.145→0.091 while pessimism 0.09→0.30). The R-P1.35 headroom is real but not closable by a generic regressor — a containment-encoding loss would be a different card | R-P1.36 |
 | (superseded) GPU arms |  (R-P1.35: 14/20 pessimistic at σ=1.0, so the deterministic estimator is not at ceiling). omo reachable but **not usable for jobs**: ping 47 ms, Ollama `0.32.5` answers with **no models loaded** (GPU idle, nothing to clear), while `ssh` authenticates by publickey and then the session hangs (`Entering interactive session` → no output, SIGTERM at 45 s). No remote process clearing is possible from here, and none is needed — the box is idle, not loaded. Local `pansa` has `torch 2.14.1+cu130`, so the learned arm runs CPU-side | R-P1.35; probe 2026-11-22 |
@@ -76,10 +76,13 @@ Consequences fixed now:
 | R-P1.40 | **Marker reliability**: identity identifiability as `1−(1−p)^N` — does the formula hold? | measured resolvable fraction within ±0.05 of the formula at every p | **done — PASS, VACUOUS** (`2026-11-22-PREREG-R-P1.40-marker-reliability.md`): with `N = 56` the formula predicts ≈ 1 for every `p ≥ 0.2`, so all four predictions were unfalsifiable as built, and the "short window" produced the same `N`. Recorded as vacuous, not evidence. Durable product: `marker_reliability` with its own stream |
 | R-P1.41 | **The formula at small N**, where the exponent discriminates: `N = 2, 4, 6`, `p` swept, 400 realizations per cell. | every cell within ±0.06 of `1−(1−p)^N`; the N=1 linear case; distinct N; more chances help by the algebra | **done — S1 UPHELD 12/12; S2/S3/S4 falsified by a units error** (`2026-11-22-PREREG-R-P1.41-small-N.md`, `scripts/small-n-identity-prereg.py`, receipt `research/loops/results/small-n-identity-20261122/`): `p=0.6, N=2 → 0.840/0.845`, `p=0.3, N=2 → 0.510/0.505`. The prereg confused slots with opportunities (two bodies ⇒ N is 2,4,6); S1 uses the measured N and is the substantive check. **Identity identifiability is a formula, not a slogan** |
 | R-P1.42 | **Bursty marker loss**: does the identity formula survive a correlated channel? | at matched marginal drop rate the bursty channel resolves strictly less often; the deficit shrinks with N | **done — B1/B2 upheld, B3 falsified as written** (`2026-11-22-PREREG-R-P1.42-bursty-markers.md`, `marker_outage_prob`/`marker_outage_len`, `scripts/bursty-markers-prereg.py`): bursty vs independent 0.618 vs 0.930 at N=4, b=0.4 (deficit **+0.312**, down to **+0.052** at N=12); B3's algebra was wrong, its mechanism (collapse to one draw: 0.618 vs 1−b = 0.600) confirmed |
-| R-P1.43 | **Detection latency**: is a late report symmetric noise? | the law is untouched; the edge estimate degrades in a signed, scaling direction | **done — PASS after two thresholds were widened at L=1 (recorded as a prereg defect)** (`2026-11-22-PREREG-R-P1.43-detection-latency.md`, `detect_latency`, `scripts/detection-latency-prereg.py`): mean margin **+0.20 → +0.05 → −0.55 → −2.65** at L = 0/1/3/10, optimism gone once L > 1 step, law identical at L=0 and L=10. First lag helper sampled the wrong side and would have measured the sign backwards |
-| R-P1.44 | **Partial visibility**: with a body radius, where does the centre-based predicate break? | the law mispredicts only in a band of width r; shrinking the blind region by r repairs it | **done — SUPPORTED, 4/4** (`2026-11-23-PREREG-R-P1.44-partial-visibility.md`, `visual_radius`, `scripts/partial-visibility-prereg.py`): mispredictions **0/1/1** at r = 0/0.5/1.0, empty at r = 0, and the r-shrunk predicate correct on every point at every radius. The law's wording becomes "identifiable iff the **whole body** is outside the blind region" |
+| R-P1.43 | **Detection latency** | signed edge bias; unchanged attribution | **Candidate.** Implemented outward sampling differs from prereg; original L2/L4 fail. Follow-up matches the same 3/3 off-boundary tasks at all four lags. |
+| R-P1.44 | **Partial visibility** | eroded rectangle predicts kick-vs-null outcome | **12/12** after repairing the second-observer implementation; a visible sliver suffices in this simulator. |
+| R-P1.45 | **Convex polygon visibility** | inward-offset diamond vs visibility | **12/12 off-boundary, after pilot amendment.** Visibility only, not attribution; original vertex and band predictions disagreed with pilot. |
+| R-P1.46 | **Producer dependence** | matched delivery marginals, vary only dependence | **M1–M3 upheld.** Fused distinguishability 1/2 shared, 3/4 independent, 1 complementary; single producer 1/2 in all; tag-stripped control ties on every mask. |
 
-| R-P1.45 | **Partial visibility for polygons**: does the radius rule extend to slanted edges, and is erosion the right repair? | the band appears on a slanted edge and nowhere else; the eroded polygon is exact | **done — SUPPORTED, 4/4** (`2026-11-23-PREREG-R-P1.45-polygon-radius.md`, `visual_radius` for `poly_o`, `scripts/polygon-radius-prereg.py`, receipt `research/loops/results/polygon-radius-20261123/`): band at d=0.283 seen at r=0.5 where the law says hidden; `inner` mispredicted at r=1.0 and the **eroded** predicate right; zero mispredictions at r=0. The rule is **shape-independent**; distance-to-segment, not axis comparison, near a vertex. Non-convex erosion not claimed |
+See [evidence audit](notes/2026-11-23-p1-evidence-audit.md) for qualifications and
+reproduction commands, and the [R-P1.46 receipt](../research/loops/results/producer-dependence-20261123/receipt.json).
 ## Claim ledger — registered, with measure and status
 
 | claim | statement | measure | status |
@@ -96,24 +99,14 @@ identification survives until the noise floor approaches the world's geometry.
 
 ## Next axes, in order of value
 
-Status: **P1 is covered end to end** — coverage of the world (events), of the
-observer (its own blind region, multi-cell, count from evidence), of its
-uncertainty (noise envelope, self-model error, hedging, bursty markers) and of its
-evidence about identity (`1−(1−p)^N`). What follows is *generality*, not gaps in the
-argument.
-
-1. **Detected-event latency (R-P1.43)** — every card so far assumed a crossing is
-   recorded the instant it happens. A late report is the one imperfection that
-   touches *every* event the program consumes, and it should bias the edge estimate
-   in a **signed** way rather than adding symmetric noise.
-2. **Rotating body frames** — R-P1.18 covered exact scene symmetries; a *continuously
-   rotating* observer needs polygon membership at every step, which now exists
-   (`law.is_blind`) but is untested with rotation.
-3. **Multi-producer identity** — the formula assumes one marker channel; two
-   observers with their own channels is the natural next composition.
-4. **Integration** — blocked outside this repo: `physis-computer` (the remote of the
-   available checkout) contains **no Rust source**, so the importer has a plan and no
-   home (`docs/notes/2026-11-22-physis-import-patch-plan.md`).
+1. **Integration** — canonical `ilPez00/physis-next:main` contains the Rust
+   source; rebase left untouched. Import implementation and verified round trip
+   remain pending. Revalidate the sketch against that ref.
+2. **Multi-producer identity** — add overlapping coverage and unreliable tag
+   content before claiming anything about distinct observers or a decoder.
+3. **Instrument controls** — distinguish forward-snapshot delay from outward
+   sampling; separate composited blocker masks from per-blocker containment.
+4. **Rotating body frames** — continuously rotating observers remain untested.
 5. **Learned arms** — closed by measurement, not policy: two attempts, two different
    failures (R-P1.36, R-P1.37).
 

@@ -1,0 +1,12 @@
+{
+  "card": "R-P1.46",
+  "claim_id": "e1811bf2-f261-4a86-bc7e-ada56a6f1f86",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.46-producer-dependence.md",
+  "frozen_commit": "0caec73",
+  "command": ".venv/bin/python scripts/producer-dependence-prereg.py",
+  "verdicts": {"M1": "UPHELD", "M2": "UPHELD", "M3": "UPHELD"},
+  "fused": {"shared": "1/2", "independent": "3/4", "complementary": "1"},
+  "single_producer": "1/2 in each arm",
+  "anonymous_control": "4/4 masks preserve ambiguity",
+  "scope": "Exact replay of four matched delivery masks over one visible simulator marker and a relabelled twin. Not a field reliability estimate or a general identity decoder."
+}

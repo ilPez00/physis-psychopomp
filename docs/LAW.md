@@ -228,46 +228,51 @@ The first attempt to test the independent case (R-P1.40) sat at `N = 56`, where 
 formula predicts ≈ 1 for every `p` — it passed and tested nothing, and is recorded
 as **vacuous** rather than as evidence.
 
-## Detection latency is not noise (measured, with a caveat)
+Two producers with marginal delivery `1/2` each need not be worth two independent
+chances. R-P1.46 enumerated the same four delivery masks over one perfect tag:
+shared loss yielded `1/2`, independent loss `3/4`, complementary availability `1`.
+A alone gave `1/2` each time, and removing tag content made all four masks tie.
+The expression here is `1 − P(neither delivers)`; no claim about unreliable tag
+content or different viewing geometry.
 
-A lagging sampler reports a crossing late with the position **then**, so the reported
-point lies further along the body's travel: the edge bound moves **outward**, and the
-self-model estimate crosses from optimistic (+0.05 at one step of latency) to
-pessimistic (−0.55 at three, −2.65 at ten) — a **signed** degradation, unlike sensor
-noise, which is symmetric (R-P1.43). The law is untouched: the same identifiability
-count at `L = 0` and `L = 10`, because it is a predicate on the true event location.
+## Crossing-position bias (R-P1.43, exploratory)
 
-Caveat kept deliberately: this card's two strict thresholds ("never optimistic at
-`L ≥ 1`", "no optimistic margin at `L ≥ 1`") were **falsified at `L = 1`** and widened
-afterwards, because one step of latency sits inside the estimator's own quantisation.
-That is a preregistration defect, not a measurement one, and it is recorded rather
-than smoothed.
+The implemented channel samples `j−L` at entry and `j+L` at exit, shifting only
+the exit timestamp. It biases the bound outward by construction on these
+straight crossings. Mean margins were `+0.20 / +0.05 / −0.55 / −2.65` at
+`L = 0 / 1 / 3 / 10`. This is **not** the preregistered `j+L` snapshot at both
+crossings; the two strict thresholds also failed at `L = 1` before being widened.
+
+The [follow-up audit](notes/2026-11-23-p1-evidence-audit.md) compares the same
+three off-boundary tasks at each lag and matches 3/3 each time. These were
+visibility-gated kicks logged directly when applied; this is not a finding about
+identifiability under arbitrary transport delay or degraded evidence.
 
 ## A scope condition the law had been assuming: hidden means *wholly* hidden
 
-Nine cards measured "hidden" as "the centre is inside the blind region" — correct for
-the point model they declared. A body of radius `r` is fully hidden only when its whole
-disc is inside, so the effective blind region is the point-level one **shrunk by `r`**
-on every edge, and a centre-based predicate over-predicts blindness in a band of width
-`r` (R-P1.44: mispredictions 0 / 1 / 1 at `r = 0 / 0.5 / 1.0`; shrinking by `r`
-predicts every point correctly at every radius).
+For one blocker `B`, the disc at centre `c` and radius `r` is hidden iff
+`c + D_r ⊆ B`. Its visible complement requires **some part** outside, not the
+whole disc. Equivalently, a centre is hidden iff it lies in `B` eroded by `D_r`.
+A rectangle shrinks on all four sides. For a simple polygon and an interior
+centre, minimum distance to the boundary segments tests disc containment;
+inward half-planes are a separate construction for convex polygons only.
 
-So the law's statement is: identifiable iff the **whole body** is outside the blind
-region. `SimConfig.visual_radius` carries the radius, and `0.0` is the point model all
-earlier measurements used.
+R-P1.44 matched the eroded rectangle on 12 declared kick-vs-null cases. R-P1.45
+matched an independently calculated diamond erosion on 12 off-boundary
+**visibility** cases under checks amended after a pilot, not through attribution.
+Neither establishes a radius-aware planner or validated crossing metadata.
+`predict_identifiable` and planning still use point geometry.
 
-The rule is **shape-independent** (R-P1.45): a rectangle shrinks by `r` and a **convex
-polygon** is **eroded** by `r`, with the same outcome — the eroded predicate is exact on
-every point at every radius, on a slanted edge as on an axis-aligned one. Near a polygon
-vertex the nearest boundary point is the vertex, so the test must be distance-to-segment,
-not an axis comparison. Non-convex erosion is not claimed.
+With several blockers per observer, the simulator tests containment by **any
+single** blocker. It does not test containment by their union. These operations
+can differ at seams; see the [audit](notes/2026-11-23-p1-evidence-audit.md).
 
 ## How to use it
 
 ```python
 from psychopomp.law import blind_region, predict_identifiable, on_boundary
 
-cfg = ...  # SimConfig with o, o2, optional o2_velocity / accel
+cfg = ...  # point-model SimConfig (visual_radius=0)
 if not on_boundary(cfg, point, t):
     identifiable = predict_identifiable(cfg, point, t)
 ```
