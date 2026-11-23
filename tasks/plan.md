@@ -192,9 +192,15 @@ Order, each step ending in a gate rather than a paragraph:
    pinned snapshot, emit `HYPOTHESIZED` operations plus an explicit `UNKNOWN`.
    No training. Operations limited to `ADD_EDGE`, `RETRACT`, `CHANGE_TYPE`,
    `RECONCILE_ID`, `SET_VALIDITY`, `REQUEST_EVIDENCE`.
-5. **E4 — route through Physis**, never around it: `whatif`, ontology admission,
-   retraction preview, authorisation. `REQUEST_EVIDENCE` reuses the R-P1.47/48
-   experiment picker rather than a new mechanism.
+5. **E4 — route through Physis**, never around it. Measured
+   ([surfaces](../docs/notes/2026-11-23-e4-admission-and-retraction-surfaces.md)):
+   `declare` admits and the fold decides (R-P1.53), `claim` gives a read-only
+   verdict before admission, and **retraction of a host-sourced relation does not
+   exist** — tombstones are filtered through `is_code_source`, `tms`/`whatif` are
+   previews, and no command applies one. So proposals are additive
+   (`ADD_EDGE`) plus `REQUEST_EVIDENCE`; `RETRACT`/`CHANGE_TYPE`/`SET_VALIDITY`/
+   `RECONCILE_ID` stay blocked on upstream. Forging a code-source provenance to
+   smuggle a tombstone is forbidden.
 6. **E5 — benchmark** a controlled corrupted graph against **no repair**,
    **deterministic constraints alone**, and **shuffled predictions**. Metrics:
    repair precision, recall, false corrections, true-world coverage, downstream
