@@ -45,6 +45,8 @@ GATES = [
      "R-P1.47: exact finite law/state gains, signed resolves 8/8, passive/magnitude/shuffled resolve none"),
     ("scripts/active-exit-prereg.py", 0, "prereg run: PASS",
      "R-P1.48: 24/24 analytic exits, 8/8 calibration rejects, signed resolves 8/8 and three controls resolve none"),
+    ("scripts/graph-patch-demo.py", 0, "graph patch demo: PASS",
+     "E3: a disputed edge becomes two HYPOTHESIZED proposals plus the experiment that would settle it; nothing applied"),
     ("scripts/turnover-discovery.py", 0, "turnover discovery: PASS",
      "C3: the one-probe loop and receipt transfer to the turnover pair — 4/4 resolved post-disturbance, 4/4 passive abstentions"),
     ("scripts/turnover-identity-prereg.py", 0, "prereg run: PASS",

@@ -124,8 +124,7 @@ One writer at a time; a delegate's claim is not a gate.
   refuses edges naming unobserved entities, and pins a revision (own digest, or
   an external packet hash). 5 tests; two mutations caught; verified on a real
   scratch world (9 entities, 2 edges, 10 evidence seqs, deterministic revision).
-- [ ] **E3: Symbolic decoder.** Admissible worlds → typed operations + `UNKNOWN`.
-  Depends on E1/E2. Gate: controlled corrupted graph, no-repair baseline.
+- [x] **E3: Symbolic decoder (first cut).** `psychopomp/graph_patch.py`: agreed edges stay `HYPOTHESIZED`, disputed ones emit both sides plus `REQUEST_EVIDENCE` with the best-gain probe, an empty admissible set is `UNKNOWN`, refused triples are never re-proposed, unobserved endpoints refused. 8 tests, three mutations caught, demo gated. **Still open:** the controlled corrupted-graph benchmark vs no-repair/deterministic/shuffled.
 - [ ] **E4: Route through Physis.** `whatif` + retraction preview + authorisation;
   a structurally valid proposal still does not mutate the graph.
 - [ ] **E5: Benchmark** vs no-repair, deterministic-only and shuffled controls;
