@@ -63,7 +63,7 @@ One writer at a time; a delegate's claim is not a gate.
   in a temporary store. Record exact ref, store path and readback command.
   Independent of A; no edits in the paused rebase.
 - [x] **B2: Import fixture under lock.** Store-level half landed (see E1). CLI half remains.
-- [x] **B2 (CLI): import subcommand.** `physis import` at `4f0ce96d8`: 5 rows in, re-import 0/5 dup, `subject` readback 5, torn tail refused, and two concurrent imports leave **5 rows / 5 unique keys** with one process aborting by design. **Not run:** `cargo test -p physis-cli`. In Physis-next, prove five-row import,
+- [x] **B2 (CLI): import subcommand.** `physis import` at `4f0ce96d8`: 5 rows in, re-import 0/5 dup, `subject` readback 5, torn tail refused, and two concurrent imports leave **5 rows / 5 unique keys** with one process aborting by design. `cargo test -p physis-cli` green (1 + 6 tests); smoke committed upstream as `scripts/psychopomp-import-smoke.sh`. In Physis-next, prove five-row import,
   order, repeat/concurrent/in-batch dedup and collision handling; reject bad
   provenance, counterfactuals and torn tails; confirm dry-run has zero writes.
   Depends on B1. Gate: targeted Rust importer tests, CLI import/query smoke
