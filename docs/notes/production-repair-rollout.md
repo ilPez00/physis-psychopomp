@@ -123,6 +123,15 @@ retraction_revoke **6/6**, physis-store **41 passed / 1 ignored**, cli lib
 write separation, no CLI verb for the withdrawal half of the flow, and no
 exercised world outside a temp dir.
 
+**Artifacts.** Head `27da5323a` is on `origin` and in a 16K delta bundle
+(`guarded-repair-27da5323a.patchbundle`) on the NAS and on air's stick,
+byte-identical. `git bundle verify` passes in a full clone and names its two
+prerequisites, `e4bb2695a8` and `f2b319cb8`, both published on origin. A full
+`--all` bundle of this repository is 5.5G, so it is made once per milestone
+rather than per commit; the one on the NAS is from `b17a83045` and is older
+than the head.
+
+
 ## Ranking — measured, and the learner is not justified
 
 [R-P1.56](../../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md) froze 24
