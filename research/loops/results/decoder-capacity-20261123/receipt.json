@@ -1,0 +1,20 @@
+{
+  "card": "R-P1.52",
+  "claim_id": "bb592f87-84fa-4142-aefc-f6adbe83a296",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.52-decoder-contract-capacity.md",
+  "frozen_commit": "5dc9897e3e810af16ec95a8811226adfc39cdba1",
+  "command": ".venv/bin/python scripts/decoder-capacity-benchmark.py",
+  "capacity": {"C1": "PASS", "C2": "PASS", "C3": "PASS", "C4": "PASS"},
+  "verdicts": {"D1": "UPHELD", "D2": "UPHELD", "D3": "UPHELD", "D4": "UPHELD", "D5": "UPHELD", "D6": "UPHELD"},
+  "arms": {
+    "no-repair": {"proposals": 0, "true": 0, "false": 0},
+    "closure": {"proposals": 1, "true": 0, "false": 1, "precision": 0.0, "recall": 0.0},
+    "exact": {"proposals": 2, "true": 2, "false": 0, "precision": 1.0, "recall": 1.0},
+    "shuffled": {"proposals": 6, "true": 0, "false": 6, "precision": 0.0},
+    "agreed": {"proposals": 3, "true": 2, "false": 1, "precision_overall": 0.67,
+               "precision_on_agreed_subset": 1.0, "recall": 1.0,
+               "note": "the third proposal is the disputed candidate; D5 scores the agreed subset only"}
+  },
+  "supersedes": "R-P1.51 D4 (its noisy arm omitted both missing edges, making the predicted agreement unsatisfiable)",
+  "scope": "Decoder contract given admissible worlds, plus one deterministic closure baseline. Not a predictor, not repair quality, not admission by Physis."
+}

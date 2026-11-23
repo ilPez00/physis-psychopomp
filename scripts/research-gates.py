@@ -45,6 +45,8 @@ GATES = [
      "R-P1.47: exact finite law/state gains, signed resolves 8/8, passive/magnitude/shuffled resolve none"),
     ("scripts/active-exit-prereg.py", 0, "prereg run: PASS",
      "R-P1.48: 24/24 analytic exits, 8/8 calibration rejects, signed resolves 8/8 and three controls resolve none"),
+    ("scripts/decoder-capacity-benchmark.py", 0, "prereg run: PASS",
+     "R-P1.52: capacity 4/4 then exact 1.00/1.00, closure baseline 0.00, shuffled 0.00, agreed arm abstains into a probe"),
     ("scripts/decoder-contract-benchmark.py", 1,
      "D4 disputed set: both sides + exactly one REQUEST_EVIDENCE: FALSIFIED",
      "R-P1.51: exact/shuffled/empty arms upheld; D4 falsified by a prereg arm defect and pinned as failing"),
