@@ -1,6 +1,9 @@
 """Independent finite-fixture verifier: no simulator or controller imports."""
+import argparse
 import hashlib
 import json
+from pathlib import Path
+import sys
 
 
 def _digest(record):
@@ -10,6 +13,9 @@ def _digest(record):
 
 def verify(calibration, commitment, observation, decision):
     """Return the derived law or None. Raise on invalid record relationships."""
+    if (not all(isinstance(record, dict) for record in (calibration, commitment, decision))
+            or observation is not None and not isinstance(observation, dict)):
+        raise ValueError("invalid fixture record shape")
     case, layout = calibration.get("case"), calibration.get("layout")
     if (not isinstance(case, str) or not case or layout not in ("left", "right")
             or _digest(calibration) != _digest({"case": case, "layout": layout, "magnitude_eighths": 45})):
@@ -50,3 +56,23 @@ def verify(calibration, commitment, observation, decision):
     if _digest(decision) != _digest(derived):
         raise ValueError("decision not supported by acquired evidence")
     return resolved
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("case", type=Path)
+    args = parser.parse_args()
+    try:
+        records = [json.loads((args.case / f"{name}.json").read_text())
+                   for name in ("calibration", "commitment", "acquisition", "decision")]
+        resolved = verify(*records)
+    except (OSError, ValueError) as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps({"verdict": "ABSTAIN" if resolved is None else "VERIFIED",
+                      "resolved": resolved}))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

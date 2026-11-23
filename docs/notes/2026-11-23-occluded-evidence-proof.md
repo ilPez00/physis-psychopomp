@@ -19,8 +19,10 @@ robotics, new public API, or production world.
   signed displacement `−6/8` or `+6/8`; the late view returns no reading
   at the deadline. Geometry must not change the latent trajectory.
 - Use all four layout × law cells. Compare passive, fixed-left, fixed-right
-  and seeded random with the same one-probe budget. Verify both laws; the
-  outcome is not a generalization beyond these four deterministic cells.
+  and uniform random with the same one-probe budget. For random selection
+  the analytic expectation is 2/4; seed 4 illustrates a 2/4 realization,
+  not a statistically independent test of the policy. The outcome does not
+  generalize beyond these four deterministic cells.
 - A separately implemented analytic verifier checks the committed plan,
   separately supplied acquisition record, forecast table, and belief update.
   Missing, out-of-support, swapped, or fabricated evidence earns no resolution.
@@ -46,3 +48,22 @@ robotics, new public API, or production world.
    round-trip one verified case through the existing Physis stdio MCP.
    CLI writes artifacts only under an explicitly new output directory.
    Run focused tests, `scripts/verify-all.py`, and a real Physis round-trip.
+
+## Reproduce
+
+From the Psychopomp checkout:
+
+```bash
+O=$(mktemp -d)
+python3 scripts/occluded-evidence.py "$O/run" --physis "$(command -v physis)"
+python3 -m psychopomp.verify_occluded_evidence "$O/run/adaptive-1"
+python3 -m psychopomp.verify_occluded_evidence "$O/run/passive-1"
+```
+
+Omit `--physis` for the simulator comparison alone. The verifier for one case
+reads only its four records, not the comparison's ground-truth key. It reports
+`VERIFIED`, `ABSTAIN`, or exits nonzero on refusal. The Physis case's
+`physis.json` binds reopened notes and hypothesis evidence to their observation
+sequences; the prior and posterior are recorded in the commitment and decision
+notes rather than substituting Physis's heuristic confidence for the fixture's
+Bayesian posterior.

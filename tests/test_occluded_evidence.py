@@ -1,4 +1,8 @@
 from copy import deepcopy
+import json
+from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -80,3 +84,35 @@ def test_tampered_forecast_or_truth_leakage_is_refused():
         plan({**c, "truth": -1}, "adaptive")
     with pytest.raises(ValueError, match="observer"):
         trajectory("left", -1, "outside-catalogue")
+
+
+def test_cli_scores_matched_controls_and_preserves_existing_output(tmp_path):
+    script = Path(__file__).resolve().parents[1] / "scripts/occluded-evidence.py"
+    out = tmp_path / "new"
+    command = [sys.executable, str(script), str(out)]
+    run = subprocess.run(command, capture_output=True, text=True, timeout=15)
+    assert run.returncode == 0, run.stderr
+    report = json.loads(run.stdout)
+    assert {k: v["verified"] for k, v in report["arms"].items()} == {
+        "adaptive": 4, "passive": 0, "left": 2, "right": 2, "random": 2,
+    }
+    assert all(v["false_resolutions"] == 0 for v in report["arms"].values())
+    assert report["arms"]["adaptive"]["probes"] == report["arms"]["random"]["probes"] == 4
+    assert report["arms"]["passive"]["probes"] == 0
+    before = (out / "comparison.json").read_bytes()
+    retry = subprocess.run(command, capture_output=True, text=True, timeout=15)
+    assert retry.returncode != 0 and "exists" in retry.stderr
+    assert (out / "comparison.json").read_bytes() == before
+
+
+def test_independent_verifier_cli_rejects_readout_substitution(tmp_path):
+    c, p, o, d = case("left", 1)
+    for name, payload in zip(("calibration", "commitment", "acquisition", "decision"), (c, p, o, d)):
+        (tmp_path / f"{name}.json").write_text(json.dumps(payload))
+    cmd = [sys.executable, "-m", "psychopomp.verify_occluded_evidence", str(tmp_path)]
+    run = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+    assert run.returncode == 0 and json.loads(run.stdout)["resolved"] == 1
+    o["readout_eighths"] = -6
+    (tmp_path / "acquisition.json").write_text(json.dumps(o))
+    run = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+    assert run.returncode == 1 and "decision" in run.stderr
