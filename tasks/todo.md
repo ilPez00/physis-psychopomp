@@ -119,7 +119,11 @@ One writer at a time; a delegate's claim is not a gate.
   seq that exists (query shape unknown), and `removed:rel|…` was not attempted.
   Consequence: E4 limited to `ADD_EDGE` + `REQUEST_EVIDENCE` until those two land.
 - [ ] **E1: Importer.** Same deliverable as B2; blocked on B1's open questions.
-- [ ] **E2: Revision-pinned adapter.** Read-only, names the base revision.
+- [x] **E2: Revision-pinned adapter.** `psychopomp/physis_snapshot.py`: parses
+  `object list --json` + `object get --json`, normalises both edge directions,
+  refuses edges naming unobserved entities, and pins a revision (own digest, or
+  an external packet hash). 5 tests; two mutations caught; verified on a real
+  scratch world (9 entities, 2 edges, 10 evidence seqs, deterministic revision).
 - [ ] **E3: Symbolic decoder.** Admissible worlds → typed operations + `UNKNOWN`.
   Depends on E1/E2. Gate: controlled corrupted graph, no-repair baseline.
 - [ ] **E4: Route through Physis.** `whatif` + retraction preview + authorisation;
