@@ -99,19 +99,21 @@ identification survives until the noise floor approaches the world's geometry.
 
 ## Next axes, in order of value
 
-1. **Integration** — canonical `ilPez00/physis-next:main` contains the Rust
-   source; rebase left untouched. Import implementation and verified round trip
-   remain pending. Revalidate the sketch against that ref.
-2. **Active law identification** — [design proposal](notes/2026-11-23-active-law-identification.md):
-   select one experiment that separates two laws with identical passive logs.
-   Keep same-disturbance counterfactual failure as a separate card.
-3. **Multi-producer identity** — add overlapping coverage and unreliable tag
-   content before claiming anything about distinct observers or a decoder.
-4. **Instrument controls** — distinguish forward-snapshot delay from outward
-   sampling; separate composited blocker masks from per-blocker containment.
-5. **Rotating body frames** — continuously rotating observers remain untested.
-6. **Learned arms** — closed by measurement, not policy: two attempts, two different
-   failures (R-P1.36, R-P1.37).
+The [P1 plan](../tasks/plan.md) and [execution queue](../tasks/todo.md) own the
+next work. This roadmap keeps the status and evidence for completed cards.
+
+1. **Active law identification:** notice a failed nominal prediction, choose
+   one safe simulated experiment to distinguish rival laws, verify the update.
+2. **Physis-next integration:** verify canonical APIs in isolation; import,
+   query and replay real evidence. The Rust source exists; the round trip
+   does not.
+3. **Organizational identity:** distinguish recovery after complete component
+   turnover from inventory-matched open-loop replay. Only then review typed
+   uncertainty across tasks.
+4. **Further R&D:** same-disturbance counterfactual limits, noisy/budgeted
+   experiment design, timestamp versus snapshot delay, composited masks and
+   radius metadata, moving frames, and unreliable multi-producer evidence.
+   Learned arms remain closed under the existing stop rule (R-P1.36/37).
 
 ## Dependencies and stop rules
 

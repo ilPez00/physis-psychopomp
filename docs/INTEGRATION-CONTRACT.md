@@ -6,6 +6,10 @@ per-source parsers and byte ceilings, and there is no generic JSONL ingress or
 `import` subcommand). This document is what a consumer needs in order to be written,
 and it separates what is guaranteed here from what must still be confirmed there.
 
+The [current P1 plan](../tasks/plan.md#phase-2-physis-next-round-trip) identifies
+the source-bearing canonical Physis-next branch and adds the concurrency,
+provenance, clock and torn-tail gates missing from the historical sketch.
+
 Checker: `scripts/export-contract-check.py` (also a pinned gate). Sample:
 `research/fixtures/observation-v1.sample.jsonl`.
 

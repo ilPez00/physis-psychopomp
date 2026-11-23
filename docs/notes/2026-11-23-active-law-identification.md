@@ -1,6 +1,8 @@
 # Next research slice: choose an experiment that separates laws
 
 **Status:** design proposal, not preregistered or measured. No learned arm.
+The [P1 plan](../../tasks/plan.md) specifies execution order, acceptance
+criteria and controls. This note retains the source rationale and scope.
 
 ## Source findings
 

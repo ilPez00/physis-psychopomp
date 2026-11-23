@@ -2,6 +2,7 @@
 
 Base: `90593f3`. Goal: make the verification command reproducible from a clean
 checkout and separate measured evidence from amended or untested claims.
+Current follow-up order is in the [P1 plan](../../tasks/plan.md).
 
 ## Ordered plan
 
