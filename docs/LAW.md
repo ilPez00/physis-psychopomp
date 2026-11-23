@@ -256,6 +256,12 @@ So the law's statement is: identifiable iff the **whole body** is outside the bl
 region. `SimConfig.visual_radius` carries the radius, and `0.0` is the point model all
 earlier measurements used.
 
+The rule is **shape-independent** (R-P1.45): a rectangle shrinks by `r` and a **convex
+polygon** is **eroded** by `r`, with the same outcome — the eroded predicate is exact on
+every point at every radius, on a slanted edge as on an axis-aligned one. Near a polygon
+vertex the nearest boundary point is the vertex, so the test must be distance-to-segment,
+not an axis comparison. Non-convex erosion is not claimed.
+
 ## How to use it
 
 ```python

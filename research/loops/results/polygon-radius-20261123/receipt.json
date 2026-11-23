@@ -1,0 +1,20 @@
+{
+  "card": "R-P1.45",
+  "date": "2026-11-23",
+  "status": "PASS — all four predictions upheld",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.45-polygon-radius.md",
+  "hypothesis": "5d07b83d-df00-490e-9e3b-e34856d2913b (Supported)",
+  "instrument": "visual_radius now applies to poly_o: fully hidden iff inside and at least r from the boundary (distance-to-segment)",
+  "command": ".venv/bin/python scripts/polygon-radius-prereg.py",
+  "measured": {
+    "band_cell": {"r": 0.5, "point": [82.6, 50.0], "boundary_distance": 0.283, "law": "tie", "instrument": "seen"},
+    "second_misprediction": {"r": 1.0, "point": [82.0, 50.0], "boundary_distance": 0.707, "eroded_predicate": "seen"},
+    "r0_mispredictions": 0,
+    "eroded_predicate": "matches the instrument on every point at every radius"
+  },
+  "finding": "the partial-visibility rule is shape-independent: identifiable iff the whole disc is outside the blind set, and the repair is the same operation - shrink a rectangle, erode a convex polygon, by r. Slanted edges need distance-to-segment rather than an axis comparison because near a vertex the nearest boundary point is the vertex.",
+  "amendment": "the prereg table was wrong twice (band distance 0.99 instead of 0.283, and the vertex was expected to be a law misprediction when the ray-cast excludes the boundary so it is visible under both predicates); both fixed before any verdict, and had they stood P1/P2 would have been reported falsified on arithmetic",
+  "limits": "convex polygons only; non-convex erosion can split or delete parts and is not claimed",
+  "tests": "158 passed",
+  "gates": 30
+}

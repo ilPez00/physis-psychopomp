@@ -193,6 +193,26 @@ def crossed_poly_edge(poly: Sequence[Tuple[float, float]],
     return best, (nx, ny)
 
 
+def distance_to_segment(px: float, py: float, ax: float, ay: float,
+                        bx: float, by: float) -> float:
+    """Perpendicular distance from a point to a segment (not the infinite line)."""
+    dx, dy = bx - ax, by - ay
+    if dx == 0.0 and dy == 0.0:
+        return math.hypot(px - ax, py - ay)
+    t = ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)
+    t = max(0.0, min(1.0, t))
+    return math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+
+
+def polygon_boundary_distance(poly: Sequence[Tuple[float, float]],
+                              x: float, y: float) -> float:
+    """Distance from a point to the polygon's boundary (vertex-aware)."""
+    n = len(poly)
+    return min(distance_to_segment(x, y, poly[i][0], poly[i][1],
+                                   poly[(i + 1) % n][0], poly[(i + 1) % n][1])
+               for i in range(n))
+
+
 def inside_polygon(poly: Sequence[Tuple[float, float]], x: float, y: float) -> bool:
     """Ray-casting point-in-polygon; works for convex and non-convex shapes."""
     inside = False
@@ -219,6 +239,16 @@ def observable(cfg: SimConfig, x: float, y: float, t: int = 0) -> bool:
     """
     r = cfg.visual_radius
 
+    def poly_fully_hidden(poly, px: float, py: float, radius: float) -> bool:
+        # R-P1.45: fully covered by a polygon means inside AND at least `radius`
+        # from the boundary. A distance-to-edge shortcut is wrong near a vertex,
+        # where the nearest boundary point is the vertex itself.
+        if not inside_polygon(poly, px, py):
+            return False
+        if radius <= 0.0:
+            return True
+        return polygon_boundary_distance(poly, px, py) >= radius
+
     def fully_inside(rect) -> bool:
         # the whole disc is covered when the centre is at least r from every edge
         return inside_rect(rect, x, y) and (x0 := rect[0] + r) <= x <= rect[1] - r \
@@ -226,7 +256,7 @@ def observable(cfg: SimConfig, x: float, y: float, t: int = 0) -> bool:
 
     blocked1 = (fully_inside(cfg.o)
                 or any(fully_inside(rect) for rect in cfg.extra_o)
-                or any(inside_polygon(poly, x, y) for poly in cfg.poly_o))
+                or any(poly_fully_hidden(poly, x, y, r) for poly in cfg.poly_o))
     if not blocked1:
         return True
     second = occluder2_at(cfg, t)
