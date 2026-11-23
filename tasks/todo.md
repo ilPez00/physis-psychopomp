@@ -119,7 +119,7 @@ One writer at a time; a delegate's claim is not a gate.
   a retry-until-admitted loop spins. **Still open:** `as-of` returned no rows at a
   seq that exists (query shape unknown), and `removed:rel|…` was not attempted.
   Consequence: E4 limited to `ADD_EDGE` + `REQUEST_EVIDENCE` until those two land.
-- [x] **E1: Importer module.** `physis-store/src/psychopomp.rs` on branch `feat/psychopomp-import` at `9520ea6e8`: UTC ingest explicit, `at_seconds` preserved, OBSERVED-only, counterfactual refused, dedup key `psychopomp:<subject>#<seq>` with a final condition inside `append_observations_if`. 8 tests, 2 mutations caught on omo. [Note](../docs/notes/2026-11-23-e1-importer.md). **Remaining:** CLI subcommand, a two-process concurrency test, and the round trip through Psychopomp's own export.
+- [x] **E1: Importer module.** `physis-store/src/psychopomp.rs` on branch `feat/psychopomp-import` at `9520ea6e8`: UTC ingest explicit, `at_seconds` preserved, OBSERVED-only, counterfactual refused, dedup key `psychopomp:<subject>#<seq>` with a final condition inside `append_observations_if`. 8 tests, 2 mutations caught on omo. [Note](../docs/notes/2026-11-23-e1-importer.md). CLI + smoke committed (`62c3a18a0`), `cargo test -p physis-cli` green, two-process concurrency leaves 5 rows / 5 unique keys, and the **round trip measured on 24 real simulator rows** (24 appended, re-import 0/24 duplicate). Remaining: linking imported evidence to a physis-core hypothesis.
 - [x] **E2: Revision-pinned adapter.** `psychopomp/physis_snapshot.py`: parses
   `object list --json` + `object get --json`, normalises both edge directions,
   refuses edges naming unobserved entities, and pins a revision (own digest, or
