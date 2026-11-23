@@ -102,12 +102,15 @@ identification survives until the noise floor approaches the world's geometry.
 1. **Integration** — canonical `ilPez00/physis-next:main` contains the Rust
    source; rebase left untouched. Import implementation and verified round trip
    remain pending. Revalidate the sketch against that ref.
-2. **Multi-producer identity** — add overlapping coverage and unreliable tag
+2. **Active law identification** — [design proposal](notes/2026-11-23-active-law-identification.md):
+   select one experiment that separates two laws with identical passive logs.
+   Keep same-disturbance counterfactual failure as a separate card.
+3. **Multi-producer identity** — add overlapping coverage and unreliable tag
    content before claiming anything about distinct observers or a decoder.
-3. **Instrument controls** — distinguish forward-snapshot delay from outward
+4. **Instrument controls** — distinguish forward-snapshot delay from outward
    sampling; separate composited blocker masks from per-blocker containment.
-4. **Rotating body frames** — continuously rotating observers remain untested.
-5. **Learned arms** — closed by measurement, not policy: two attempts, two different
+5. **Rotating body frames** — continuously rotating observers remain untested.
+6. **Learned arms** — closed by measurement, not policy: two attempts, two different
    failures (R-P1.36, R-P1.37).
 
 ## Dependencies and stop rules
