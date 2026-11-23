@@ -1,0 +1,17 @@
+{
+  "card": "R-P1.53",
+  "claim_id": "34f72429-d5aa-461d-89cf-2ec5a6ac2ddf",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.53-admission-of-proposals.md",
+  "frozen_commit": "d66780a08d9683de4c7a2d12fa287c8619375bef",
+  "command": ".venv/bin/python scripts/admission-probe.py",
+  "scratch_world": "/tmp/opencode/admission-20lqfyse",
+  "probes": [
+    {"probe": "first refusal", "triple": "file:src/a.txt CONTAINS file:src/b.txt", "rc": 1, "log_delta": 1},
+    {"probe": "repeat", "triple": "same", "rc": 3, "log_delta": 1},
+    {"probe": "unknown predicate", "triple": "file:src/a.txt frobnicates file:src/b.txt", "rc": 2, "log_delta": 0},
+    {"probe": "already observed", "triple": "file:src/a.txt DEFINES document:src/a.txt::1", "rc": 0, "log_delta": 1, "relations_after": 1}
+  ],
+  "verdicts": {"P1": "UPHELD", "P2": "UPHELD", "P3": "UPHELD", "P4": "UPHELD", "P5": "UPHELD"},
+  "finding": "admission is the fold's decision: refusals persist, a repeated refusal reads UNVERIFIABLE rather than refuted again, invalid input writes nothing, an already-observed triple does not duplicate the edge, and no decoder output ever claims an admission",
+  "scope": "One world, one ontology version, four probes. Not evidence about other lanes, and not a repair-quality claim."
+}
