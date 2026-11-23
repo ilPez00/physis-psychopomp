@@ -45,8 +45,10 @@ One writer at a time; a delegate's claim is not a gate.
   First review `work/occluded-evidence-proof` (`2f08e49`) for reusable receipt
   and verifier code. Its four-cell early/late-observer fixture is separate
   from R-P1.48; neither card's results substitute for A4 on this fixture.
-- [ ] **Checkpoint A:** Publish local transcript with exact claim, denominators,
-  normalized receipts and `scripts/verify-all.py` output. No Physis integration claim.
+- [x] **Checkpoint A (local half).** `scripts/active-discovery.py` — 8/8 diagnoses
+  receipted and independently verified, shuffled control abstains, second action
+  refused; now a research gate. **Still open:** the transcript is local only, and
+  Phase 2 has not replayed it from a Physis-next store.
 
 ## B — Real Physis-next evidence
 
