@@ -1,7 +1,11 @@
 # W2 — digest-bound receipt and independent verifier (free-pi-cli)
 
-**Model: GLM 5.3 Flash (`z-ai/glm-5.3-flash`). Thinking: high.**
-Paste the footer line showing `<model> • high` in your report.
+**Model: GLM 5.3 Flash (`z-ai/glm-5.3-flash`).**
+Measured 2026-11-23: on free-pi's nvidia route this model has
+`reasoning: true` but `supportsReasoningEffort: false` — there is **no** effort
+selector, so "high thinking" cannot be selected here and the brief no longer asks
+for it. Record the footer/model line you actually got; anything other than
+GLM 5.3 Flash is `BLOCKED(model)`.
 
 Repo: `/home/gio/dev/physis-psychopomp` (branch `fix/p1-evidence-audit`).
 Read `docs/2026-11-23-PREREG-R-P1.48-active-exit-fixture.md` first. This brief

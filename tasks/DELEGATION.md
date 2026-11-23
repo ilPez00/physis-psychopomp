@@ -13,7 +13,7 @@ tmux. Two rules follow, and neither is negotiable:
 | Brief | CLI | Model to select | Thinking | Why this one |
 |---|---|---|---|---|
 | W1 | `freebuff` | **DeepSeek V4.1 Flash — not the "fast mode" variant** (freebuff catalog: `deepseek/deepseek-v4-flash`; the fast one is `deepseek/deepseek-v4-flash-fast`, display "fast mode") | **high** | user-pinned |
-| W2 | `free-pi-cli` | **GLM 5.3 Flash** (`z-ai/glm-5.3-flash` in `~/.free-pi/agent/models-store.json`) | **high** | user-pinned |
+| W2 | `free-pi-cli` | **GLM 5.3 Flash** (`z-ai/glm-5.3-flash` in `~/.free-pi/agent/models-store.json`) | **not selectable** (`supportsReasoningEffort: false` on this route) | user-pinned model; effort pin impossible here, measured |
 
 Evidence for the freebuff split, so nobody picks the wrong one: the catalog
 carries both `deepseek/deepseek-v4-flash` (premium, recommended) and
@@ -27,10 +27,15 @@ effort is a separate control (freebuff: Tab on the highlighted row, or `/model`
 then Tab; free-pi: its model menu). Confirm from the footer line, which prints
 `<model> • <effort>` — paste that line into the report.
 
-**STOP and report `BLOCKED(model)`** if the picker has no matching model, no
-thinking selector, or admission says `Not enough hours …` / a quota banner.
-Substituting a cheaper or "fast" model silently is a failed delegation, not a
-workaround.
+**STOP and report `BLOCKED(model)`** if the picker has no matching model, or
+admission says `Not enough hours …` / a quota banner. Substituting a cheaper or
+"fast" model silently is a failed delegation, not a workaround.
+
+**Neither driver pins the model.** `free-agent` types the task into a TUI whose
+model is whatever that session last used, so a run can complete on the wrong model
+(W2 did, see the run log). Select the model in the TUI *before* the task, or set
+`freebuffModelKey` in `~/.config/manicode/settings.json`, and treat a footer that
+disagrees with the pinned label as `BLOCKED(model)` even if the gate is green.
 
 ## State as of this commit
 

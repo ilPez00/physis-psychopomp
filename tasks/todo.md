@@ -27,6 +27,10 @@ currently **BLOCKED** on freebuff quota) and
 [W2 free-pi](briefs/W2-freepi-receipt-verifier.md) (GLM 5.3 Flash, high).
 One writer at a time; a delegate's claim is not a gate.
 
+- [~] **A4 (half): receipts.** `psychopomp/active_receipt.py` binds a decision to
+  the frozen fixture (`predictions_for`) and refuses a self-consistent lie;
+  8 tests. Written by the W2 delegate on an **unpinned model**, then reviewed and
+  fixed here — not a delegate result. The loop half is still open.
 - [ ] **A4: Bounded execute and verify loop.** Reject a second diagnostic action,
   non-allowlisted action and forged receipts. Verify both laws and all reset
   states, losing controls and abstention. Depends on A2/A3. Gate:
