@@ -142,3 +142,14 @@ One writer at a time; a delegate's claim is not a gate.
 - [x] **E5: Benchmark.** R-P1.52 (frozen `5dc9897`) capacity 4/4, D1–D6 upheld: exact `1.00/1.00`, closure baseline `0.00`, shuffled `0.00`, agreed arm abstains into one probe. [Receipt](../research/loops/results/decoder-capacity-20261123/). Supersedes R-P1.51's D4. **Remaining:** the agreed arm's overall precision is 0.67 — a repair-quality claim needs a predictor arm, not this benchmark.
 - [~] **E5 (first cut, superseded).** R-P1.51 froze at `308dae`, **failed on D4**: exact precision/recall 1.00, shuffled 0.00, empty `UNKNOWN`, nothing applied — all upheld; D4's arm omitted both missing edges, so its predicted agreement was unsatisfiable. Pinned as failing. **Next:** follow-up card with the agreed-case arm defined correctly, plus a genuine no-repair and deterministic-only baseline (this run had neither, so it is a contract benchmark only).
 - [ ] **E6: Learned ranker** only with measured headroom over E3.
+
+### Guarded repair rollout
+
+- [x] **Writer foundation:** Physis-next `1da2aefeab` fails closed before
+  appending to unreadable or unterminated observation logs.
+- [ ] **Writer staging:** one evidence adapter and predicate; preview and
+  approval pin exact world, state and edge; real two-process apply and
+  exact-row retraction/revoke rehearsal. No live target until release gates.
+- [ ] **Ranking headroom:** freeze held-out cases and matched deterministic,
+  no-repair and shuffled controls; train offline only if headroom is measured.
+  See [rollout](../docs/notes/production-repair-rollout.md).
