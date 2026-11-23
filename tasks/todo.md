@@ -111,10 +111,13 @@ One writer at a time; a delegate's claim is not a gate.
 
 ## E — Graph repair (proposals only)
 
-- [ ] **E0: Verify the admission/retraction claims.** Procurement, not work:
-  probe `declare` verdicts, `removed:rel|…`, retraction preview/authorise/
-  `as_of` on a scratch world. Gate: transcript with command + output per claim;
-  any mismatch rewrites Phase 5 order. **Do this before any decoder code.**
+- [~] **E0: Verify the admission/retraction claims.** [Probed](notes/2026-11-23-e0-admission-retraction-probes.md).
+  **Confirmed:** `declare` codes 0/1/2/3, refusals persist in the log, `tms` is
+  counterfactual (14 rows before and after), unknown predicate writes nothing.
+  **Sharp edge:** repeating a refused triple returns **3 (UNVERIFIABLE)**, not 1 —
+  a retry-until-admitted loop spins. **Still open:** `as-of` returned no rows at a
+  seq that exists (query shape unknown), and `removed:rel|…` was not attempted.
+  Consequence: E4 limited to `ADD_EDGE` + `REQUEST_EVIDENCE` until those two land.
 - [ ] **E1: Importer.** Same deliverable as B2; blocked on B1's open questions.
 - [ ] **E2: Revision-pinned adapter.** Read-only, names the base revision.
 - [ ] **E3: Symbolic decoder.** Admissible worlds → typed operations + `UNKNOWN`.
