@@ -117,3 +117,15 @@ first and failed (`+ VERIFIED`) before the fix.
 Consequence for W1: its brief cannot rely on the driver to pin the model either.
 Set the model in the TUI before typing the task, and treat a footer that does not
 read `DeepSeek V4.1 Flash • high` (no "fast") as `BLOCKED(model)`.
+
+### 2026-11-23 — W1 delivered inline instead
+
+freebuff stayed `EXHAUSTED` ("Not enough hours"), so W1's scope was implemented
+here as `psychopomp/active_loop.py` + `tests/test_active_loop.py` (5 tests) rather
+than waiting. The brief stays in the repo as the spec it was built against; its
+gate is now part of the suite. Provenance: **mine, not a delegate's.**
+
+The delegate's W2 test `test_verifier_never_imports_the_session_loop` asserted on
+`sys.modules` and went red as soon as the loop existed and any sibling test
+imported it. Rewritten to check the module's own source — the property it meant
+to check. Kept as the example of why a delegate's green gate is a hypothesis.

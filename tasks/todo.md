@@ -23,10 +23,17 @@ No step is preregistered until a claim and frozen card are committed.
 Delegation: [routing and stop rules](../DELEGATION.md). A4 and the receipt work
 are split into two TUI-sized briefs —
 [W1 freebuff](briefs/W1-freebuff-active-loop.md) (DeepSeek V4.1 Flash, high;
-currently **BLOCKED** on freebuff quota) and
+**superseded** — implemented inline while freebuff was out of hours) and
 [W2 free-pi](briefs/W2-freepi-receipt-verifier.md) (GLM 5.3 Flash, high).
 One writer at a time; a delegate's claim is not a gate.
 
+- [x] **A4: Bounded execute and verify loop.** `psychopomp/active_loop.py`:
+  one diagnostic per `Session`, second call raises `BudgetExhausted` without
+  touching the simulator, unknown policy refused before any simulation,
+  malformed log abstains, shuffled control never resolves. Gates:
+  `tests/test_active_loop.py` (5) + receipts in `tests/test_active_receipt.py` (7).
+  Three mutations were run against the guards (budget, shuffle, adaptive pick)
+  and each turned a test red before the restore.
 - [~] **A4 (half): receipts.** `psychopomp/active_receipt.py` binds a decision to
   the frozen fixture (`predictions_for`) and refuses a self-consistent lie;
   8 tests. Written by the W2 delegate on an **unpinned model**, then reviewed and
