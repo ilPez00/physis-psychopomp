@@ -248,7 +248,12 @@ decision or reveals a failure the current verifier misses.
    Turnover transfer is not a copy of this: `turnover_evidence` produces integer
    load readings, not observable events, so `psychopomp.observation/1` has no
    shape for it yet. Decide whether a scalar-evidence record belongs in the
-   schema before claiming the loop transfers.
+   schema before claiming the loop transfers. **Decided and built:**
+   `export.turnover_records` emits one `kind: "loads"` record per observed tick,
+   with role-ordered loads, a per-tick `dt` of one second, and a config digest
+   that is identical across arms, targets and episodes. The arm, the target and
+   the perturbation never reach the record. Remaining: import and replay a
+   turnover episode end to end.
 3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
    validation before tests. Add ordered readback, mixed overlap and same-key
    conflict controls, including concurrent writers. Cold-check the importer

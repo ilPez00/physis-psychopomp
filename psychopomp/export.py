@@ -18,11 +18,17 @@ Schema ``psychopomp.observation/1``::
      "evidence": "OBSERVED",
      "seq": 3}
 
-The consumer side is **measured absent** (2026-11-22): `physis ingest` is a
+The consumer side was **measured absent** (2026-11-22): `physis ingest` is a
 closed 12-source connector registry with per-source parsers and byte ceilings,
-and there is no generic JSONL ingress or `import` subcommand. See
-`docs/2026-11-22-R-P1.7-ingest-measurement.md`. This module is the producer side
-only, and no compatibility is claimed.
+and there was no generic JSONL ingress or `import` subcommand. See
+`docs/2026-11-22-R-P1.7-ingest-measurement.md`. A consumer now exists on
+Physis-next branch `feat/psychopomp-import` (`physis import psychopomp.observation/1`);
+it is not merged, so nothing here is a compatibility promise.
+
+Two producers ship: `observation_records` for the exit fixture's typed events,
+and `turnover_records` for the turnover fixture's per-tick loads — that fixture
+has no event log and no simulated clock, so one tick is declared to be one
+second.
 """
 from __future__ import annotations
 
@@ -134,7 +140,8 @@ def turnover_records(run, episode: int, ticks=None) -> List[dict]:
                 "kind": "loads",
                 "at": round(tick * TURNOVER_DT, 6),
                 "props": {"loads": list(run.loads[tick]), "tick": tick, "dt": TURNOVER_DT},
-                "provenance": {"source": "sim:turnover/v0.1", "config_sha256": "",
+                "provenance": {"source": "sim:turnover/v0.1",
+                               "config_sha256": _turnover_config_sha(),
                                "seed": 0, "episode": episode},
                 "evidence": "OBSERVED",
                 "seq": seq,

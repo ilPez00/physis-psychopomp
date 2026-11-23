@@ -97,7 +97,10 @@ One writer at a time; a delegate's claim is not a gate.
   identical passive logs, then test both one-role perturbations, relabelling,
   feedback removal, sham and independent-copy controls. Gate:
   `tests/test_organizational_identity.py` plus prereg replay. Depends on C1.
-- [x] **C3: Transfer evidence loop (local half).** `psychopomp/turnover_evidence.py`: passive probe buys 0 bits, one post-disturbance observation buys 1, receipts verify 4/4 and abstain 4/4. Gate `scripts/turnover-discovery.py`. **Still open:** the Physis-store half, which needs B2.
+- [x] **C3: Transfer evidence loop (local half).** `psychopomp/turnover_evidence.py`: passive probe buys 0 bits, one post-disturbance observation buys 1, receipts verify 4/4 and abstain 4/4. Gate `scripts/turnover-discovery.py`.
+  **Store half started:** `export.turnover_records` gives one `loads` record per
+  observed tick with no arm, target or perturbation in it, and a config digest
+  that is constant across episodes. Import and replay still open.
 - [ ] **C3: Transfer evidence loop.** Use target-specific planner and receipt
   from A4/B3 with the same abstention rules. Only then review typed uncertainty
   proposal. Depends on B3/C2. Gate: both discovery transcripts and reopened
