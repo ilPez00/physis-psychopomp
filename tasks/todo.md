@@ -151,13 +151,14 @@ One writer at a time; a delegate's claim is not a gate.
 
 - [x] **Writer foundation:** Physis-next `1da2aefeab` fails closed before
   appending to unreadable or unterminated observation logs.
-- [x] **Guarded verb (staged):** `physis repair` at `0e4614c53` in PR #315 —
+- [x] **Guarded verb (staged):** `physis repair` at `27da5323a` in PR #315 —
   world-side evidence, an approval bound to the exact state, one use checked
-  under the store lock; 5 integration tests plus a CLI refusal receipt. No live
-  target, no deployment, no write separation.
-- [ ] **Writer staging:** real two-process apply; the withdrawal half of the
-  operator flow has no CLI verb yet; release needs an exact-head CI result, a
-  restorable backup and separate approval of target and rollout.
+  under the store lock; 6 integration tests (including two writers racing one
+  approval) plus a CLI refusal receipt. No live target, no deployment, no write
+  separation.
+- [ ] **Writer staging:** the withdrawal half of the operator flow has no CLI
+  verb yet; release needs an exact-head CI result, a restorable backup and
+  separate approval of target and rollout.
 - [x] **Ranking headroom: measured, none.** R-P1.56 found support ranking below
   the shuffled control (P 0.194 vs 0.282), so E6 stays closed.
 - [ ] **Ranking, if reopened:** features beyond surviving-world counts that beat

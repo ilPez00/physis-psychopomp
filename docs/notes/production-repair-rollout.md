@@ -110,6 +110,15 @@ refusal asserting the log is unchanged); `--lib` 48 passed; clippy
 `-D warnings` clean; rustfmt clean. CLI receipt: the false edge, an existing
 edge and an unknown verb all exit 2 with the log unchanged.
 
+**Race closed** (`27da5323a`, merged onto `origin/main` `f2b319cb8`): two writers
+each load their own `Runtime` behind a barrier and race one approval. Real
+`flock` contention, not two calls in sequence — exactly one wins, the loser is
+refused inside the lock, the log grows by exactly one row, and the fold still
+judges the winning row. Re-measured at the merged head: repair_writer **6/6**,
+retraction_revoke **6/6**, physis-store **41 passed / 1 ignored**, cli lib
+**48 passed**, clippy clean.
+
+
 **Not done, and deliberately:** no live target, no deployment, no account-level
 write separation, no CLI verb for the withdrawal half of the flow, and no
 exercised world outside a temp dir.
