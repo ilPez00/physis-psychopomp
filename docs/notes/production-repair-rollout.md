@@ -135,6 +135,26 @@ prerequisites, `e4bb2695a8` and `f2b319cb8`, both published on origin. A full
 rather than per commit; the one on the NAS is from `b17a83045` and is older
 than the head.
 
+## The local gate is red at base, and that has to be fixed first
+
+Running `scripts/ci-local.sh` on omo at `27da5323a` gave **14 PASS, 4 FAIL**. One
+was mine (`fmt` — module order, fixed). The other three reproduce on a clean
+`f2b319cb8` worktree:
+
+- `guards`: a stale assertion in `test-loop-receipt.py` about whether a corrupt
+  cycle still publishes its receipt (the guard itself still rejects corruption);
+- `workspace-tests`: a genuine facade violation,
+  `crates/physis-mcp/src/tests.rs` importing `physis_store::log`;
+- `cli-smoke`: `test-restart-durability.py` red on the commit that merged it
+  (PR #317).
+
+Because a permanently red gate cannot separate "my change broke it" from "it is
+always broken", the release gate for this rollout needs one more thing before it
+means anything: either those three get an owner, or `ci-local.sh` gains a pinned
+baseline of known-red steps so a *new* red is attributable. Neither exists
+today, and a green local run is currently impossible to obtain.
+
+
 
 ## Ranking — measured, and the learner is not justified
 
