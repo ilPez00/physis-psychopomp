@@ -52,7 +52,13 @@ One writer at a time; a delegate's claim is not a gate.
 
 ## B — Real Physis-next evidence
 
-- [ ] **B1: Inspect current store APIs.** Fetch canonical origin to an isolated
+- [x] **B1: Inspect current store APIs.** [Measured](notes/2026-11-23-b1-physis-evidence-ledger.md)
+  against `physis` 1.9.1 + `physis-core` 0.3.0: `observe` is idempotent (10 rows
+  after three runs), `subject` reads back typed props, `packet` + `packet-verify`
+  verify and fail on one appended junk line. **Correction:** physis-next has no
+  hypothesis ledger — rivals live in physis-core, so the demo binds two stores by
+  a packet hash. **Trap:** `PHYSIS_DATA_DIR` is ignored; `PHYSIS_CORE_DIR` isolates.
+- [ ] **B1 (superseded note): Inspect current store APIs.** Fetch canonical origin to an isolated
   source-bearing branch; prove both hypotheses and a revision can be queried
   in a temporary store. Record exact ref, store path and readback command.
   Independent of A; no edits in the paused rebase.
