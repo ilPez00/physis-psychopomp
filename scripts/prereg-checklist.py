@@ -1,29 +1,27 @@
-"""Prereg checklist — a prereg must name the claim it registers, before the run.
+"""Check dated preregs declare a full claim UUID in the preamble.
 
-Two cards (R-P1.18, R-P1.27) were preregistered without a store claim id. That is
-a process miss, not a measurement defect, and it is exactly the kind of thing
-that rots silently. This check fails on any *new* prereg that carries no claim
-id; the two historical misses stay on an explicit list rather than being edited
-into compliance after the fact.
+This checks file structure, not when the claim was registered or measured.
+Commit and push the frozen prereg before running its experiment.
 
 Usage: .venv/bin/python scripts/prereg-checklist.py
 """
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 UUID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 SHORT_ID = re.compile(r"\b[0-9a-f]{8}\b")
+CLAIM = re.compile(rf"\b[Cc]laim +`{UUID.pattern}`")
+SECTION = re.compile(r"^#{2,6}[ \t]", re.MULTILINE)
 
 # Enforced from this date. Everything registered before it is a dated record:
 # several cards registered a claim in the store but did not write the id into the
 # prereg file, and back-filling would edit the record rather than fix the process.
 ENFORCED_FROM = "2026-11-23"
-DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
+DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})-")
 
 
 def main() -> int:
@@ -34,14 +32,14 @@ def main() -> int:
     missing, listed = [], []
     for path in preregs:
         text = path.read_text()
-        has_id = bool(UUID.search(text)) or SHORT_ID.search(text)
-        if has_id:
-            continue
         stamp = DATE.match(path.name)
-        if stamp is None or stamp.group(1) < ENFORCED_FROM:
-            listed.append(path.name)
-        else:
-            missing.append(path.name)
+        if stamp is None:
+            missing.append(f"{path.name}: expected a YYYY-MM-DD prefix")
+        elif stamp.group(1) < ENFORCED_FROM:
+            if not (UUID.search(text) or SHORT_ID.search(text)):
+                listed.append(path.name)
+        elif not CLAIM.search(SECTION.split(text, maxsplit=1)[0]):
+            missing.append(f"{path.name}: expected Claim `full-uuid` before the first section")
 
     print(f"preregistrations: {len(preregs)}; with a claim id: "
           f"{len(preregs) - len(missing) - len(listed)}")
