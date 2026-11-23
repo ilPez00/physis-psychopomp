@@ -9,6 +9,25 @@ LAWS = (-1, 0, 1)
 COMMAND = {"passive": 0, "signed": 2, "magnitude": 2}
 MICRO = 1_000_000
 
+# R-P1.48's frozen analytical table, in millionths of the displacement
+# y(21)-50. Single source for the sensors' decision arms and the research
+# script; `readout` above never consults it, so comparing the two is a real
+# check rather than a tautology.
+SHIFTED = {-1: (-7.62, -5.62, -3.62, -1.62), 0: STATES, 1: (1.62, 3.62, 5.62, 7.62)}
+
+
+def expected(law: int, state: int, probe: str) -> int:
+    """The frozen scalar this fixture predicts for one cell (millionths)."""
+    command = _command(probe)
+    d = state if command == 0 else SHIFTED[law][STATES.index(state)]
+    value = round(d * MICRO)
+    return abs(value) if probe == "magnitude" else value
+
+
+def rows(probe: str) -> list[tuple[int, int]]:
+    """(law, scalar) over the two rivals and four reset states."""
+    return [(law, expected(law, state, probe)) for law in (-1, 1) for state in STATES]
+
 
 def _command(probe: str) -> int:
     if type(probe) is not str or probe not in COMMAND:
@@ -17,7 +36,12 @@ def _command(probe: str) -> int:
 
 
 def readout(events: Iterable[Event], probe: str) -> int | None:
-    """Expose one scalar only; no readout if the visible log is not well formed."""
+    """Expose one scalar only; no readout if the visible log is not well formed.
+
+    The well-formedness test is **fixture-specific** (one right-side exit at
+    step 21). A different world needs its own constants before this sensor can
+    read it; it is not a general exit parser.
+    """
     _command(probe)
     rows = tuple(events)
     if len(rows) != 1:

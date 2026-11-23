@@ -20,6 +20,13 @@ No step is preregistered until a claim and frozen card are committed.
   frozen at `d48206f`; actual exits and scalar-only acquisition passed.
   Gates: `scripts/active-exit-prereg.py`, `tests/test_active_exit_fixture.py`.
   [Receipt](../research/loops/results/active-exit-20261123/receipt.json).
+Delegation: [routing and stop rules](../DELEGATION.md). A4 and the receipt work
+are split into two TUI-sized briefs —
+[W1 freebuff](briefs/W1-freebuff-active-loop.md) (DeepSeek V4.1 Flash, high;
+currently **BLOCKED** on freebuff quota) and
+[W2 free-pi](briefs/W2-freepi-receipt-verifier.md) (GLM 5.3 Flash, high).
+One writer at a time; a delegate's claim is not a gate.
+
 - [ ] **A4: Bounded execute and verify loop.** Reject a second diagnostic action,
   non-allowlisted action and forged receipts. Verify both laws and all reset
   states, losing controls and abstention. Depends on A2/A3. Gate:

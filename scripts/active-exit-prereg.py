@@ -7,12 +7,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from psychopomp.active_design import posterior
-from psychopomp.active_exit import _run_case, readout
+from psychopomp.active_exit import SHIFTED, STATES, _run_case, readout
 
-STATES = (-3, -1, 1, 3)
-# Frozen in R-P1.48 before acquiring any trace.
-SHIFTED = {-1: (-7.62, -5.62, -3.62, -1.62),
-            0: STATES, 1: (1.62, 3.62, 5.62, 7.62)}
 PRIOR = {-1: Fraction(1, 2), 1: Fraction(1, 2)}
 
 
@@ -63,8 +59,11 @@ def main():
                   for _, y in arms[probe])
           and sorted(y for _, y in arms["shuffled"]) == sorted(signed.values()))
     print(f"X3: {'UPHELD' if x3 else 'FALSIFIED'}; correct resolutions out of {len(rivals)}: {resolved}")
-    print("X4: see tests/test_active_exit_fixture.py")
-    print(f"prereg run: {'PASS' if x2 and x3 else 'FAIL'}")
+    # X4 (malformed/duplicate/forged logs) needs surrogate events this script
+    # cannot build without the fixture's own shape: tests/ covers it and this
+    # run does NOT score it.
+    print("X4: NOT SCORED by this script (covered by tests/test_active_exit_fixture.py)")
+    print(f"prereg run: {'PASS' if x2 and x3 else 'FAIL'} (X1-X3)")
     return 0 if x2 and x3 else 1
 
 

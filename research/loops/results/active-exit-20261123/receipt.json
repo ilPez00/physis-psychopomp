@@ -7,7 +7,7 @@
     ".venv/bin/python scripts/active-exit-prereg.py",
     ".venv/bin/python -m pytest -q tests/test_active_exit_fixture.py"
   ],
-  "verdicts": {"X1": "UPHELD", "X2": "UPHELD", "X3": "UPHELD", "X4": "UPHELD"},
+  "verdicts": {"X1": "UPHELD (simulator-measured)", "X2": "UPHELD (frozen-table replay)", "X3": "UPHELD (frozen-table replay)", "X4": "UPHELD in tests/, NOT SCORED by the card script"},
   "capacity": {"expected_right_exit_at_step_21": "24/24", "position_absolute_tolerance": 0.000001},
   "calibration": {"rivals_reject_nominal": "8/8", "nominal_false_rejections": "0/4"},
   "diagnosis": {"signed": "8/8", "passive": "0/8", "magnitude": "0/8", "shuffled": "0/8"},
