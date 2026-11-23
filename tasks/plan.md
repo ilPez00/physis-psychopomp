@@ -195,9 +195,10 @@ Order, each step ending in a gate rather than a paragraph:
 5. **E4 — route through Physis**, never around it. Measured
    ([surfaces](../docs/notes/2026-11-23-e4-admission-and-retraction-surfaces.md)):
    `declare` admits and the fold decides (R-P1.53), `claim` gives a read-only
-   verdict before admission, and **retraction of a host-sourced relation does not
-   exist** — tombstones are filtered through `is_code_source`, `tms`/`whatif` are
-   previews, and no command applies one. So proposals are additive
+    verdict against the current fold, not an independent truth check. The tested
+    tombstone path filtered host-sourced relations through `is_code_source` and
+    the tested `tms`/`whatif` paths were previews. No supported host retraction
+    path was demonstrated. So proposals are additive
    (`ADD_EDGE`) plus `REQUEST_EVIDENCE`; `RETRACT`/`CHANGE_TYPE`/`SET_VALIDITY`/
    `RECONCILE_ID` stay blocked on upstream. Forging a code-source provenance to
    smuggle a tombstone is forbidden.
@@ -219,3 +220,36 @@ prediction; mutating a production world in this milestone.
 and finish one card at a time; if controls fail capacity, withhold the claim and
 save the failure. Phase 4 earns complexity only if it changes an existing
 decision or reveals a failure the current verifier misses.
+
+## Evidence audit and development order
+
+1. **Repair R-P1.55's instrument.** Preserve the first run as a pilot; keep
+   the frozen claim and thresholds. Require both observed true edges before
+   writing, exactly one matching provisional operation, and declaration driven
+   by that operation in a fresh scratch world. Read back the exact edge and tie
+   the fold's citation to the appended assertion. Run `ontology-check` with its
+   positional path and report it separately from Z1–Z6. The live replay and a
+   missing/wrong-proposal negative control are the acceptance checks.
+2. **Fix A4 before B3.** Seal the actual selected action before acquisition;
+   verify the executor's own posterior, not a verifier-generated decision.
+   A contradictory executor result must fail even when the verifier can compute
+   the right answer. Then reopen an isolated Physis store and recompute from
+   exact executed evidence IDs. Two hashes in prose do not prove a replay.
+3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
+   validation before tests. Add ordered readback, mixed overlap and same-key
+   conflict controls, including concurrent writers. Cold-check the importer
+   locally on omo and verify hosted CI separately; provide a verified restore
+   artifact or leave its backup gate open.
+4. **Research: ask for evidence that can disprove a plausible edit.** E5 should
+   start with held-out observations that produce competing worlds, not an edge
+   list containing the answer. Compare provenance-aware abstention with
+   lane-only, no-repair, deterministic and shuffled controls at matched
+   budgets. Stop if the independent evidence cannot separate rivals. Separately
+   preregister D1's matched-marginal additive/sign-flip discriminator; no
+   learner without measured headroom. No autonomous writer or retraction
+   feature while these gates are open.
+
+Formalities: pin the live CLI in the verification environment (hosted workflow
+currently provisions Python only), retain raw evidence or its restorable
+artifact, and keep the frozen card, pilot, audited replay, CI and backup
+verdicts separate.

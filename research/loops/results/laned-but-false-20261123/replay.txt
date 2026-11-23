@@ -1,0 +1,81 @@
+scratch world: /tmp/opencode/laned-yv6vv_i7
+{
+  "physis": "physis 1.9.1",
+  "plan": {
+    "schema": "psychopomp.graph-patch/1",
+    "base_revision": "sha256:11ef4d5de55f8ce7384e826cffda16731364c87aaebcfbe4fa6b47be55cbb24f",
+    "operations": [
+      {
+        "op": "propose_edge",
+        "source": "file:src/b.txt",
+        "predicate": "DEFINES",
+        "target": "document:src/a.txt::1",
+        "status": "HYPOTHESIZED",
+        "agreement": "all_surviving_worlds",
+        "evidence_seqs": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "blocked": [],
+    "verifier": {
+      "status": "NOT_EVALUATED"
+    }
+  },
+  "declare_rc": 0,
+  "rows": [
+    10,
+    11
+  ],
+  "claim_before": {
+    "detail": "no cited DEFINES edge from the first to the second; absence is not refutation",
+    "rows": [],
+    "state": "no_evidence"
+  },
+  "claim_after": {
+    "detail": "1 edge(s) with this direction and predicate",
+    "rows": [
+      "file:src/b.txt --DEFINES--> document:src/a.txt::1 (#10)"
+    ],
+    "state": "verified"
+  },
+  "assertion": {
+    "seq": 10,
+    "at": "2026-11-23T08:59:47.627737984Z",
+    "source": "host",
+    "subject": "rel|DEFINES|file:src/b.txt|document:src/a.txt::1",
+    "body": "",
+    "produced_by": "physis declare"
+  },
+  "relations": [
+    1,
+    2
+  ],
+  "true_edge_after": {
+    "detail": "1 edge(s) with this direction and predicate",
+    "rows": [
+      "file:src/b.txt --DEFINES--> document:src/b.txt::1 (#2)"
+    ],
+    "state": "verified"
+  },
+  "ontology_violations": [
+    0,
+    0
+  ],
+  "verdicts": {
+    "Z1": "UPHELD",
+    "Z2": "UPHELD",
+    "Z3": "UPHELD",
+    "Z4": "UPHELD",
+    "Z5": "UPHELD",
+    "Z6": "UPHELD"
+  }
+}
+laned-but-false: PASS

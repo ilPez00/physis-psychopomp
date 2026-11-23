@@ -1,0 +1,11 @@
+{"seq":0,"at":"2026-11-23T08:59:46.724283140Z","source":"fs","subject":"dir:src","body":"","produced_by":"scan_fs"}
+{"seq":1,"at":"2026-11-23T08:59:46.724336341Z","source":"fs","subject":"file:src/b.txt","body":"bytes:5 fnv:0b0b885ea62985f7","produced_by":"scan_fs","props":{"bytes":"5","fingerprint":"fnv:0b0b885ea62985f7","kind":"file","path":"src/b.txt"}}
+{"seq":2,"at":"2026-11-23T08:59:46.724362240Z","source":"doc","subject":"doc:src/b.txt::1","body":"beta","produced_by":"scan_text_docs"}
+{"seq":3,"at":"2026-11-23T08:59:46.724389943Z","source":"fs","subject":"file:src/a.txt","body":"bytes:6 fnv:bbd23ea491ed9813","produced_by":"scan_fs","props":{"bytes":"6","fingerprint":"fnv:bbd23ea491ed9813","kind":"file","path":"src/a.txt"}}
+{"seq":4,"at":"2026-11-23T08:59:46.724395884Z","source":"doc","subject":"doc:src/a.txt::1","body":"alpha","produced_by":"scan_text_docs"}
+{"seq":5,"at":"2026-11-23T08:59:46.726950494Z","source":"harness","subject":"adapter:jev-review","body":"status:degraded command:jev_review capabilities:scalar-feedback,review-loop","produced_by":"scan_harness"}
+{"seq":6,"at":"2026-11-23T08:59:46.726959541Z","source":"harness","subject":"adapter:hermes","body":"status:available command:hermes capabilities:orchestration,memory,skills","produced_by":"scan_harness"}
+{"seq":7,"at":"2026-11-23T08:59:46.726966073Z","source":"harness","subject":"adapter:opencode","body":"status:available command:opencode capabilities:coding,refactor,build-agent","produced_by":"scan_harness"}
+{"seq":8,"at":"2026-11-23T08:59:46.726979078Z","source":"scan","subject":"summary","body":"files:2 dirs:1 rust:0 parsed:0 truncated:false","produced_by":"scan_summary"}
+{"seq":9,"at":"2026-11-23T08:59:46.728180434Z","source":"git","subject":"world-base","body":"none","produced_by":"observe"}
+{"seq":10,"at":"2026-11-23T08:59:47.627737984Z","source":"host","subject":"rel|DEFINES|file:src/b.txt|document:src/a.txt::1","body":"","produced_by":"physis declare"}
