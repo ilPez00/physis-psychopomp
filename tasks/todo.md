@@ -62,7 +62,8 @@ One writer at a time; a delegate's claim is not a gate.
   source-bearing branch; prove both hypotheses and a revision can be queried
   in a temporary store. Record exact ref, store path and readback command.
   Independent of A; no edits in the paused rebase.
-- [ ] **B2: Import fixture under lock.** In Physis-next, prove five-row import,
+- [x] **B2: Import fixture under lock.** Store-level half landed (see E1). CLI half remains.
+- [ ] **B2 (CLI): import subcommand.** In Physis-next, prove five-row import,
   order, repeat/concurrent/in-batch dedup and collision handling; reject bad
   provenance, counterfactuals and torn tails; confirm dry-run has zero writes.
   Depends on B1. Gate: targeted Rust importer tests, CLI import/query smoke
@@ -118,7 +119,7 @@ One writer at a time; a delegate's claim is not a gate.
   a retry-until-admitted loop spins. **Still open:** `as-of` returned no rows at a
   seq that exists (query shape unknown), and `removed:rel|…` was not attempted.
   Consequence: E4 limited to `ADD_EDGE` + `REQUEST_EVIDENCE` until those two land.
-- [ ] **E1: Importer.** Same deliverable as B2; blocked on B1's open questions.
+- [x] **E1: Importer module.** `physis-store/src/psychopomp.rs` on branch `feat/psychopomp-import` at `9520ea6e8`: UTC ingest explicit, `at_seconds` preserved, OBSERVED-only, counterfactual refused, dedup key `psychopomp:<subject>#<seq>` with a final condition inside `append_observations_if`. 8 tests, 2 mutations caught on omo. [Note](../docs/notes/2026-11-23-e1-importer.md). **Remaining:** CLI subcommand, a two-process concurrency test, and the round trip through Psychopomp's own export.
 - [x] **E2: Revision-pinned adapter.** `psychopomp/physis_snapshot.py`: parses
   `object list --json` + `object get --json`, normalises both edge directions,
   refuses edges naming unobserved entities, and pins a revision (own digest, or

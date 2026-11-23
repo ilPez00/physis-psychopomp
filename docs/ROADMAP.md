@@ -116,10 +116,14 @@ next work. This roadmap keeps the status and evidence for completed cards.
 3. **Organizational identity:** distinguish recovery after complete component
    turnover from inventory-matched open-loop replay. Only then review typed
    uncertainty across tasks.
-4. **Graph repair (Phase 5):** additions are routed and measured (`declare`,
+4. **Importer (E1/B2):** `physis-store/psychopomp.rs` landed on a physis-next
+   branch (`feat/psychopomp-import`, `9520ea6e8`) — UTC ingest time explicit,
+   simulated seconds preserved, OBSERVED-only, dedup inside the store lock.
+   CLI subcommand and the two-process concurrency test remain.
+5. **Graph repair (Phase 5):** additions are routed and measured (`declare`,
    `claim`); **retraction is blocked upstream** — `removed:rel|` is filtered to
    code sources, and `tms`/`whatif` are previews only.
-5. **Graph repair detail:** Psychopomp proposes typed graph patches,
+6. **Graph repair detail:** Psychopomp proposes typed graph patches,
    Physis authorises them; symbolic decoder first, learned ranker only with
    measured headroom. Design: [graph-patch decoder](notes/2026-11-23-graph-patch-decoder.md).
 5. **Further R&D:** same-disturbance counterfactual limits, noisy/budgeted
