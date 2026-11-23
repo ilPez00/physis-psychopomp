@@ -63,7 +63,7 @@ GATES = [
     ("scripts/turnover-identity-prereg.py", 0, "prereg run: PASS",
      "R-P1.49: complete turnover, feedback recovers 3/3 vs open-loop 0/3 at +2 on both roles; +1 and sham tie"),
     ("scripts/active-discovery.py", 0, "discovery run: PASS",
-     "Checkpoint A: verifier checks the executor's 8/8 diagnoses, 8/8 shuffled abstain, second action refused"),
+     "Checkpoint A: replay checks the executor's 8/8 decisions from saved observable events, 8/8 shuffled abstain, second action refused"),
     ("scripts/producer-dependence-prereg.py", 0, "prereg run: PASS",
      "R-P1.46: matched marginals give 1/2, 3/4, 1 under shared, independent, complementary masks; anonymous control ties"),
     ("scripts/polygon-radius-prereg.py", 0, "prereg run: PASS",

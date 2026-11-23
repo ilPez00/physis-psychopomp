@@ -10,6 +10,7 @@ Oracle events are evaluation-only and are never training inputs.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Tuple
@@ -110,28 +111,32 @@ class EventLog:
 
     @staticmethod
     def from_jsonl(path: str | Path) -> "EventLog":
-        out = EventLog()
         with open(path) as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                d = json.loads(line)
-                p = d["provenance"]
-                out.add(
-                    Event(
-                        kind=d["kind"],
-                        t=d["t"],
-                        subjects=tuple(d["subjects"]),
-                        attrs=d["attrs"],
-                        observable=d["observable"],
-                        provenance=Provenance(
-                            source=p["source"],
-                            config_sha256=p["config_sha256"],
-                            seed=p["seed"],
-                            episode=p["episode"],
-                        ),
-                        seq=d["seq"],
-                    )
+            return EventLog.from_jsonl_lines(f)
+
+    @staticmethod
+    def from_jsonl_lines(lines: Iterable[str]) -> "EventLog":
+        out = EventLog()
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            d = json.loads(line)
+            p = d["provenance"]
+            out.add(
+                Event(
+                    kind=d["kind"],
+                    t=d["t"],
+                    subjects=tuple(d["subjects"]),
+                    attrs=d["attrs"],
+                    observable=d["observable"],
+                    provenance=Provenance(
+                        source=p["source"],
+                        config_sha256=p["config_sha256"],
+                        seed=p["seed"],
+                        episode=p["episode"],
+                    ),
+                    seq=d["seq"],
                 )
+            )
         return out

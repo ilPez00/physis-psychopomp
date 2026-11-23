@@ -1,7 +1,7 @@
 """R-P1.48 fixture: reduce one observable exit to the selected sensor scalar."""
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
-from .eventlog import Event
+from .eventlog import Event, EventLog
 from .sim import Init, SimConfig, run
 
 STATES = (-3, -1, 1, 3)
@@ -75,6 +75,15 @@ def _run_case(law: int, state: int, command: int):
     return run(config, seed=0, init=Init(x=(50,), y=(50 + state,), v=((5, 0),)))
 
 
-def acquire(law: int, state: int, probe: str) -> int | None:
+def acquire_events(law: int, state: int, probe: str) -> EventLog:
+    """The observable event stream from one execution of the fixture."""
+    return _run_case(law, state, _command(probe)).observable_log()
+
+
+def acquire(law: int, state: int, probe: str, *,
+            capture: Callable[[EventLog], None] | None = None) -> int | None:
     """Run this fixture once; the caller receives only the chosen scalar."""
-    return readout(_run_case(law, state, _command(probe)).observable_log(), probe)
+    events = acquire_events(law, state, probe)
+    if capture is not None:
+        capture(events)
+    return readout(events, probe)

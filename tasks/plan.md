@@ -236,6 +236,10 @@ decision or reveals a failure the current verifier misses.
    a jointly fabricated reading and matching decision by reprojecting the
    event. Then reopen an isolated Physis store and recompute from exact
    executed evidence IDs. Two hashes in prose do not prove a replay.
+   First slice: persist separate plan, observable event and decision files for
+   the eight adaptive cases. Add a replay command that never invokes the
+   simulator and rejects a reading and posterior forged together. Run the
+   shuffled control unchanged; import and store-level replay follow separately.
 3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
    validation before tests. Add ordered readback, mixed overlap and same-key
    conflict controls, including concurrent writers. Cold-check the importer

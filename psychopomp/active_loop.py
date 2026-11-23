@@ -10,6 +10,7 @@ from fractions import Fraction
 
 from .active_design import best_probes, posterior
 from .active_exit import acquire, rows
+from .eventlog import EventLog
 
 DIAGNOSTIC_BUDGET = 1
 POLICIES = ("adaptive", "passive", "signed", "shuffled")
@@ -46,7 +47,8 @@ class Session:
         return self._remaining
 
     def diagnose(self, law: int, state: int, *, policy: str = "adaptive",
-                 before_acquire: Callable[[str], None] | None = None) -> dict:
+                 before_acquire: Callable[[str], None] | None = None,
+                 capture: Callable[[EventLog], None] | None = None) -> dict:
         """Select an action and optionally seal its plan before touching the fixture."""
         if policy not in POLICIES:
             raise ValueError(f"unknown policy {policy!r}")
@@ -61,7 +63,9 @@ class Session:
             except Exception:
                 self._remaining += 1
                 raise
-        reading = acquire(law, state, "signed" if selected == "shuffled" else selected)
+        probe = "signed" if selected == "shuffled" else selected
+        reading = (acquire(law, state, probe) if capture is None
+                   else acquire(law, state, probe, capture=capture))
         if policy == "shuffled":
             # The prereg's frozen shuffle: exchange the rivals' signs for s < 0.
             # It preserves the readout's entropy and removes its law information.

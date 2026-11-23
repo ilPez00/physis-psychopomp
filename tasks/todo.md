@@ -49,7 +49,8 @@ One writer at a time; a delegate's claim is not a gate.
   action sealed before acquisition; verifier checks the executor's actual
   8/8 decisions against the frozen fixture; 8/8 shuffled abstentions; second
   action refused. A wrong posterior or a reading swapped after the update
-  now fails the gate. This is an in-process check, not a durable receipt.
+  now fails the gate. Adaptive cases also save separate plan, observable log
+  and decision files; `--replay` reprojects the saved event without simulation.
 
 ## B — Real Physis-next evidence
 
@@ -69,10 +70,10 @@ One writer at a time; a delegate's claim is not a gate.
   provenance, counterfactuals and torn tails; confirm dry-run has zero writes.
   Depends on B1. Gate: targeted Rust importer tests, CLI import/query smoke
   and repo-prescribed Rust checks on omo after resource checks.
-- [ ] **A4 durable binding:** Persist the plan before acquisition and bind the
-  actual observable event to the decision. The current in-memory seal does
-  not authenticate a reading and decision fabricated together. See the
-  [audit order](plan.md#evidence-audit-and-development-order).
+- [x] **A4 local replay:** Persist the plan before acquisition and the observed
+  event before recording the decision. Reopened replay rejects a jointly
+  fabricated reading and decision if the original event is retained.
+  [Run instructions and limits](../docs/notes/active-discovery-replay.md).
 - [ ] **B3: Link real evidence.** Feed executed rows into the isolated store and
   link hypotheses/revision; reopen and recompute from receipt IDs. Compare to
   A4 across both laws and verify no unsupported update. Depends on A4/B2.
