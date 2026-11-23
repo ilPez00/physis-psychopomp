@@ -124,8 +124,23 @@ retraction_revoke **6/6**, physis-store **41 passed / 1 ignored**, cli lib
 
 
 **Not done, and deliberately:** no live target, no deployment, no account-level
-write separation, no CLI verb for the withdrawal half of the flow, and no
-exercised world outside a temp dir.
+write separation, and no exercised world outside a temp dir.
+
+**The withdrawal half now exists** (`d3d7627e0`): `physis retract` and
+`physis revoke`, preview-by-default, over the runtime's own append-only records.
+Tested at 53 lib tests plus a five-step shell flow that withdraws a row, watches
+the entity and its edge disappear, repairs the edge from world evidence, and
+revokes the withdrawal.
+
+**But that flow found a problem worth stopping on.** The retraction preview
+printed `0 lost, 0 weakened` for a row whose withdrawal removed an entity and an
+edge. So the digest binds a report that can be empty while the withdrawal is
+not: an operator approves "nothing will be lost" and loses an edge. The counts
+come from `physis_query::tms::retraction_analysis`, not from the new surface, and
+they are not fixed here. **Treat a retraction's consequence counts as
+informational until that is understood; the digest binds the range, not the
+truth about what it costs.**
+
 
 **Artifacts.** Head `27da5323a` is on `origin` and in a 16K delta bundle
 (`guarded-repair-27da5323a.patchbundle`) on the NAS and on air's stick,

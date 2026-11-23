@@ -156,11 +156,15 @@ One writer at a time; a delegate's claim is not a gate.
   under the store lock; 6 integration tests (including two writers racing one
   approval) plus a CLI refusal receipt. No live target, no deployment, no write
   separation.
-- [ ] **Writer staging:** the withdrawal half of the operator flow has no CLI
-  verb yet; release needs the repo's local gate (`scripts/ci-local.sh`) at the
-  exact head, a restorable backup and an approval separate from the preview.
-  Hosted CI is permanently unavailable (unpaid account, zero steps) and is not
-  a gate anywhere on this fleet.
+- [x] **Withdrawal surface:** `physis retract` / `physis revoke` at
+  `d3d7627e0`, preview-by-default over the runtime's append-only records; the
+  five-step shell flow runs. **Finding:** the preview reported `0 lost, 0
+  weakened` for a withdrawal that removed an entity and its edge, so its counts
+  are informational until `tms` says otherwise.
+- [ ] **Writer staging:** release needs the repo's local gate
+  (`scripts/ci-local.sh`) at the exact head, a restorable backup and an approval
+  separate from the preview. Hosted CI is permanently unavailable (unpaid
+  account, zero steps) and is not a gate anywhere on this fleet.
 - [x] **Ranking headroom: measured, none.** R-P1.56 found support ranking below
   the shuffled control (P 0.194 vs 0.282), so E6 stays closed.
 - [ ] **Ranking, if reopened:** features beyond surviving-world counts that beat
