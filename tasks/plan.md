@@ -254,3 +254,7 @@ Formalities: pin the live CLI in the verification environment (hosted workflow
 currently provisions Python only), retain raw evidence or its restorable
 artifact, and keep the frozen card, pilot, audited replay, CI and backup
 verdicts separate.
+
+Operator-approved follow-on: [guarded repair writer and offline ranking](../docs/notes/production-repair-rollout.md).
+Start with the existing Physis-next store lock; stage the writer before
+deployment, and keep the learner outside the authorization boundary.
