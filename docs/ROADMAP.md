@@ -113,7 +113,10 @@ next work. This roadmap keeps the status and evidence for completed cards.
 3. **Organizational identity:** distinguish recovery after complete component
    turnover from inventory-matched open-loop replay. Only then review typed
    uncertainty across tasks.
-4. **Further R&D:** same-disturbance counterfactual limits, noisy/budgeted
+4. **Graph repair (Phase 5):** Psychopomp proposes typed graph patches,
+   Physis authorises them; symbolic decoder first, learned ranker only with
+   measured headroom. Design: [graph-patch decoder](notes/2026-11-23-graph-patch-decoder.md).
+5. **Further R&D:** same-disturbance counterfactual limits, noisy/budgeted
    experiment design, timestamp versus snapshot delay, composited masks and
    radius metadata, moving frames, and unreliable multi-producer evidence.
    Learned arms remain closed under the existing stop rule (R-P1.36/37).

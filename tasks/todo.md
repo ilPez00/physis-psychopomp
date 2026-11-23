@@ -108,3 +108,19 @@ One writer at a time; a delegate's claim is not a gate.
 - [ ] **D7:** Partially overlapping producers plus incorrect tags at matched
   marginal delivery. Independent; require matched anonymous and tag-shuffled
   controls before claiming a fusion rule.
+
+## E — Graph repair (proposals only)
+
+- [ ] **E0: Verify the admission/retraction claims.** Procurement, not work:
+  probe `declare` verdicts, `removed:rel|…`, retraction preview/authorise/
+  `as_of` on a scratch world. Gate: transcript with command + output per claim;
+  any mismatch rewrites Phase 5 order. **Do this before any decoder code.**
+- [ ] **E1: Importer.** Same deliverable as B2; blocked on B1's open questions.
+- [ ] **E2: Revision-pinned adapter.** Read-only, names the base revision.
+- [ ] **E3: Symbolic decoder.** Admissible worlds → typed operations + `UNKNOWN`.
+  Depends on E1/E2. Gate: controlled corrupted graph, no-repair baseline.
+- [ ] **E4: Route through Physis.** `whatif` + retraction preview + authorisation;
+  a structurally valid proposal still does not mutate the graph.
+- [ ] **E5: Benchmark** vs no-repair, deterministic-only and shuffled controls;
+  report precision/recall/false-corrections/coverage/abstention separately.
+- [ ] **E6: Learned ranker** only with measured headroom over E3.

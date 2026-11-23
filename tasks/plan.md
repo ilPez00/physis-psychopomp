@@ -169,6 +169,46 @@ preregistration candidates, not measured results.
    coverage. For identity channels, extend R-P1.46 to partially overlapping
    coverage, correlated failures and wrong tags at matched marginals.
 
+## Phase 5: Graph repair — decoder proposals, Physis authority
+
+Design: [graph-patch decoder](../docs/notes/2026-11-23-graph-patch-decoder.md).
+Psychopomp predicts; a decoder emits typed `psychopomp.graph-patch/1`
+proposals; Physis validates and authorises. **A proposal never mutates the graph
+because it passed a structural check**, and no prediction is promoted to an
+observation because a model is confident.
+
+Order, each step ending in a gate rather than a paragraph:
+
+1. **E0 — verify the boundary claims first.** `declare` must return
+   admitted/refused/unverifiable; `removed:rel|…` allegedly fails to retract host
+   relations; retraction preview + authorisation digest + `as_of` allegedly exist.
+   Gate: a transcript of one probe each, with exact commands and outputs. If any
+   claim is wrong, the decoder plan changes **before** code.
+2. **E1 — importer (same work as B2).** Versioned JSONL; simulated seconds kept
+   distinct from UTC ingest time; dedup under the store lock; torn-tail refusal.
+3. **E2 — revision-pinned adapter.** Read-only Physis snapshot → Psychopomp
+   state; every proposal names the revision it was computed against.
+4. **E3 — symbolic decoder.** Enumerate admissible worlds, diff against the
+   pinned snapshot, emit `HYPOTHESIZED` operations plus an explicit `UNKNOWN`.
+   No training. Operations limited to `ADD_EDGE`, `RETRACT`, `CHANGE_TYPE`,
+   `RECONCILE_ID`, `SET_VALIDITY`, `REQUEST_EVIDENCE`.
+5. **E4 — route through Physis**, never around it: `whatif`, ontology admission,
+   retraction preview, authorisation. `REQUEST_EVIDENCE` reuses the R-P1.47/48
+   experiment picker rather than a new mechanism.
+6. **E5 — benchmark** a controlled corrupted graph against **no repair**,
+   **deterministic constraints alone**, and **shuffled predictions**. Metrics:
+   repair precision, recall, false corrections, true-world coverage, downstream
+   prediction change, abstention quality. Success is one sentence: recover more
+   correct relationships than it invents, and abstain when the evidence cannot
+   decide.
+7. **E6 — learned edit-ranker only if E3 leaves measured headroom**, under the
+   standing learner stop rule (a shuffled control must lose, a deterministic
+   baseline must be named first). Energy-guided reconstruction is a later card.
+
+Non-goals: a second graph database; whole-graph reconstruction from a latent
+(representations are not invertible); automatic promotion of a confident
+prediction; mutating a production world in this milestone.
+
 **Stop rules:** no bundling four research questions under one verdict. Preregister
 and finish one card at a time; if controls fail capacity, withhold the claim and
 save the failure. Phase 4 earns complexity only if it changes an existing
