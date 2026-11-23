@@ -1,0 +1,13 @@
+{
+  "card": "E1 round trip",
+  "producer": {"script": "scripts/e1-roundtrip-export.py", "episodes": 24, "rows": 24, "subjects": 24,
+               "why_distinct_episodes": "subject is episode:<seed>:<episode>; one episode would collapse 24 rows into one subject and dedup would skip 23"},
+  "consumer": {"host": "omo", "binary": "physis (branch feat/psychopomp-import)", "world": "/home/gio/e1-smoke/rt-z83p",
+               "first_import": {"rows_read": 24, "rows_appended": 24},
+               "re_import": {"rows_read": 24, "rows_appended": 0, "rows_skipped_duplicate": 24}},
+  "readback": {"command": "physis subject --path <world> episode:0:0 --json", "rows": 1,
+               "at": "2026-11-23T08:33:08Z", "at_seconds": "2.1", "kind": "exit_occ", "source": "psychopomp"},
+  "finding": "UTC ingest time and simulated seconds are kept distinct end to end, and re-import is idempotent on real simulator rows",
+  "wrinkle": "the stored row carries produced_by=psychopomp:episode:0:0#0, but `subject --json` does not render it; dedup is proven by the re-import counts, not by the readback",
+  "scope": "24 noiseless cells of one fixture; no queries other than subject, no evidence linked to a physis-core hypothesis yet"
+}
