@@ -86,3 +86,43 @@ retraction restores it. The original byte prefix and both history rows stay
 intact. `cargo test --locked -j 2 -p physis-runtime --test retraction_revoke`
 passed six tests. This validates runtime recovery for the fixture, not
 production recovery permissions or the future writer's approval transaction.
+
+## Second slice — the guarded verb (staged, not deployed)
+
+Physis-next PR #315, head `0e4614c53`. `physis repair <source> <predicate>
+<target> --operator <id> [--approval <sha>]`, with preview as the default:
+
+- **Evidence before anything else.** One adapter ships: a `DEFINES` claim needs
+  the target document's id to name the file claimed to define it, and that file
+  to exist in the tree. Checked against the world, never against the log, so
+  R-P1.55's false edge is refused with `no independent evidence`.
+- **Approval binds state.** sha256 over schema, world, revision, edge, operator,
+  reason, evidence and the observation-prefix digest. The payload is stored in
+  the assertion body, so the digest is reproducible by a reader.
+- **One use, under the lock.** Apply re-derives the approval, then re-checks the
+  prefix digest, single use and already-asserted inside
+  `append_observation_if`. A world that moved, a spent approval or an existing
+  triple appends nothing.
+
+Measured: `cargo test -p physis-cli --test repair_writer` 5 passed (restore +
+`Admitted`; false edge; wrong approval; spent approval; moved world, each
+refusal asserting the log is unchanged); `--lib` 48 passed; clippy
+`-D warnings` clean; rustfmt clean. CLI receipt: the false edge, an existing
+edge and an unknown verb all exit 2 with the log unchanged.
+
+**Not done, and deliberately:** no live target, no deployment, no account-level
+write separation, no CLI verb for the withdrawal half of the flow, and no
+exercised world outside a temp dir.
+
+## Ranking — measured, and the learner is not justified
+
+[R-P1.56](../../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md) froze 24
+ambiguous synthetic cases (0 determined) and compared no-repair, consensus,
+top-3-by-support and a permuted-truth control. Consensus proposed nothing;
+top-3-by-support reached **P 0.194 / R 0.097** while the shuffled control scored
+**0.282**. The deterministic heuristic is *below chance*: high-support
+candidates complete other worlds, not the truth.
+
+So E6 stays closed. A learner trained on the same surviving-world counts would
+fit noise. Any future ranking card must add information those counts do not
+carry, and must beat chance before it is called headroom.

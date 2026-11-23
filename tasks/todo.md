@@ -151,10 +151,15 @@ One writer at a time; a delegate's claim is not a gate.
 
 - [x] **Writer foundation:** Physis-next `1da2aefeab` fails closed before
   appending to unreadable or unterminated observation logs.
-- [ ] **Writer staging:** one evidence adapter and predicate; preview and
-  approval pin exact world, state and edge; real two-process apply. Runtime
-  exact-row retraction/revoke rehearsal passed for the host fixture at
-  Physis-next `b17a83045c`; staging permissions and the apply flow are untested.
-- [ ] **Ranking headroom:** freeze held-out cases and matched deterministic,
-  no-repair and shuffled controls; train offline only if headroom is measured.
+- [x] **Guarded verb (staged):** `physis repair` at `0e4614c53` in PR #315 —
+  world-side evidence, an approval bound to the exact state, one use checked
+  under the store lock; 5 integration tests plus a CLI refusal receipt. No live
+  target, no deployment, no write separation.
+- [ ] **Writer staging:** real two-process apply; the withdrawal half of the
+  operator flow has no CLI verb yet; release needs an exact-head CI result, a
+  restorable backup and separate approval of target and rollout.
+- [x] **Ranking headroom: measured, none.** R-P1.56 found support ranking below
+  the shuffled control (P 0.194 vs 0.282), so E6 stays closed.
+- [ ] **Ranking, if reopened:** features beyond surviving-world counts that beat
+  chance on held-out cases before any training is described as justified.
   See [rollout](../docs/notes/production-repair-rollout.md).
