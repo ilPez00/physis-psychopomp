@@ -20,7 +20,7 @@ No step is preregistered until a claim and frozen card are committed.
   frozen at `d48206f`; actual exits and scalar-only acquisition passed.
   Gates: `scripts/active-exit-prereg.py`, `tests/test_active_exit_fixture.py`.
   [Receipt](../research/loops/results/active-exit-20261123/receipt.json).
-Delegation: [routing and stop rules](../DELEGATION.md). A4 and the receipt work
+Delegation: [routing and stop rules](DELEGATION.md). A4 and the receipt work
 are split into two TUI-sized briefs —
 [W1 freebuff](briefs/W1-freebuff-active-loop.md) (DeepSeek V4.1 Flash, high;
 **superseded** — implemented inline while freebuff was out of hours) and
@@ -52,7 +52,7 @@ One writer at a time; a delegate's claim is not a gate.
 
 ## B — Real Physis-next evidence
 
-- [x] **B1: Inspect current store APIs.** [Measured](notes/2026-11-23-b1-physis-evidence-ledger.md)
+- [x] **B1: Inspect current store APIs.** [Measured](../docs/notes/2026-11-23-b1-physis-evidence-ledger.md)
   against `physis` 1.9.1 + `physis-core` 0.3.0: `observe` is idempotent (10 rows
   after three runs), `subject` reads back typed props, `packet` + `packet-verify`
   verify and fail on one appended junk line. **Correction:** physis-next has no
@@ -111,7 +111,7 @@ One writer at a time; a delegate's claim is not a gate.
 
 ## E — Graph repair (proposals only)
 
-- [~] **E0: Verify the admission/retraction claims.** [Probed](notes/2026-11-23-e0-admission-retraction-probes.md).
+- [~] **E0: Verify the admission/retraction claims.** [Probed](../docs/notes/2026-11-23-e0-admission-retraction-probes.md).
   **Confirmed:** `declare` codes 0/1/2/3, refusals persist in the log, `tms` is
   counterfactual (14 rows before and after), unknown predicate writes nothing.
   **Sharp edge:** repeating a refused triple returns **3 (UNVERIFIABLE)**, not 1 —

@@ -1,7 +1,7 @@
 # Graph repair: Psychopomp as a proposal engine for a Physis graph
 
 **Status: proposed, not implemented, not measured.** This is the design that
-Phase 5 of the [P1 plan](../tasks/plan.md) implements. Nothing here claims a
+Phase 5 of the [P1 plan](../../tasks/plan.md) implements. Nothing here claims a
 capability exists.
 
 ## The boundary
