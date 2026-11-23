@@ -1,0 +1,16 @@
+{
+  "card": "R-P1.48",
+  "claim_id": "91c5f494-0b43-49dc-acdc-fb8ce78697d6",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.48-active-exit-fixture.md",
+  "frozen_commit": "d48206f643fe6d29a6f3a5f3946a091012b16f81",
+  "commands": [
+    ".venv/bin/python scripts/active-exit-prereg.py",
+    ".venv/bin/python -m pytest -q tests/test_active_exit_fixture.py"
+  ],
+  "verdicts": {"X1": "UPHELD", "X2": "UPHELD", "X3": "UPHELD", "X4": "UPHELD"},
+  "capacity": {"expected_right_exit_at_step_21": "24/24", "position_absolute_tolerance": 0.000001},
+  "calibration": {"rivals_reject_nominal": "8/8", "nominal_false_rejections": "0/4"},
+  "diagnosis": {"signed": "8/8", "passive": "0/8", "magnitude": "0/8", "shuffled": "0/8"},
+  "boundary_tests_passed": 16,
+  "scope": "Noiseless declared simulator fixture and scalar-readout tests. No bounded controller, authenticated execution receipt, Physis-next round trip or importer was exercised."
+}
