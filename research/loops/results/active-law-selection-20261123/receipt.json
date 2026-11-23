@@ -1,0 +1,15 @@
+{
+  "card": "R-P1.47",
+  "claim_id": "bf975d6e-5faf-4556-844e-e4a47de640fc",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.47-active-law-selection.md",
+  "frozen_commit": "38b5d70417831305044aecf1aa5acb42f8457ac9",
+  "command": ".venv/bin/python scripts/active-law-selection-prereg.py",
+  "verdicts": {"E1": "UPHELD", "E2": "UPHELD", "E3": "UPHELD"},
+  "calibration": {"rival_nominal_rejections": "4/8", "nominal_false_rejections": "0/4"},
+  "law_state_gain_bits": {"passive": [0, 2], "signed": [1, 0], "magnitude": [0, 1]},
+  "uniform_random_law_gain_bits": "1/3",
+  "diagnostic_cases": 8,
+  "signed_correct": 8,
+  "resolved_by_passive_magnitude_or_shuffled": {"passive": 0, "magnitude": 0, "shuffled": 0},
+  "scope": "Finite exhaustive arithmetic fixture under known uniform priors and a declared sensor. No simulator exit, action receipt, field calibration, or Physis integration was exercised."
+}

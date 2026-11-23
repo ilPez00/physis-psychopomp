@@ -41,6 +41,8 @@ GATES = [
      "row export onto a declared template: typed substitution, refusal on unknown fields"),
     ("scripts/export-contract-check.py", 0, "export contract: PASS",
      "integration contract: schema, canonical order, identity-free, deterministic, counterfactual-refusing"),
+    ("scripts/active-law-selection-prereg.py", 0, "prereg run: PASS",
+     "R-P1.47: exact finite law/state gains, signed resolves 8/8, passive/magnitude/shuffled resolve none"),
     ("scripts/producer-dependence-prereg.py", 0, "prereg run: PASS",
      "R-P1.46: matched marginals give 1/2, 3/4, 1 under shared, independent, complementary masks; anonymous control ties"),
     ("scripts/polygon-radius-prereg.py", 0, "prereg run: PASS",

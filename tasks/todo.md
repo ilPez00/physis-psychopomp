@@ -10,11 +10,12 @@ No step is preregistered until a claim and frozen card are committed.
   fixes the law/state table, balanced shuffle, separate budgets and gates.
   Calibration values `1` and `3` are nominal-compatible; only `5` and `7`
   reject the nominal model.
-  Implementation and measurement have not started for this card.
-- [ ] **A2: Exact Bayesian selector.** Implement target-specific scoring and
-  abstention in one Python module; unit test `(0,2)`, `(1,0)`, `(0,1)`, `1/3`
-  random baseline, shuffled null and candidate-order invariance.
-  Depends on A1. Gate: `.venv/bin/python -m pytest -q tests/test_active_design.py`.
+  Frozen and pushed at `38b5d70` before implementation or measurement.
+- [x] **A2: Exact Bayesian selector.** R-P1.47 replays all eight rows with
+  target-specific information gain, positive-gain selection and abstention.
+  Run `.venv/bin/python -m pytest -q tests/test_active_design.py` and
+  `.venv/bin/python scripts/active-law-selection-prereg.py`; see the
+  [receipt](../research/loops/results/active-law-selection-20261123/receipt.json).
 - [ ] **A3: Exit-event fixture.** Preregister physical response table. Test
   expected step/position, nominal mismatch, equal rival magnitude likelihood,
   both signed outcomes and no oracle/provenance passthrough. Depends on A1;
