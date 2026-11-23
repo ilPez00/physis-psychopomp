@@ -1,0 +1,18 @@
+{
+  "card": "R-P1.54",
+  "claim_id": "ca4ba2d9-b401-47bb-8f0f-5e863f791c83",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.54-patch-chain.md",
+  "frozen_commit": "a5988320dc0627a2b8e9bb1717981d6ea71701f7",
+  "command": ".venv/bin/python scripts/patch-chain.py",
+  "scratch_world": "/tmp/opencode/chain-244bsy8d",
+  "steps": {
+    "gate": {"P": "NO_EVIDENCE (2)", "Q": "NO_EVIDENCE (2)"},
+    "declare": {"P": "rc 1", "Q": "rc 1"},
+    "re_claim": {"P": 2, "Q": 2},
+    "graph_relations": "1 -> 1",
+    "log_rows": "12 -> 14"
+  },
+  "verdicts": {"Y1": "UPHELD", "Y2": "UPHELD", "Y3": "UPHELD", "Y4": "UPHELD", "Y5": "UPHELD"},
+  "finding": "decode -> gate -> declare -> re-verify runs on one world, and the fold's refusal is recorded without promoting the proposal: the graph is unchanged and the claim verdict stays NO_EVIDENCE",
+  "scope": "One ontology version, unlaned predicates only (the easy refusal). No laned-but-wrong proposal, no retry policy, no authorisation step, throwaway world."
+}
