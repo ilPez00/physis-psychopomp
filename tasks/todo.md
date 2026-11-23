@@ -6,10 +6,11 @@ No step is preregistered until a claim and frozen card are committed.
 
 ## A — Local discovery demo
 
-- [ ] **A1: Freeze finite-law card.** Enumerate both law/state tables, balanced
-  shuffle and no-signed control; register claim, threshold, and two budgets
-  (calibration versus diagnosis). Run `scripts/prereg-checklist.py`; verify
-  remote prereg SHA before first run. Depends on plan review.
+- [x] **A1: Freeze finite-law card.** [R-P1.47](../docs/2026-11-23-PREREG-R-P1.47-active-law-selection.md)
+  fixes the law/state table, balanced shuffle, separate budgets and gates.
+  Calibration values `1` and `3` are nominal-compatible; only `5` and `7`
+  reject the nominal model.
+  Implementation and measurement have not started for this card.
 - [ ] **A2: Exact Bayesian selector.** Implement target-specific scoring and
   abstention in one Python module; unit test `(0,2)`, `(1,0)`, `(0,1)`, `1/3`
   random baseline, shuffled null and candidate-order invariance.
