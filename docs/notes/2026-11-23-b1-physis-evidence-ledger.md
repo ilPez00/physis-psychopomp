@@ -1,7 +1,7 @@
 # B1 — the evidence ledger: two stores, measured (2026-11-23)
 
 Status: **measured**, no importer written. Corrects one assumption in the
-[P1 plan](../tasks/plan.md) phase 2 and one in `physis-check`.
+[P1 plan](../../tasks/plan.md) phase 2 and one in `physis-check`.
 
 ## Versions
 
