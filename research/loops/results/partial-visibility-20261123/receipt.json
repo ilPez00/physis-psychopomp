@@ -1,0 +1,18 @@
+{
+  "card": "R-P1.44",
+  "date": "2026-11-23",
+  "status": "PASS — all four predictions upheld after one instrument fix",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.44-partial-visibility.md",
+  "hypothesis": "f142a2b6-c9d5-44ec-a248-afb780814563 (Supported)",
+  "instrument": "SimConfig.visual_radius: a body is fully hidden only when its whole disc is inside a blocker",
+  "command": ".venv/bin/python scripts/partial-visibility-prereg.py",
+  "measured": {
+    "mispredictions_by_radius": {"0.0": 0, "0.5": 1, "1.0": 1},
+    "band_cell": {"point": [53.7, 45.0], "law": "tie", "measured": "unique", "r": 0.5},
+    "shrunk_predicate_correct": "every point at every radius"
+  },
+  "finding": "the law is exact for a point body; for radius r the blind region is the point-level one shrunk by r, and a centre-based predicate over-predicts blindness in a band of width r. The correct wording is: identifiable iff the whole body is outside the blind region.",
+  "defect": "the first patch shrank only observer 1's blockers, so observer 2 kept hiding everything on the unshrunk rule and the card measured no band at any radius; both observers now share one predicate. Second consecutive card where a partial patch to a shared predicate gave a plausible wrong answer (R-P1.43's lag helper was the first), both caught by control cells.",
+  "tests": "158 passed",
+  "gates": 29
+}

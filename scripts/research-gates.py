@@ -41,6 +41,8 @@ GATES = [
      "row export onto a declared template: typed substitution, refusal on unknown fields"),
     ("scripts/export-contract-check.py", 0, "export contract: PASS",
      "integration contract: schema, canonical order, identity-free, deterministic, counterfactual-refusing"),
+    ("scripts/partial-visibility-prereg.py", 0, "prereg run: PASS",
+     "R-P1.44: centre-based law mispredicts only in a band of width r (0/1/1 at r=0/0.5/1.0); r-shrunk predicate exact"),
     ("scripts/detection-latency-prereg.py", 0, "prereg run: PASS",
      "R-P1.43: latency is signed (mean margin +0.20 -> -2.65) and the law is untouched; two thresholds were widened after L=1 (recorded)"),
     ("scripts/bursty-markers-prereg.py", 1,

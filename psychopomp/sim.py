@@ -75,6 +75,10 @@ class SimConfig:
     # carrying the body's position THEN (a lagging sampler). 0 = instant, and the
     # oracle log is never delayed.
     detect_latency: int = 0
+    # Partial visibility (R-P1.44): a body of radius r is FULLY hidden only when its
+    # whole disc is inside a blocker, so the blind region shrinks by r on each edge.
+    # 0.0 reproduces the point model every prior number was measured with.
+    visual_radius: float = 0.0
     # Start a body already occluded (R-P1.39 case 3): models an observer that was
     # created with something hidden, so zero identity evidence exists for it.
     # Off by default; the init-observable guard still applies otherwise.
@@ -206,17 +210,27 @@ def inside_polygon(poly: Sequence[Tuple[float, float]], x: float, y: float) -> b
 def observable(cfg: SimConfig, x: float, y: float, t: int = 0) -> bool:
     """Visible to at least one observer at step `t`.
 
-    An observer is blocked when the point is inside ANY of its own rects; the
-    body is hidden only when every observer is blocked. The second observer moves
-    with `t`.
+    An observer is blocked when the body is **fully** inside any of its own rects —
+    with `visual_radius` the whole disc must be covered, so a sliver of a body is
+    still seen (R-P1.44). The body is hidden only when every observer is blocked,
+    and the second observer's rect applies the same rule; a patch that shrinks only
+    the first observer leaves the second one hiding everything, which is exactly the
+    mistake the first run of R-P1.44 measured.
     """
-    blocked1 = (inside_rect(cfg.o, x, y)
-                or any(inside_rect(rect, x, y) for rect in cfg.extra_o)
+    r = cfg.visual_radius
+
+    def fully_inside(rect) -> bool:
+        # the whole disc is covered when the centre is at least r from every edge
+        return inside_rect(rect, x, y) and (x0 := rect[0] + r) <= x <= rect[1] - r \
+            and (y0 := rect[2] + r) <= y <= rect[3] - r
+
+    blocked1 = (fully_inside(cfg.o)
+                or any(fully_inside(rect) for rect in cfg.extra_o)
                 or any(inside_polygon(poly, x, y) for poly in cfg.poly_o))
     if not blocked1:
         return True
     second = occluder2_at(cfg, t)
-    return second is not None and not inside_rect(second, x, y)
+    return second is not None and not fully_inside(second)
 
 
 def _fold(value: float, lo: float, hi: float) -> float:

@@ -243,6 +243,19 @@ afterwards, because one step of latency sits inside the estimator's own quantisa
 That is a preregistration defect, not a measurement one, and it is recorded rather
 than smoothed.
 
+## A scope condition the law had been assuming: hidden means *wholly* hidden
+
+Nine cards measured "hidden" as "the centre is inside the blind region" — correct for
+the point model they declared. A body of radius `r` is fully hidden only when its whole
+disc is inside, so the effective blind region is the point-level one **shrunk by `r`**
+on every edge, and a centre-based predicate over-predicts blindness in a band of width
+`r` (R-P1.44: mispredictions 0 / 1 / 1 at `r = 0 / 0.5 / 1.0`; shrinking by `r`
+predicts every point correctly at every radius).
+
+So the law's statement is: identifiable iff the **whole body** is outside the blind
+region. `SimConfig.visual_radius` carries the radius, and `0.0` is the point model all
+earlier measurements used.
+
 ## How to use it
 
 ```python
