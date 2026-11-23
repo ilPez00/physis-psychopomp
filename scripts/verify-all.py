@@ -1,8 +1,14 @@
-"""Run everything that CI would run, in one command, and print one verdict.
+"""The gate. Run every check the repository has, in one command, one verdict.
 
-GitHub Actions refuses to start jobs on this repository (billing), so the local
-transcript is the only evidence anyone has. This makes it one command instead of a
-dozen, and it fails loudly with the failing step named.
+This is the authoritative gate, not a convenience wrapper. GitHub Actions
+refuses to start jobs on this repository — every push failed with "recent
+account payments have failed", zero steps run — and the account is not going to
+be fixed, so `.github/workflows/ci.yml` is manual-only and this command is what
+"verified" means. It runs the same steps the workflow lists, so the two cannot
+drift into disagreeing about what a green result is.
+
+Every step is a gate that prints what it measured; the run fails loudly with the
+failing step named, because "exit 0" over zero work looks exactly like success.
 
 Usage: .venv/bin/python scripts/verify-all.py
 """

@@ -1,8 +1,25 @@
 name: ci
 
+# Manual only, on purpose.
+#
+# GitHub refuses to start jobs on this repository: every push used to paint the
+# branch red with "recent account payments have failed or your spending limit
+# needs to be increased", zero steps run. A red check nobody can make green is
+# noise that reads like a broken build, so the automatic triggers are gone.
+#
+# The authoritative gate is local and is the same command:
+#
+#     .venv/bin/python scripts/verify-all.py
+#
+# It runs the lockfile check, pytest, law conformance, every research gate, the
+# prereg checklist, the repro block, recoverability, the probe baseline and the
+# demo, and fails loudly with the failing step named. `scripts/verify-all.py`
+# writes the same list, so the two cannot drift into disagreement about what
+# "verified" means.
+#
+# Restore `push:` / `pull_request:` below if billing is ever fixed.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:

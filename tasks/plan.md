@@ -250,10 +250,12 @@ decision or reveals a failure the current verifier misses.
    learner without measured headroom. No autonomous writer or retraction
    feature while these gates are open.
 
-Formalities: pin the live CLI in the verification environment (hosted workflow
-currently provisions Python only), retain raw evidence or its restorable
-artifact, and keep the frozen card, pilot, audited replay, CI and backup
-verdicts separate.
+Formalities: the local gate is the gate — `scripts/verify-all.py` here,
+`scripts/ci-local.sh` in Physis-next — because the hosted workflows start zero
+steps on an unpaid account and will not be restored. Pin the live CLI in the
+local environment, retain raw evidence or its restorable artifact, and keep the
+frozen card, pilot, audited replay, local-gate receipt and backup verdicts
+separate.
 
 Operator-approved follow-on: [guarded repair writer and offline ranking](../docs/notes/production-repair-rollout.md).
 Start with the existing Physis-next store lock; stage the writer before

@@ -41,10 +41,14 @@ writer; the writer must not depend on learner output.
    tail, and reopen the same store with a fresh process. Match the exact edge
    and audit seq. A lost response means inspect by approval identity, not
    blind retry. Keep `declare`'s existing operator semantics unchanged.
-5. **Release gate.** Require separate operator approval of the target and
-   permission separation, exact-head verification, a restorable backup, and
-   a demonstrated containment/correction path. No claim of retraction until
-   measured. Until then no live-world writes, deployment or permission grants.
+5. **Release gate.** Run the repository's own local gate at the exact head — for
+   Psychopomp `.venv/bin/python scripts/verify-all.py`, for Physis-next
+   `bash scripts/ci-local.sh` — and keep its receipt. Hosted CI is not a gate
+   anywhere on this fleet: the account is unpaid, GitHub starts zero steps, and
+   that is not going to change. Then require a restorable backup, an operator
+   approval separate from the one that previewed, and a demonstrated
+   containment/correction path. No claim of retraction until measured. Until
+   then no live-world writes, deployment or permission grants.
 
 ## Learner: headroom before training
 

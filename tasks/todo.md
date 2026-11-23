@@ -157,8 +157,10 @@ One writer at a time; a delegate's claim is not a gate.
   approval) plus a CLI refusal receipt. No live target, no deployment, no write
   separation.
 - [ ] **Writer staging:** the withdrawal half of the operator flow has no CLI
-  verb yet; release needs an exact-head CI result, a restorable backup and
-  separate approval of target and rollout.
+  verb yet; release needs the repo's local gate (`scripts/ci-local.sh`) at the
+  exact head, a restorable backup and an approval separate from the preview.
+  Hosted CI is permanently unavailable (unpaid account, zero steps) and is not
+  a gate anywhere on this fleet.
 - [x] **Ranking headroom: measured, none.** R-P1.56 found support ranking below
   the shuffled control (P 0.194 vs 0.282), so E6 stays closed.
 - [ ] **Ranking, if reopened:** features beyond surviving-world counts that beat
