@@ -26,6 +26,7 @@ only, and no compatibility is claimed.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from typing import List
 
@@ -84,3 +85,60 @@ def read_observations(path: str) -> List[dict]:
             if line:
                 out.append(json.loads(line))
     return out
+
+
+#: Turnover has no simulated clock, so one tick is one second. Stated here
+#: rather than left implied: a consumer that assumes milliseconds is wrong by 1000.
+TURNOVER_DT = 1.0
+
+
+def _turnover_config_sha() -> str:
+    """Digest of the fixture's declared shape, identical for every episode.
+
+    Deliberately excludes the target, the perturbation and the arm: those are the
+    episode's situation and its hidden variable, so folding them in would put the
+    answer inside the provenance a consumer is allowed to read.
+    """
+    from .turnover import INVARIANT, OBSERVE, PERTURB_TICK
+
+    declared = {"invariant": INVARIANT, "observe": list(OBSERVE),
+                "perturb_tick": PERTURB_TICK, "loads": [4, 4],
+                "components": {"1": [1, 1], "2": [2, 1]}, "dt": TURNOVER_DT}
+    payload = json.dumps(declared, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+
+def turnover_records(run, episode: int, ticks=None) -> List[dict]:
+    """One record per observed tick of a turnover episode.
+
+    The arm is the **hypothesis** under test, so it never reaches the record —
+    a consumer that could read it back would be handed the answer. Role order is
+    kept because the two roles are the organization's structure, not component
+    identity: the fixture replaces every component while each role keeps its
+    load, and `relabel=True` exists to ask whether an analysis depends on that
+    order. Component generations are deliberately absent for the same reason.
+    """
+    from .turnover import OBSERVE
+
+    ticks = OBSERVE if ticks is None else ticks
+    subject = f"episode:0:{episode}"
+    records = []
+    for seq, tick in enumerate(ticks):
+        if tick not in run.loads:
+            raise ValueError(f"tick {tick} is outside the recorded episode")
+        records.append(
+            {
+                "schema": SCHEMA,
+                "subject": subject,
+                "kind": "loads",
+                "at": round(tick * TURNOVER_DT, 6),
+                "props": {"loads": list(run.loads[tick]), "tick": tick, "dt": TURNOVER_DT},
+                "provenance": {"source": "sim:turnover/v0.1", "config_sha256": "",
+                               "seed": 0, "episode": episode},
+                "evidence": "OBSERVED",
+                "seq": seq,
+            }
+        )
+    return records
+
