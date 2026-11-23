@@ -61,9 +61,9 @@ REPRO.md                 environment, seeds, canonical scenarios
 ```bash
 uv venv --python 3.12 .venv
 uv pip install -e '.[dev]'
-.venv/bin/pytest -q          # full suite (incl. ASP cross-check)
-.venv/bin/python scripts/research-gates.py   # every documented result, pinned
-.venv/bin/python scripts/law-conformance.py  # the law vs attribution, random grid
+.venv/bin/python scripts/verify-all.py      # EVERYTHING CI runs, one command (~40 s)
+.venv/bin/pytest -q                          # just the suite
+.venv/bin/python scripts/status.py           # what this repo currently holds
 .venv/bin/python scripts/demo.py
 .venv/bin/python scripts/recoverability.py
 ```

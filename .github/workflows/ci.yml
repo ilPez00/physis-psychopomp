@@ -16,17 +16,5 @@ jobs:
         run: uv lock --check
       - name: install
         run: uv pip install -e '.[dev]'
-      - name: tests
-        run: .venv/bin/pytest -q
-      - name: recoverability gate
-        run: .venv/bin/python scripts/recoverability.py
-      - name: probe baseline (M2/M3)
-        run: .venv/bin/python scripts/probes.py
-      - name: REPRO table matches the gate
-        run: .venv/bin/python scripts/repro-table.py --check
-      - name: demo
-        run: .venv/bin/python scripts/demo.py
-      - name: law conformance (random geometries)
-        run: .venv/bin/python scripts/law-conformance.py --cells 120
-      - name: research gates (every documented result, pinned)
-        run: .venv/bin/python scripts/research-gates.py
+      - name: every gate, in one command (the same one a human runs locally)
+        run: .venv/bin/python scripts/verify-all.py
