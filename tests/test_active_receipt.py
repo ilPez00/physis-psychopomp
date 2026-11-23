@@ -106,3 +106,14 @@ def test_verifier_never_imports_the_session_loop() -> None:
     from psychopomp import active_receipt
 
     assert "active_loop" not in inspect.getsource(active_receipt)
+
+
+def test_forged_prediction_table_refused() -> None:
+    """An internally consistent plan that lies about the fixture must not verify."""
+    reading = CELLS[0][2]
+    lie = {reading: (Fraction(0), Fraction(1))}          # reading proves law +1
+    forged = commit(policy="sign-only", selected="signed", prior=PRIOR, predictions=lie)
+    decision = decide(forged, reading)
+    report = verify(forged, reading, decision)
+    assert report["verdict"] == "REFUSED", report
+    assert "frozen" in report["reason"] or "fixture" in report["reason"], report

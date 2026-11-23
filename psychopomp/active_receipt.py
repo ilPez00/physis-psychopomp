@@ -48,6 +48,14 @@ def digest(record: dict) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def predictions_from(rows: list[tuple[int, int]]) -> dict[int, tuple[Fraction, Fraction]]:
+    """Posterior over the rows' first coordinate, per attainable reading."""
+    return {
+        reading: tuple(active_design.posterior(rows, reading)[target] for target in RIVALS)
+        for reading in {reading for _, reading in rows}
+    }
+
+
 def predictions_for(selected: str) -> dict[int, tuple[Fraction, Fraction]]:
     """The fixture's own posterior per attainable reading for one channel.
 
@@ -59,11 +67,7 @@ def predictions_for(selected: str) -> dict[int, tuple[Fraction, Fraction]]:
         return {reading: (Fraction(1, 2), Fraction(1, 2)) for reading in readings}
     if selected not in CHANNELS:
         raise ValueError(f"unknown channel {selected!r}")
-    rows = active_exit.rows(selected)
-    return {
-        reading: tuple(active_design.posterior(rows, reading)[law] for law in RIVALS)
-        for reading in {reading for _, reading in rows}
-    }
+    return predictions_from(active_exit.rows(selected))
 
 
 def commit(*, policy: str, selected: str, prior: tuple[Fraction, Fraction],
@@ -112,14 +116,28 @@ def decide(plan: dict, reading: int | None) -> dict:
 
 
 def verify(plan: dict, reading: int | None, decision: dict) -> dict:
-    """Recompute the decision from the plan and reading; never raise on bad input."""
+    """Recompute from the plan, the reading and this fixture's frozen table."""
     try:
-        return _verify(plan, reading, decision)
+        if plan.get("selected") is None:
+            return _refuse("plan names no channel")
+        frozen = predictions_for(plan["selected"])
+    except (ValueError, TypeError):
+        return _refuse("plan names a channel the frozen fixture does not define")
+    except AttributeError:
+        return _refuse("plan is not a record")
+    return verify_against(plan, reading, decision, frozen)
+
+
+def verify_against(plan: dict, reading: int | None, decision: dict,
+                   frozen: dict[int, tuple[Fraction, Fraction]]) -> dict:
+    """Same check against a caller-declared table, for a second fixture."""
+    try:
+        return _verify(plan, reading, decision, frozen)
     except Exception as error:  # a malformed receipt is refused, not a crash
         return _refuse(f"malformed receipt: {type(error).__name__}: {error}")
 
 
-def _verify(plan: Any, reading: Any, decision: Any) -> dict:
+def _verify(plan: Any, reading: Any, decision: Any, frozen: Any) -> dict:
     if not isinstance(plan, dict):
         return _refuse("plan is not a record")
     declared = plan.get("plan_sha256")
@@ -133,10 +151,6 @@ def _verify(plan: Any, reading: Any, decision: Any) -> dict:
         return _refuse("decision was not made from this plan")
     if decision.get("reading") != reading or type(decision.get("reading")) is not type(reading):
         return _refuse("decision was not made from this reading")
-    try:
-        frozen = predictions_for(plan.get("selected"))
-    except (ValueError, TypeError):
-        return _refuse("plan names a channel the frozen fixture does not define")
     if _decoded(plan.get("predictions")) != frozen:
         return _refuse("plan predictions are not the frozen fixture table")
     expected = decide(plan, reading)
