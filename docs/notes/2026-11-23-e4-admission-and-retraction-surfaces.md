@@ -69,3 +69,27 @@ rows. Until one exists, the plan's E4 stays partial and says so.
 - Retraction-based operations are **blocked on upstream**, not on effort, and the
   blocker names a specific function and filter so a future reader can check it in
   one command.
+
+## 4. A pre-admission gate, measured on a live world
+
+`psychopomp/admission.py` wraps `claim` so a plan can be checked before anyone
+declares anything. On the scratch world from the probe, with one true and one
+unsupported proposal:
+
+```
+kept:            ('file:src/a.txt', 'CONTAINS', 'file:src/b.txt', unverified_by_fold=True)
+already known:   (['file:src/a.txt', 'DEFINES', 'document:src/a.txt::1'], 'VERIFIED')
+checks:          [('CONTAINS','NO_EVIDENCE',2), ('DEFINES','VERIFIED',0)]
+applied: False   verifier: NOT_EVALUATED
+```
+
+Rules the gate enforces, each with a test:
+
+- **`VERIFIED` retires the proposal** — it means "the fold already knows this",
+  not "the prediction was right";
+- **`NO_EVIDENCE` keeps it** and marks `unverified_by_fold`;
+- **`REFUTED` keeps it** and marks `contradicted_by_fold` — a contradiction is
+  recorded, not silently deleted;
+- an **undocumented exit code fails closed** (`ValueError`), because a gate that
+  guesses is worse than one that stops;
+- the input plan is not mutated and `applied` stays `False`.
