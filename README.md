@@ -59,9 +59,8 @@ REPRO.md                 environment, seeds, canonical scenarios
 ## Quickstart
 
 ```bash
-uv venv --python 3.12 .venv
-uv pip install -e '.[dev]'
-.venv/bin/python scripts/verify-all.py      # EVERYTHING CI runs, one command (~40 s)
+uv sync --locked --extra dev --python 3.12
+.venv/bin/python scripts/verify-all.py      # same nine checks as CI, after setup
 .venv/bin/pytest -q                          # just the suite
 .venv/bin/python scripts/status.py           # what this repo currently holds
 .venv/bin/python scripts/demo.py

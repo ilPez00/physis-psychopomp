@@ -4,21 +4,23 @@
 
 - Python 3.12 (pin; other versions untested — `random.Random` and float
   formatting are the determinism surface).
-- Core (sim, event log, filter, controls) is stdlib-only. Dev dep: pytest>=8.
+- Core (sim, event log, filter, controls) is stdlib-only. The `dev` extra includes
+  pytest and clingo.
 - Install:
 
 ```bash
-uv venv --python 3.12 .venv
-uv lock --check                 # dependencies are locked in uv.lock
-uv pip install -e '.[dev]'
-.venv/bin/pytest -q
+uv sync --locked --extra dev --python 3.12
+.venv/bin/python scripts/verify-all.py
 ```
 
 ## Off-machine copy
 
 ```bash
 git bundle create physis-psychopomp.bundle --all   # artifact
-git clone physis-psychopomp.bundle restore && cd restore && .venv/bin/pytest -q
+git clone physis-psychopomp.bundle restore
+cd restore
+uv sync --locked --extra dev --python 3.12
+.venv/bin/python scripts/verify-all.py
 ```
 
 Verified 2026-11-21: 137 KB, 40 commits at `2c6ba68`, `HEAD` matches the source
