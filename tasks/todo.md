@@ -16,14 +16,17 @@ No step is preregistered until a claim and frozen card are committed.
   Run `.venv/bin/python -m pytest -q tests/test_active_design.py` and
   `.venv/bin/python scripts/active-law-selection-prereg.py`; see the
   [receipt](../research/loops/results/active-law-selection-20261123/receipt.json).
-- [ ] **A3: Exit-event fixture.** Preregister physical response table. Test
-  expected step/position, nominal mismatch, equal rival magnitude likelihood,
-  both signed outcomes and no oracle/provenance passthrough. Depends on A1;
-  reuse existing `run` and visible log. Gate: `tests/test_active_exit_fixture.py`.
+- [x] **A3: Exit-event fixture.** [R-P1.48](../docs/2026-11-23-PREREG-R-P1.48-active-exit-fixture.md)
+  frozen at `d48206f`; actual exits and scalar-only acquisition passed.
+  Gates: `scripts/active-exit-prereg.py`, `tests/test_active_exit_fixture.py`.
+  [Receipt](../research/loops/results/active-exit-20261123/receipt.json).
 - [ ] **A4: Bounded execute and verify loop.** Reject a second diagnostic action,
   non-allowlisted action and forged receipts. Verify both laws and all reset
   states, losing controls and abstention. Depends on A2/A3. Gate:
   `tests/test_active_discovery.py` and the demo replay in `scripts/research-gates.py`.
+  First review `work/occluded-evidence-proof` (`2f08e49`) for reusable receipt
+  and verifier code. Its four-cell early/late-observer fixture is separate
+  from R-P1.48; neither card's results substitute for A4 on this fixture.
 - [ ] **Checkpoint A:** Publish local transcript with exact claim, denominators,
   normalized receipts and `scripts/verify-all.py` output. No Physis integration claim.
 
