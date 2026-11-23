@@ -1,4 +1,4 @@
-# Psychopomp
+# Psychopomp — Temporal Reasoning & Possible-World Verification
 
 A machine for making possible worlds experimentally accountable: persistent,
 provenance-bearing world states → temporal reasoning → falsifiable
