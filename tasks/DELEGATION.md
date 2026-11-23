@@ -88,3 +88,27 @@ report format. Nothing about "what we discussed".
 
 `UNVERIFIABLE` is not a pass. A delegate that cannot run its gate has produced
 nothing I may commit.
+
+## Run log
+
+### 2026-11-23 — W2 via free-agent / freepi
+
+`free-agent loop … --worker freepi --check 'pytest -q tests/test_active_receipt.py'`
+returned `ok=true`, gate exit 0, and created exactly its two files. **The delegate
+reported the session was NOT on the pinned model** ("re-run this same brief in a
+session whose modelId is `z-ai/glm-5.3-flash`"), so by the rules above the run is
+`BLOCKED(model)`, not a delivered brief: free-agent's freepi driver does not set
+the model, and the TUI default won. The two files were therefore reviewed by me
+as unreviewed work, not accepted as a delegate result.
+
+Review found one **required** defect: `verify` checked only that the record was
+self-consistent, so a plan carrying a fabricated prediction table with a matching
+digest read as `VERIFIED` — the one thing the module exists to prevent. Fixed in
+`psychopomp/active_receipt.py` by recomputing from `active_exit.rows(selected)`
+(`predictions_for`) and refusing any plan whose table differs; reproducer
+`tests/test_active_receipt.py::test_forged_prediction_table_refused` was written
+first and failed (`+ VERIFIED`) before the fix.
+
+Consequence for W1: its brief cannot rely on the driver to pin the model either.
+Set the model in the TUI before typing the task, and treat a footer that does not
+read `DeepSeek V4.1 Flash • high` (no "fast") as `BLOCKED(model)`.
