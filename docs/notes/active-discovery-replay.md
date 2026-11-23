@@ -58,7 +58,17 @@ or a simulator.
 This is an engineering check, not a new research card or a general importer
 correctness claim.
 
-**Next B3 slice:** link the exact store rows and rival IDs to a durable belief
-revision, reopen the hypothesis ledger, and reproduce revision or abstention.
-Shuffled decisions remain controls, not history. Importer hardening stays on
-its own branch.
+## Propose belief revisions without writing
+
+Pass `--rivals "$negative_id" "$positive_id"` with `--replay` and
+`--store-log`. Use two distinct, case-scoped hypothesis UUIDs, in law order
+`-1`, `+1`. The proposal cites the exact producer key, store sequence,
+canonical store row hash, and sealed plan hash. It recomputes the resolved law
+from the stored reading and proposes `Supported` for one rival and
+`Contradicted` for the other. A refusal produces no revision.
+
+`PROPOSED` is not a persisted revision or an authorization. The caller must
+verify the UUID-to-law assignments in the target ledger. Next: record both
+updates in an isolated ledger, reopen it, and read back both the evidence and
+revision. Shuffled decisions remain controls, not history. Importer hardening
+stays on its own branch.

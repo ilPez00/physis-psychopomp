@@ -9,13 +9,14 @@ import tempfile
 from dataclasses import asdict, replace
 from fractions import Fraction
 from pathlib import Path
+from uuid import UUID
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from psychopomp.active_loop import BudgetExhausted, Session
 from psychopomp.active_exit import readout
 from psychopomp.active_receipt import (
-    ABSTAIN, REFUSED, VERIFIED, commit, digest, predictions_for, verify,
+    ABSTAIN, REFUSED, VERIFIED, commit, decide, digest, predictions_for, verify,
 )
 from psychopomp.eventlog import EventLog
 from psychopomp.export import SCHEMA
@@ -87,7 +88,7 @@ def export_case(case: Path) -> dict:
     return observation_record(*load_case(case))
 
 
-def replay_store(case: Path, log: Path) -> tuple[str, int]:
+def checked_store_evidence(case: Path, log: Path) -> dict:
     plan, decision, events = load_case(case)
     expected = observation_record(plan, decision, events)
     key = f"psychopomp:{expected['subject']}#{expected['seq']}"
@@ -118,7 +119,43 @@ def replay_store(case: Path, log: Path) -> tuple[str, int]:
     if type(row["seq"]) is not int or row["seq"] < 0:
         raise ValueError("invalid store sequence")
     event = replace(events[0], attrs=observed["props"])
-    return verify(plan, readout((event,), plan["selected"]), decision)["verdict"], row["seq"]
+    reading = readout((event,), plan["selected"])
+    verdict = verify(plan, reading, decision)["verdict"]
+    return {
+        "verdict": verdict,
+        "resolved": decide(plan, reading)["resolved"] if verdict == VERIFIED else None,
+        "store_seq": row["seq"],
+        "producer_key": key,
+        "store_row_sha256": hashlib.sha256(
+            json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+        ).hexdigest(),
+        "plan_sha256": plan["plan_sha256"],
+    }
+
+
+def replay_store(case: Path, log: Path) -> tuple[str, int]:
+    evidence = checked_store_evidence(case, log)
+    return evidence["verdict"], evidence["store_seq"]
+
+
+def propose_belief_revision(case: Path, log: Path, rivals: dict[int, str]) -> dict:
+    """Bind a pair of case-scoped rivals to verified evidence; never write either store."""
+    if set(rivals) != set(LAWS) or len(set(rivals.values())) != len(LAWS):
+        raise ValueError("two distinct rival UUIDs are required for laws -1 and +1")
+    if any(str(UUID(value)) != value for value in rivals.values()):
+        raise ValueError("rival UUIDs must use canonical notation")
+    evidence = checked_store_evidence(case, log)
+    if evidence["verdict"] != VERIFIED:
+        raise ValueError("a revision requires a resolved, verified observation")
+    return {
+        "status": "PROPOSED",
+        "evidence": evidence,
+        "revisions": [
+            {"hypothesis": rivals[law],
+             "status": "Supported" if law == evidence["resolved"] else "Contradicted"}
+            for law in LAWS
+        ],
+    }
 
 
 def diagnose_and_verify(law: int, state: int, policy: str, case: Path | None = None, *,
@@ -196,9 +233,13 @@ if __name__ == "__main__":
     mode.add_argument("--replay", type=Path, help="verify one recorded case without simulation")
     mode.add_argument("--export", type=Path, help="export the verified cases recorded in this directory")
     parser.add_argument("--store-log", type=Path, help="with --replay, cite the matching Physis row")
+    parser.add_argument("--rivals", nargs=2, metavar=("NEGATIVE_ID", "POSITIVE_ID"),
+                        help="with --store-log, propose revisions for two case-scoped rivals")
     args = parser.parse_args()
     if args.store_log is not None and args.replay is None:
         parser.error("--store-log requires --replay")
+    if args.rivals is not None and args.store_log is None:
+        parser.error("--rivals requires --store-log")
     if args.export is not None:
         records = [export_case(case) for case in sorted(args.export.iterdir()) if case.is_dir()]
         if not records or len({row["subject"] for row in records}) != len(records):
@@ -211,6 +252,11 @@ if __name__ == "__main__":
             print(verdict)
         else:
             try:
+                if args.rivals is not None:
+                    proposal = propose_belief_revision(
+                        args.replay, args.store_log, dict(zip(LAWS, args.rivals)))
+                    print(json.dumps(proposal, sort_keys=True))
+                    raise SystemExit(0)
                 verdict, seq = replay_store(args.replay, args.store_log)
                 print(json.dumps({"verdict": verdict, "store_seq": seq}))
             except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:

@@ -240,6 +240,11 @@ decision or reveals a failure the current verifier misses.
    the eight adaptive cases. Add a replay command that never invokes the
    simulator and rejects a reading and posterior forged together. Run the
    shuffled control unchanged; import and store-level replay follow separately.
+   Belief-revision slice: from a single adaptive case and its reopened store
+   row, bind the two case-scoped rival UUIDs to the exact evidence and compute
+   their proposed revisions. No write on absent, duplicate or altered evidence.
+   Reopen the hypothesis ledger separately and compare actual revisions; a
+   proposed update alone does not close B3.
 3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
    validation before tests. Add ordered readback, mixed overlap and same-key
    conflict controls, including concurrent writers. Cold-check the importer
