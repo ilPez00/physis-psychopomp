@@ -1,0 +1,21 @@
+{
+  "card": "R-P1.49",
+  "claim_id": "297b0fac-4996-4e71-b9c0-bff55314a966",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.49-turnover-identity.md",
+  "frozen_commit": "2d829929b2a09538a299c8bda788d795e21b0e88",
+  "commands": [
+    ".venv/bin/python scripts/turnover-identity-prereg.py",
+    ".venv/bin/python -m pytest -q tests/test_turnover_identity.py"
+  ],
+  "verdicts": {"O1": "UPHELD", "O2": "UPHELD", "O3": "UPHELD", "O4": "UPHELD"},
+  "cells": {
+    "p=0": "both arms (4,4) for ticks 4-6, tie as predicted",
+    "p=1": "both arms (5,4) / (4,5), inside the invariant, tie as predicted",
+    "p=2 target=1": {"feedback": "(5,5), residence 3/3", "open-loop": "(6,4), residence 0/3"},
+    "p=2 target=2": {"feedback": "(5,5), residence 3/3", "open-loop": "(4,6), residence 0/3"}
+  },
+  "capacity": "both initial components retired in every run; undisturbed trajectories identical across arms",
+  "mutations_run": ["feedback threshold >=2 -> >=3: 4 tests red", "replacement bookkeeping removed: 3 tests red"],
+  "finding": "organizational continuity is discriminable under these interventions: with every initial component replaced, a rule that reads the current imbalance restores the invariant within one tick and an inventory-identical open-loop arm does not, while a +1 disturbance and the sham tie as predicted",
+  "limits": "declared rule, declared invariant, one magnitude, two roles, no noise or partial turnover; two independent copies would pass the same test, so this is not individual identity"
+}

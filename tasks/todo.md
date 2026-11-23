@@ -75,7 +75,8 @@ One writer at a time; a delegate's claim is not a gate.
 
 ## C — Organizational identity
 
-- [ ] **C1: Freeze turnover card.** Fix tick order, role update, perturbation,
+- [x] **C1: Freeze turnover card.** Frozen at `2d8299`; see [R-P1.49](../docs/2026-11-23-PREREG-R-P1.49-turnover-identity.md).
+- [x] **C2: Run feedback versus replay.** 12 cells, O1–O4 upheld, two mutations caught; [receipt](../research/loops/results/turnover-identity-20261123/receipt.json). Fix tick order, role update, perturbation,
   recovery horizon, persistent-residence metric and loss controls. Register
   claim, seal before execution; record lineage separately. Depends on A4.
 - [ ] **C2: Run feedback versus replay.** Require full component turnover and
