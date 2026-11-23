@@ -3,8 +3,10 @@ import argparse
 import hashlib
 import json
 import os
+import secrets
 import sys
 import tempfile
+from dataclasses import asdict, replace
 from fractions import Fraction
 from pathlib import Path
 
@@ -13,9 +15,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from psychopomp.active_loop import BudgetExhausted, Session
 from psychopomp.active_exit import readout
 from psychopomp.active_receipt import (
-    ABSTAIN, REFUSED, VERIFIED, commit, predictions_for, verify,
+    ABSTAIN, REFUSED, VERIFIED, commit, digest, predictions_for, verify,
 )
 from psychopomp.eventlog import EventLog
+from psychopomp.export import SCHEMA
 
 LAWS = (-1, 1)
 # The prior, not `run["posterior"]`: a receipt whose prior is already updated
@@ -32,35 +35,101 @@ def write_record(path: Path, record: dict) -> None:
         os.fsync(handle.fileno())
 
 
+def case_plan(policy: str, selected: str, episode: int | None) -> dict:
+    plan = commit(policy=policy, selected=selected, prior=PRIOR,
+                  predictions=predictions_for(selected))
+    if episode is not None:
+        plan["episode"] = episode
+        plan["plan_sha256"] = digest(plan)
+    return plan
+
+
+def load_case(case: Path):
+    plan = json.loads((case / "plan.json").read_text(encoding="utf-8"))
+    decision = json.loads((case / "decision.json").read_text(encoding="utf-8"))
+    episode = plan.get("episode")  # older local receipts did not pin an episode
+    if episode is not None and (type(episode) is not int or not 0 <= episode < 2**63):
+        raise ValueError("invalid episode")
+    if plan != case_plan("adaptive", "signed", episode):
+        raise ValueError("not the frozen adaptive plan")
+    evidence = (case / "events.jsonl").read_bytes()
+    if decision["events_sha256"] != hashlib.sha256(evidence).hexdigest():
+        raise ValueError("event digest mismatch")
+    events = tuple(EventLog.from_jsonl_lines(evidence.decode("utf-8").split("\n")))
+    if any(event.observable is not True or not event.provenance.source.startswith("sim:")
+           or (episode is not None and event.provenance.episode != episode) for event in events):
+        raise ValueError("event is not observed evidence from this episode")
+    return plan, decision, events
+
+
 def replay(case: Path) -> str:
     """Verify persisted adaptive evidence without running the simulator."""
     try:
-        plan = json.loads((case / "plan.json").read_text(encoding="utf-8"))
-        decision = json.loads((case / "decision.json").read_text(encoding="utf-8"))
-        if plan != commit(policy="adaptive", selected="signed", prior=PRIOR,
-                          predictions=predictions_for("signed")):
-            return REFUSED
-        evidence = (case / "events.jsonl").read_bytes()
-        if decision["events_sha256"] != hashlib.sha256(evidence).hexdigest():
-            return REFUSED
-        events = tuple(EventLog.from_jsonl_lines(evidence.decode("utf-8").split("\n")))
-        if any(event.observable is not True for event in events):
-            return REFUSED
+        plan, decision, events = load_case(case)
         return verify(plan, readout(events, plan["selected"]), decision)["verdict"]
     except (OSError, ValueError, TypeError, KeyError, AttributeError):
         return REFUSED
 
 
-def diagnose_and_verify(law: int, state: int, policy: str,
-                        case: Path | None = None) -> tuple[dict, str]:
+def observation_record(plan, decision, events) -> dict:
+    if "episode" not in plan or len(events) != 1:
+        raise ValueError("export requires one observed exit with a sealed episode")
+    if verify(plan, readout(events, plan["selected"]), decision)["verdict"] != VERIFIED:
+        raise ValueError("export requires a verified case")
+    event = events[0]
+    return {"schema": SCHEMA, "subject": f"episode:{event.provenance.seed}:{plan['episode']}",
+            "kind": event.kind, "at": round(event.t * event.attrs["dt"], 6),
+            "props": event.attrs, "provenance": asdict(event.provenance),
+            "evidence": "OBSERVED", "seq": event.seq}
+
+
+def export_case(case: Path) -> dict:
+    return observation_record(*load_case(case))
+
+
+def replay_store(case: Path, log: Path) -> tuple[str, int]:
+    plan, decision, events = load_case(case)
+    expected = observation_record(plan, decision, events)
+    key = f"psychopomp:{expected['subject']}#{expected['seq']}"
+    matches = []
+    with log.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.endswith("\n"):
+                raise ValueError("unterminated store row")
+            row = json.loads(line)
+            if row.get("produced_by") == key:
+                matches.append(row)
+    if len(matches) != 1:
+        raise ValueError(f"expected one stored row for {key}, found {len(matches)}")
+    row = matches[0]
+    props = row["props"]
+    observed = {
+        "schema": props["psychopomp_schema"],
+        "subject": row["subject"],
+        "kind": props["psychopomp_kind"],
+        "at": float(props["at_seconds"]),
+        "props": json.loads(props["psychopomp_props"]),
+        "provenance": json.loads(props["psychopomp_provenance"]),
+        "evidence": props["psychopomp_evidence"],
+        "seq": expected["seq"],  # the producer seq is carried by the exact key
+    }
+    if row["source"] != "psychopomp" or observed != expected:
+        raise ValueError("stored payload differs from the captured observation")
+    if type(row["seq"]) is not int or row["seq"] < 0:
+        raise ValueError("invalid store sequence")
+    event = replace(events[0], attrs=observed["props"])
+    return verify(plan, readout((event,), plan["selected"]), decision)["verdict"], row["seq"]
+
+
+def diagnose_and_verify(law: int, state: int, policy: str, case: Path | None = None, *,
+                        episode: int = 0) -> tuple[dict, str]:
     if case is not None:
         if policy != "adaptive":
             raise ValueError("durable replay supports only the adaptive arm")
         case.mkdir()
 
     def seal(selected: str) -> None:
-        plan.update(commit(policy=policy, selected=selected, prior=PRIOR,
-                           predictions=predictions_for(selected)))
+        plan.update(case_plan(policy, selected, episode if case is not None else None))
         if case is not None:
             write_record(case / "plan.json", plan)
 
@@ -69,7 +138,7 @@ def diagnose_and_verify(law: int, state: int, policy: str,
 
     plan = {}
     run = Session().diagnose(law, state, policy=policy, before_acquire=seal,
-                             capture=capture if case is not None else None)
+                             capture=capture if case is not None else None, episode=episode)
     if (run["policy"], run["selected"]) != (plan["policy"], plan["selected"]):
         return run, REFUSED
     decision = {key: run[key] for key in ("reading", "posterior", "resolved")}
@@ -87,12 +156,14 @@ def main(root: Path | None = None) -> int:
         with tempfile.TemporaryDirectory(prefix="psychopomp-discovery-") as directory:
             return main(Path(directory))
     verified = abstained = refused = 0
+    episode = secrets.randbits(60) << 3
     print("| law | state | selected | reading | resolved | verdict |")
     print("|---|---|---|---|---|---|")
     for law in LAWS:
         for state in STATES:
             case = root / f"law{law:+d}-state{state:+d}"
-            run, verdict = diagnose_and_verify(law, state, "adaptive", case)
+            run, verdict = diagnose_and_verify(law, state, "adaptive", case, episode=episode)
+            episode += 1
             good = verdict == VERIFIED and run["resolved"] == law
             verified += good
             refused += verdict == REFUSED
@@ -123,10 +194,28 @@ if __name__ == "__main__":
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--record", type=Path, help="write all cases into a new directory")
     mode.add_argument("--replay", type=Path, help="verify one recorded case without simulation")
+    mode.add_argument("--export", type=Path, help="export the verified cases recorded in this directory")
+    parser.add_argument("--store-log", type=Path, help="with --replay, cite the matching Physis row")
     args = parser.parse_args()
+    if args.store_log is not None and args.replay is None:
+        parser.error("--store-log requires --replay")
+    if args.export is not None:
+        records = [export_case(case) for case in sorted(args.export.iterdir()) if case.is_dir()]
+        if not records or len({row["subject"] for row in records}) != len(records):
+            parser.error("expected a nonempty set of distinct verified episodes")
+        print("\n".join(json.dumps(row, sort_keys=True, allow_nan=False) for row in records))
+        raise SystemExit(0)
     if args.replay is not None:
-        verdict = replay(args.replay)
-        print(verdict)
+        if args.store_log is None:
+            verdict = replay(args.replay)
+            print(verdict)
+        else:
+            try:
+                verdict, seq = replay_store(args.replay, args.store_log)
+                print(json.dumps({"verdict": verdict, "store_seq": seq}))
+            except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
+                verdict = REFUSED
+                print(json.dumps({"verdict": verdict, "detail": str(error)}))
         raise SystemExit({"VERIFIED": 0, "ABSTAIN": 1, "REFUSED": 2}[verdict])
     if args.record is not None:
         args.record.mkdir()

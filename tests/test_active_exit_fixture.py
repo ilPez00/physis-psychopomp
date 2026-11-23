@@ -20,9 +20,10 @@ def test_acquisition_uses_event_scalar_without_oracle_or_metadata(
         def observable_log(self):
             return EventLog([OBS])
 
-    def run(config, *, seed, init):
+    def run(config, *, seed, init, episode):
         assert config.accel == (0, -command)
         assert init.y == (47,)
+        assert (seed, episode) == (0, 0)
         return ObservableOnly()
 
     monkeypatch.setattr(active_exit, "run", run)

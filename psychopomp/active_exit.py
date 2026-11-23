@@ -65,25 +65,25 @@ def readout(events: Iterable[Event], probe: str) -> int | None:
     return project(probe, round((pos[1] - 50) * MICRO))
 
 
-def _run_case(law: int, state: int, command: int):
+def _run_case(law: int, state: int, command: int, *, episode: int = 0):
     if (type(law) is not int or law not in LAWS
             or type(state) is not int or state not in STATES
             or type(command) is not int or command not in (0, 2)):
         raise ValueError("law, reset state or command is outside the exit fixture")
     config = SimConfig(o=(40, 60, 35, 65), o2=None, n_balls=1, dt=0.1, steps=24,
                        visual_radius=0.0, allow_hidden_init=True, accel=(0, law * command))
-    return run(config, seed=0, init=Init(x=(50,), y=(50 + state,), v=((5, 0),)))
+    return run(config, seed=0, episode=episode, init=Init(x=(50,), y=(50 + state,), v=((5, 0),)))
 
 
-def acquire_events(law: int, state: int, probe: str) -> EventLog:
+def acquire_events(law: int, state: int, probe: str, *, episode: int = 0) -> EventLog:
     """The observable event stream from one execution of the fixture."""
-    return _run_case(law, state, _command(probe)).observable_log()
+    return _run_case(law, state, _command(probe), episode=episode).observable_log()
 
 
 def acquire(law: int, state: int, probe: str, *,
-            capture: Callable[[EventLog], None] | None = None) -> int | None:
+            capture: Callable[[EventLog], None] | None = None, episode: int = 0) -> int | None:
     """Run this fixture once; the caller receives only the chosen scalar."""
-    events = acquire_events(law, state, probe)
+    events = acquire_events(law, state, probe, episode=episode)
     if capture is not None:
         capture(events)
     return readout(events, probe)

@@ -77,6 +77,9 @@ One writer at a time; a delegate's claim is not a gate.
 - [ ] **B3: Link real evidence.** Feed executed rows into the isolated store and
   link hypotheses/revision; reopen and recompute from receipt IDs. Compare to
   A4 across both laws and verify no unsupported update. Depends on A4/B2.
+  **Store replay measured:** eight executed rows imported and replayed by
+  exact producer key and store seq at importer `62c3a18a0`. Rival hypothesis
+  IDs and durable revision/readback still open.
 - [ ] **Checkpoint B:** End-to-end replay from clean checkouts, exact refs and
   run instructions; record CI and bundle states separately.
 

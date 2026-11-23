@@ -1,0 +1,1 @@
+{"attrs": {"dt": 0.1, "pos": [60.5, 46.38], "side": "right", "track": [[60.5, 46.38], [61.0, 45.94], [61.5, 45.48]], "v": [5.0, -4.4]}, "kind": "exit_occ", "observable": true, "provenance": {"config_sha256": "f3e4e6e29a7efb75fb01e5385ca04fea618ecc93e8551f66199f87eb2f59e303", "episode": 1159617891002457986, "seed": 0, "source": "sim:v0.2"}, "seq": 0, "subjects": ["ball"], "t": 21}

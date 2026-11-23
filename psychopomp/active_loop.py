@@ -48,7 +48,7 @@ class Session:
 
     def diagnose(self, law: int, state: int, *, policy: str = "adaptive",
                  before_acquire: Callable[[str], None] | None = None,
-                 capture: Callable[[EventLog], None] | None = None) -> dict:
+                 capture: Callable[[EventLog], None] | None = None, episode: int = 0) -> dict:
         """Select an action and optionally seal its plan before touching the fixture."""
         if policy not in POLICIES:
             raise ValueError(f"unknown policy {policy!r}")
@@ -64,8 +64,8 @@ class Session:
                 self._remaining += 1
                 raise
         probe = "signed" if selected == "shuffled" else selected
-        reading = (acquire(law, state, probe) if capture is None
-                   else acquire(law, state, probe, capture=capture))
+        reading = (acquire(law, state, probe) if capture is None and episode == 0
+                   else acquire(law, state, probe, capture=capture, episode=episode))
         if policy == "shuffled":
             # The prereg's frozen shuffle: exchange the rivals' signs for s < 0.
             # It preserves the readout's entropy and removes its law information.
