@@ -127,6 +127,5 @@ One writer at a time; a delegate's claim is not a gate.
 - [x] **E3: Symbolic decoder (first cut).** `psychopomp/graph_patch.py`: agreed edges stay `HYPOTHESIZED`, disputed ones emit both sides plus `REQUEST_EVIDENCE` with the best-gain probe, an empty admissible set is `UNKNOWN`, refused triples are never re-proposed, unobserved endpoints refused. 8 tests, three mutations caught, demo gated. **Still open:** the controlled corrupted-graph benchmark vs no-repair/deterministic/shuffled.
 - [ ] **E4: Route through Physis.** `whatif` + retraction preview + authorisation;
   a structurally valid proposal still does not mutate the graph.
-- [ ] **E5: Benchmark** vs no-repair, deterministic-only and shuffled controls;
-  report precision/recall/false-corrections/coverage/abstention separately.
+- [~] **E5: Benchmark (first cut).** R-P1.51 froze at `308dae`, **failed on D4**: exact precision/recall 1.00, shuffled 0.00, empty `UNKNOWN`, nothing applied — all upheld; D4's arm omitted both missing edges, so its predicted agreement was unsatisfiable. Pinned as failing. **Next:** follow-up card with the agreed-case arm defined correctly, plus a genuine no-repair and deterministic-only baseline (this run had neither, so it is a contract benchmark only).
 - [ ] **E6: Learned ranker** only with measured headroom over E3.

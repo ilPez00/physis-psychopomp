@@ -1,0 +1,16 @@
+{
+  "card": "R-P1.51",
+  "claim_id": "c9e2e6c8-d1aa-4489-ab51-2c2e9a98cb3d",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.51-decoder-contract.md",
+  "frozen_commit": "308daee98c33fadf0cced20ac1008e84a696c6e6",
+  "command": ".venv/bin/python scripts/decoder-contract-benchmark.py",
+  "verdicts": {"D1": "UPHELD", "D2": "UPHELD", "D3": "UPHELD", "D4": "FALSIFIED", "D5": "UPHELD"},
+  "measured": {
+    "exact": {"proposals": 2, "true": 2, "false": 0, "precision": 1.0, "recall": 1.0},
+    "noisy": {"proposals": 1, "true": 0, "false": 1},
+    "shuffled": {"proposals": 6, "true": 0, "false": 6, "precision": 0.0},
+    "empty": {"proposals": 0, "unknown": 1, "requests": 0}
+  },
+  "defect": "D4's arm was mis-specified: noisy = snapshot + fabricated omits both missing true edges, so no edge is shared with T and the predicted agreed edge was impossible. The decoder emitted three disputed proposals and exactly one REQUEST_EVIDENCE — the measurable half of D4 held.",
+  "scope": "Decoder contract given admissible worlds. Not a predictor, not repair precision, not admission by Physis."
+}
