@@ -141,7 +141,11 @@ One writer at a time; a delegate's claim is not a gate.
   a structurally valid proposal still does not mutate the graph.
 - [x] **E5: Benchmark.** R-P1.52 (frozen `5dc9897`) capacity 4/4, D1–D6 upheld: exact `1.00/1.00`, closure baseline `0.00`, shuffled `0.00`, agreed arm abstains into one probe. [Receipt](../research/loops/results/decoder-capacity-20261123/). Supersedes R-P1.51's D4. **Remaining:** the agreed arm's overall precision is 0.67 — a repair-quality claim needs a predictor arm, not this benchmark.
 - [~] **E5 (first cut, superseded).** R-P1.51 froze at `308dae`, **failed on D4**: exact precision/recall 1.00, shuffled 0.00, empty `UNKNOWN`, nothing applied — all upheld; D4's arm omitted both missing edges, so its predicted agreement was unsatisfiable. Pinned as failing. **Next:** follow-up card with the agreed-case arm defined correctly, plus a genuine no-repair and deterministic-only baseline (this run had neither, so it is a contract benchmark only).
-- [ ] **E6: Learned ranker** only with measured headroom over E3.
+- [ ] **E6: Learned ranker** only with measured headroom over E3. **Closed by
+  measurement:** [R-P1.56](../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md)
+  found support ranking below the shuffled control (P 0.194 vs 0.282), so a
+  learner on the same features would fit noise. Reopen only with features the
+  surviving-world counts do not contain, and beat chance first.
 
 ### Guarded repair rollout
 

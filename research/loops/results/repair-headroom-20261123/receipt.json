@@ -1,0 +1,18 @@
+{
+  "card": "R-P1.56",
+  "claim_id": "c4847c84-a694-43e6-a5f3-a3db19875602",
+  "prereg": "docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md",
+  "command": ".venv/bin/python scripts/repair-headroom-prereg.py",
+  "cases": {"total": 24, "development": 12, "held_out": 12, "determined": 0},
+  "held_out": {
+    "A_no_repair": {"precision": 0.0, "recall": 0.0, "false_corrections": "0/0"},
+    "B_consensus": {"precision": 0.0, "recall": 0.0, "false_corrections": "0/0", "abstentions": 12},
+    "C_top3_support": {"precision": 0.194, "recall": 0.097, "false_corrections": "29/36"},
+    "D_permuted_truth": {"precision": 0.282}
+  },
+  "verdicts": {"H1": "UPHELD", "H2": "FALSIFIED", "H3": "FALSIFIED", "H4": "FALSIFIED"},
+  "headroom": "NO HEADROOM",
+  "finding": "support ranking scores below the shuffled control (0.194 vs 0.282): the top-supported candidates complete other worlds, not the truth, so the candidate set carries no recoverable ranking signal at this observation budget and a learner on the same features would fit noise",
+  "learner": "E6 stays closed; a future card must add features beyond surviving-world counts and beat chance before claiming headroom",
+  "scope": "one synthetic fixture, one closure rule (degree <= 2), 3 of 6 edges observed; not evidence about repair ranking in general"
+}

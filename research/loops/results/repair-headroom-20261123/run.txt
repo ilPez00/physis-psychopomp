@@ -1,0 +1,22 @@
+cases 24 (12 dev, 12 held-out); determined by observations: 0/24 (0.000)
+
+| arm | dev | precision | recall | false corrections | abstentions |
+|---|---|---|---|---|---|
+| A | 12 cases | 0.000 | 0.000 | 0/0 | 12 |
+| B | 12 cases | 0.000 | 0.000 | 0/0 | 12 |
+| C | 12 cases | 0.139 | 0.069 | 31/36 | 0 |
+| D | 12 cases | 0.276 | — | — | — |
+
+| arm | held-out | precision | recall | false corrections | abstentions |
+|---|---|---|---|---|---|
+| A | 12 cases | 0.000 | 0.000 | 0/0 | 12 |
+| B | 12 cases | 0.000 | 0.000 | 0/0 | 12 |
+| C | 12 cases | 0.194 | 0.097 | 29/36 | 0 |
+| D | 12 cases | 0.282 | — | — | — |
+
+H1 cases genuinely ambiguous: UPHELD (0/24 determined)
+H2 consensus precise but small: FALSIFIED (P 0.000 R 0.000)
+H3 support rank trades precision for recall: FALSIFIED (R 0.097 vs B 0.000, P 0.194)
+H4 shuffled arm at chance: FALSIFIED (P 0.282)
+repair headroom: NO HEADROOM
+prereg run: PASS

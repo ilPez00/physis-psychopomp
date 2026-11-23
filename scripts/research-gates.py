@@ -49,6 +49,8 @@ GATES = [
      "R-P1.54: direct unlaned declarations refused; the tested incident count and claim verdicts stay unchanged"),
     ("scripts/laned-but-false.py", 0, "laned-but-false: PASS",
      "R-P1.55: the fold cites the newly appended assertion, not independent evidence for the proposed edge"),
+    ("scripts/repair-headroom-prereg.py", 0, "repair headroom: NO HEADROOM",
+     "R-P1.56: no ranking headroom — support ranking scores below the shuffled control, so E6 stays closed"),
     ("scripts/decoder-capacity-benchmark.py", 0, "prereg run: PASS",
      "R-P1.52: capacity 4/4 then exact 1.00/1.00, closure baseline 0.00, shuffled 0.00, agreed arm abstains into a probe"),
     ("scripts/decoder-contract-benchmark.py", 1,
