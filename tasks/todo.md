@@ -45,10 +45,11 @@ One writer at a time; a delegate's claim is not a gate.
   First review `work/occluded-evidence-proof` (`2f08e49`) for reusable receipt
   and verifier code. Its four-cell early/late-observer fixture is separate
   from R-P1.48; neither card's results substitute for A4 on this fixture.
-- [x] **Checkpoint A (local half).** `scripts/active-discovery.py` — 8/8 diagnoses
-  receipted and independently verified, shuffled control abstains, second action
-  refused; now a research gate. **Still open:** the transcript is local only, and
-  Phase 2 has not replayed it from a Physis-next store.
+- [x] **Checkpoint A (local half).** `scripts/active-discovery.py` — selected
+  action sealed before acquisition; verifier checks the executor's actual
+  8/8 decisions against the frozen fixture; 8/8 shuffled abstentions; second
+  action refused. A wrong posterior or a reading swapped after the update
+  now fails the gate. This is an in-process check, not a durable receipt.
 
 ## B — Real Physis-next evidence
 
@@ -68,9 +69,10 @@ One writer at a time; a delegate's claim is not a gate.
   provenance, counterfactuals and torn tails; confirm dry-run has zero writes.
   Depends on B1. Gate: targeted Rust importer tests, CLI import/query smoke
   and repo-prescribed Rust checks on omo after resource checks.
-- [ ] **A4 replay prerequisite:** Commit the selected action before acquisition;
-  independently check the executor decision; reject a forged outcome and a
-  swapped observation. See the [audit order](plan.md#evidence-audit-and-development-order).
+- [ ] **A4 durable binding:** Persist the plan before acquisition and bind the
+  actual observable event to the decision. The current in-memory seal does
+  not authenticate a reading and decision fabricated together. See the
+  [audit order](plan.md#evidence-audit-and-development-order).
 - [ ] **B3: Link real evidence.** Feed executed rows into the isolated store and
   link hypotheses/revision; reopen and recompute from receipt IDs. Compare to
   A4 across both laws and verify no unsupported update. Depends on A4/B2.

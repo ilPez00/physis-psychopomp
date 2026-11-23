@@ -5,6 +5,7 @@ The budget is the point. A controller that can keep probing will eventually
 and that success says nothing about choosing a good experiment. `Session` makes
 the spend explicit and refuses the second call rather than quietly taking one.
 """
+from collections.abc import Callable
 from fractions import Fraction
 
 from .active_design import best_probes, posterior
@@ -44,7 +45,9 @@ class Session:
     def remaining(self) -> int:
         return self._remaining
 
-    def diagnose(self, law: int, state: int, *, policy: str = "adaptive") -> dict:
+    def diagnose(self, law: int, state: int, *, policy: str = "adaptive",
+                 before_acquire: Callable[[str], None] | None = None) -> dict:
+        """Select an action and optionally seal its plan before touching the fixture."""
         if policy not in POLICIES:
             raise ValueError(f"unknown policy {policy!r}")
         if self._remaining <= 0:
@@ -52,6 +55,12 @@ class Session:
         selected = (best_probes({arm: rows(arm) for arm in ("passive", "signed")})[0]
                     if policy == "adaptive" else policy)
         self._remaining -= 1
+        if before_acquire is not None:
+            try:
+                before_acquire(selected)
+            except Exception:
+                self._remaining += 1
+                raise
         reading = acquire(law, state, "signed" if selected == "shuffled" else selected)
         if policy == "shuffled":
             # The prereg's frozen shuffle: exchange the rivals' signs for s < 0.

@@ -60,3 +60,25 @@ def test_unknown_policy_refuses_before_simulation(monkeypatch):
     with pytest.raises(ValueError):
         Session().diagnose(-1, -3, policy="magnitude")
     assert calls == []
+
+
+def test_selected_action_is_committed_before_acquisition(monkeypatch):
+    order = []
+    monkeypatch.setattr(active_loop, "acquire",
+                        lambda law, state, probe: order.append(("acquire", probe)) or -1)
+    out = Session().diagnose(-1, -3, before_acquire=lambda probe: order.append(("commit", probe)))
+    assert order == [("commit", "signed"), ("acquire", "signed")]
+    assert out["resolved"] == -1
+
+
+def test_failed_commit_does_not_acquire_or_spend_budget(monkeypatch):
+    calls = counted(monkeypatch, reading=-1)
+    session = Session()
+
+    def fail(_):
+        raise RuntimeError("could not seal")
+
+    with pytest.raises(RuntimeError, match="could not seal"):
+        session.diagnose(-1, -3, before_acquire=fail)
+    assert calls == []
+    assert session.remaining == 1

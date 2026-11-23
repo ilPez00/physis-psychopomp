@@ -230,11 +230,12 @@ decision or reveals a failure the current verifier misses.
    the fold's citation to the appended assertion. Run `ontology-check` with its
    positional path and report it separately from Z1–Z6. The live replay and a
    missing/wrong-proposal negative control are the acceptance checks.
-2. **Fix A4 before B3.** Seal the actual selected action before acquisition;
-   verify the executor's own posterior, not a verifier-generated decision.
-   A contradictory executor result must fail even when the verifier can compute
-   the right answer. Then reopen an isolated Physis store and recompute from
-   exact executed evidence IDs. Two hashes in prose do not prove a replay.
+2. **Fix A4 before B3.** The local transcript now seals the selected action
+   before acquisition and verifies the executor's own posterior. Next,
+   persist the seal separately before acquiring the observable event; reject
+   a jointly fabricated reading and matching decision by reprojecting the
+   event. Then reopen an isolated Physis store and recompute from exact
+   executed evidence IDs. Two hashes in prose do not prove a replay.
 3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
    validation before tests. Add ordered readback, mixed overlap and same-key
    conflict controls, including concurrent writers. Cold-check the importer
