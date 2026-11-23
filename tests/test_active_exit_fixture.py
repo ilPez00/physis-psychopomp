@@ -61,13 +61,15 @@ def test_real_signed_and_magnitude_reads_do_not_reveal_the_same_information():
 
 
 def test_frozen_table_matches_measured_scalars_for_every_cell():
-    # `signed` is a projection of the frozen scalar onto its sign, so the table
-    # is compared after applying the same projection; the raw table has no
-    # sign channel and comparing them directly is a category error.
-    from psychopomp.active_exit import expected
+    # `expected` returns the channel's own reading, so the comparison is direct;
+    # comparing the raw displacement to a sign channel was a category error the
+    # first version of this test made.
+    from psychopomp.active_exit import expected, rows
     for law in (-1, 0, 1):
         for state in (-3, -1, 1, 3):
             for probe in ("passive", "signed", "magnitude"):
-                raw = expected(law, state, probe)
-                want = (raw > 0) - (raw < 0) if probe == "signed" else raw
-                assert want == active_exit.acquire(law, state, probe), (law, state, probe)
+                assert expected(law, state, probe) == \
+                    active_exit.acquire(law, state, probe), (law, state, probe)
+    for probe in ("passive", "signed", "magnitude"):
+        assert rows(probe) == [(law, expected(law, state, probe))
+                               for law in (-1, 1) for state in (-3, -1, 1, 3)]

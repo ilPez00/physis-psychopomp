@@ -11,6 +11,7 @@
   "capacity": {"expected_right_exit_at_step_21": "24/24", "position_absolute_tolerance": 0.000001},
   "calibration": {"rivals_reject_nominal": "8/8", "nominal_false_rejections": "0/4"},
   "diagnosis": {"signed": "8/8", "passive": "0/8", "magnitude": "0/8", "shuffled": "0/8"},
-  "boundary_tests_passed": 16,
+  "boundary_tests_passed": 17,
+  "post_run_strengthening": "X1 now also checks the frozen channel table against measured readings; added after the run, strengthens only",
   "scope": "Noiseless declared simulator fixture and scalar-readout tests. No bounded controller, authenticated execution receipt, Physis-next round trip or importer was exercised."
 }

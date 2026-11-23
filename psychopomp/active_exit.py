@@ -16,12 +16,20 @@ MICRO = 1_000_000
 SHIFTED = {-1: (-7.62, -5.62, -3.62, -1.62), 0: STATES, 1: (1.62, 3.62, 5.62, 7.62)}
 
 
+def project(probe: str, displacement: int) -> int:
+    """The channel's own projection of a displacement (millionths)."""
+    _command(probe)
+    if probe == "magnitude":
+        return abs(displacement)
+    if probe == "signed":
+        return (displacement > 0) - (displacement < 0)
+    return displacement
+
+
 def expected(law: int, state: int, probe: str) -> int:
-    """The frozen scalar this fixture predicts for one cell (millionths)."""
-    command = _command(probe)
-    d = state if command == 0 else SHIFTED[law][STATES.index(state)]
-    value = round(d * MICRO)
-    return abs(value) if probe == "magnitude" else value
+    """The frozen reading this fixture predicts for one cell."""
+    d = state if _command(probe) == 0 else SHIFTED[law][STATES.index(state)]
+    return project(probe, round(d * MICRO))
 
 
 def rows(probe: str) -> list[tuple[int, int]]:
@@ -54,12 +62,7 @@ def readout(events: Iterable[Event], probe: str) -> int | None:
     if (not isinstance(pos, (list, tuple)) or len(pos) != 2
             or any(type(p) not in (int, float) or not 1 <= p <= 99 for p in pos)):
         return None
-    displacement = round((pos[1] - 50) * MICRO)
-    if probe == "magnitude":
-        return abs(displacement)
-    if probe == "signed":
-        return (displacement > 0) - (displacement < 0)
-    return displacement
+    return project(probe, round((pos[1] - 50) * MICRO))
 
 
 def _run_case(law: int, state: int, command: int):

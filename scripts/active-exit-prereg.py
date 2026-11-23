@@ -7,7 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from psychopomp.active_design import posterior
-from psychopomp.active_exit import SHIFTED, STATES, _run_case, readout
+from psychopomp.active_exit import SHIFTED, STATES, _run_case, readout, rows
 
 PRIOR = {-1: Fraction(1, 2), 1: Fraction(1, 2)}
 
@@ -28,9 +28,17 @@ def main():
         else:
             reads[m, s, u] = scalars
     n = len(cells)
-    print(f"X1: {'FALSIFIED' if failures else 'UPHELD'}; right exits matched "
-          f"{n - len(failures)}/{n}")
-    if failures:
+    # Post-run strengthening (2026-11-23): the table is also checked through the
+    # channels themselves, so a table that disagrees with the sensor fails here
+    # instead of only in tests. It cannot retroactively soften X1; if it failed
+    # the receipt would need a correction.
+    rivals_now = tuple(product((-1, 1), STATES))
+    table_agrees = all(
+        sorted((m, reads[m, s, 0 if probe == "passive" else 2][probe]) for m, s in rivals_now)
+        == sorted(rows(probe)) for probe in ("passive", "signed", "magnitude"))
+    print(f"X1: {'FALSIFIED' if failures or not table_agrees else 'UPHELD'}; right exits "
+          f"matched {n - len(failures)}/{n}, channel table agrees: {table_agrees}")
+    if failures or not table_agrees:
         print(f"capacity failures: {failures}; X2/X3 NOT SCORED")
         return 1
 
