@@ -108,9 +108,10 @@ One writer at a time; a delegate's claim is not a gate.
 
 ## D — Further research cards
 
-- [ ] **D1:** Same-disturbance counterfactuals: exact additive vs sign-flip
-  card, matched marginals, paired error/coverage, shuffle and scoring oracle.
-  Independent of B/C; preregister before fixture implementation.
+- [x] **D1:** [R-P1.57](../docs/2026-11-24-PREREG-R-P1.57-paired-counterfactual.md)
+  frozen at `ae1cba8`. All five checks matched: equal marginals, paired
+  residual-reuse MAE `0` versus `3`, and two-candidate coverage `8/8` per law.
+  Next D2: noise, budget, and out-of-catalogue abstention.
 - [ ] **D2:** Cost/noise/out-of-model stress tests and adaptive vs fixed/random
   policies. Depends on A4. Require decision and abstention metrics per cell.
 - [ ] **D3:** Contact/fold/action-disturbance counterfactuals and horizon sweep.
