@@ -23,25 +23,25 @@ def encode(loads: tuple[int, int]) -> int:
     return loads[0] * 10 + loads[1]
 
 
-def _observe(arm: str, probe: str, target: int = 1) -> int:
+def execute(arm: str, probe: str, target: int = 1):
+    """Execute one fixture arm; export may retain its single measured tick."""
     if arm not in ARMS or probe not in PROBES:
         raise ValueError("arm or probe outside the declared catalogue")
     perturbation = 0 if probe == "passive" else 2
     nominal = run("feedback", target, 0)
-    result = (run("feedback", target, perturbation) if arm == "feedback"
-              else run("open-loop", target, perturbation, nominal=nominal.transfers))
-    return encode(result.loads[TICK])
+    return (run("feedback", target, perturbation) if arm == "feedback"
+            else run("open-loop", target, perturbation, nominal=nominal.transfers))
 
 
 def rows(probe: str, target: int = 1) -> list[tuple[int, int]]:
     """What each hypothesis predicts for one probe: `(slot, reading)`."""
-    readings = {arm: _observe(arm, probe, target) for arm in ARMS}
+    readings = {arm: acquire(arm, probe, target) for arm in ARMS}
     return [(SLOT[arm], readings[arm]) for arm in ARMS]
 
 
 def acquire(arm: str, probe: str, target: int = 1) -> int:
     """Run the true world once and hand back only the selected observation."""
-    return _observe(arm, probe, target)
+    return encode(execute(arm, probe, target).loads[TICK])
 
 
 def arm_of(slot: int | None) -> str | None:

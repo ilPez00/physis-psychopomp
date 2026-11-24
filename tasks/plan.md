@@ -253,7 +253,11 @@ decision or reveals a failure the current verifier misses.
    with role-ordered loads, a per-tick `dt` of one second, and a config digest
    that is identical across arms, targets and episodes. The arm, the target and
    the perturbation never reach the record. Remaining: import and replay a
-   turnover episode end to end.
+   turnover episode end to end. Transfer gate: seal the fixed R-P1.50
+   predictions before each acquisition, export only tick 4, and reopen the
+   imported rows by producer key. Four perturbed cases must resolve and four
+   passive cases must abstain; a missing, duplicated or mismatched row must
+   refuse. This is replay validation, not a new research claim or ledger write.
 3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
    validation before tests. Add ordered readback, mixed overlap and same-key
    conflict controls, including concurrent writers. Cold-check the importer
