@@ -1,0 +1,14 @@
+{
+  "dry_run": false,
+  "rows_appended": 8,
+  "rows_read": 8,
+  "rows_skipped_duplicate": 0,
+  "rows_skipped_in_batch": 0
+}
+{
+  "dry_run": false,
+  "rows_appended": 0,
+  "rows_read": 8,
+  "rows_skipped_duplicate": 8,
+  "rows_skipped_in_batch": 0
+}

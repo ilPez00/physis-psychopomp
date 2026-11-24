@@ -1,0 +1,82 @@
+[
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061040#0",
+    "store_seq": 0,
+    "probe": "passive",
+    "target": 1,
+    "plan_sha256": "fc9d96d7679f0be89c060656bc7cbc807d55b0bc234e887dcfde9a477e9f9bb7",
+    "store_row_sha256": "0a43f8f989dd9725269c6654144d34ce38b3bf63f916985b52b55906c4ea40bb",
+    "verdict": "ABSTAIN",
+    "resolved": null
+  },
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061041#0",
+    "store_seq": 1,
+    "probe": "perturbed",
+    "target": 1,
+    "plan_sha256": "2e5196d058f8cdcdf6d422ab25d9dddff8df6bdfeecabb4b2c1b044e06442d20",
+    "store_row_sha256": "91cf304ca11948722793aa7c1fbd5d404679b3da9d31b0463f3a35b76ab9ee73",
+    "verdict": "VERIFIED",
+    "resolved": "feedback"
+  },
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061042#0",
+    "store_seq": 2,
+    "probe": "passive",
+    "target": 1,
+    "plan_sha256": "c4581676b61779c96271f3a1464760c3d25b0c0908fec390a237061a9287862e",
+    "store_row_sha256": "359abef52969680fb51d6ad30a0e20a8381b2f76a7f0bc89ce3a1c7a29d6058f",
+    "verdict": "ABSTAIN",
+    "resolved": null
+  },
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061043#0",
+    "store_seq": 3,
+    "probe": "perturbed",
+    "target": 1,
+    "plan_sha256": "be408c03e12a56126d05d8651564c3037275c0d2a856d009c0e1dabaf2441985",
+    "store_row_sha256": "b456844b869876a4734e6cda69980fb382af01d4d4ff46f73a489c76af5ecf42",
+    "verdict": "VERIFIED",
+    "resolved": "replay"
+  },
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061044#0",
+    "store_seq": 4,
+    "probe": "passive",
+    "target": 2,
+    "plan_sha256": "34e379d2cb3009c2433df7a07e528dd16cc3e3e0572c3bbb336033153b241f3c",
+    "store_row_sha256": "6f6ae75f48eac9422b3fe0759634aa8e495d5f28dabc1ff49ea32627581651db",
+    "verdict": "ABSTAIN",
+    "resolved": null
+  },
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061045#0",
+    "store_seq": 5,
+    "probe": "perturbed",
+    "target": 2,
+    "plan_sha256": "49b4d7665f9231935d8c6be7a059e0a50097e11a31d195c94404ce8c374687d4",
+    "store_row_sha256": "d0a74f1d522c5a2b8b7a78277e10caea2c33d8ebbe297e663680efef970539d4",
+    "verdict": "VERIFIED",
+    "resolved": "feedback"
+  },
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061046#0",
+    "store_seq": 6,
+    "probe": "passive",
+    "target": 2,
+    "plan_sha256": "1be2e7c1c3c0ce03cb477c239253c0f446cbb97e103e4667166bcbb5517348c5",
+    "store_row_sha256": "bcba3538e679d4972d4f2476ef1a138c2e54df9e2740a37d56d12e27326c99f6",
+    "verdict": "ABSTAIN",
+    "resolved": null
+  },
+  {
+    "producer_key": "psychopomp:episode:0:370203516603061047#0",
+    "store_seq": 7,
+    "probe": "perturbed",
+    "target": 2,
+    "plan_sha256": "084f4f8b29b93a5c31052ac908ef163d8ea7a50f8265b579320266b1a42e92a6",
+    "store_row_sha256": "e2cce056693033627695132cdd37f75556aa540a7d331e90b29806ce700af391",
+    "verdict": "VERIFIED",
+    "resolved": "replay"
+  }
+]

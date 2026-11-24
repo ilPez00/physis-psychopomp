@@ -1,0 +1,1 @@
+{"episode": 370203516603061046, "plan_sha256": "1be2e7c1c3c0ce03cb477c239253c0f446cbb97e103e4667166bcbb5517348c5", "policy": "fixed", "predictions": {"44": {"-1": [1, 2], "1": [1, 2]}}, "prior": [[1, 2], [1, 2]], "selected": "passive", "target": 2}
