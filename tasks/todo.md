@@ -136,6 +136,11 @@ One writer at a time; a delegate's claim is not a gate.
   seq that exists (query shape unknown), and `removed:rel|…` was not attempted.
   Consequence: E4 limited to `ADD_EDGE` + `REQUEST_EVIDENCE` until those two land.
 - [x] **E1: Importer module.** `physis-store/src/psychopomp.rs` on branch `feat/psychopomp-import` at `9520ea6e8`: UTC ingest explicit, `at_seconds` preserved, OBSERVED-only, counterfactual refused, dedup key `psychopomp:<subject>#<seq>` with a final condition inside `append_observations_if`. 8 tests, 2 mutations caught on omo. [Note](../docs/notes/2026-11-23-e1-importer.md). CLI + smoke committed (`62c3a18a0`), `cargo test -p physis-cli` green, two-process concurrency leaves 5 rows / 5 unique keys, and the **round trip measured on 24 real simulator rows** (24 appended, re-import 0/24 duplicate). Evidence linked: claim `26f1ebc3` Supported, citing the producer export hash and the consumer audit-packet hash (`7badfc82…`, `91f3236b…`).
+  **Defect found and fixed** at `65e3e02f2`: a batch whose rows were partly
+  already imported aborted with "observation log changed while importing" — the
+  predicate judged all read keys, not the pending ones — so a retry could never
+  converge. Now appends only the unknown rows; pinned by a unit test and a smoke
+  step (`2773ccbbc`). The store module had also been committed unformatted.
 - [x] **E2: Revision-pinned adapter.** `psychopomp/physis_snapshot.py`: parses
   `object list --json` + `object get --json`, normalises both edge directions,
   refuses edges naming unobserved entities, and pins a revision (own digest, or
