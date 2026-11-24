@@ -71,7 +71,7 @@ from the stored reading and proposes `Supported` for one rival and
 verify the UUID-to-law assignments in the target ledger. Shuffled decisions
 remain controls, not history. Importer hardening stays on its own branch.
 
-## Applied and reopened
+## Historical shared-ledger application
 
 Rivals `40f8a80e` (negative law) and `3fc720f1` (positive law) were created in
 the programme ledger, because a `physis-core` write is refused under an
@@ -101,3 +101,17 @@ caller asserts it and the ledger cannot check it), that the store row is
 authentic beyond exact key/payload/digest matching, that the proposal was
 written before the transition (one session; the ordering is this receipt), or
 that any of it transfers to the turnover pair — a different fixture, untested.
+
+## Isolated B3 acceptance
+
+The [clean-checkout receipt](../../research/loops/results/active-isolated-b3-20261124/)
+reopened the committed import without simulation and checked eight rows.
+Two fresh, case-scoped UUID pairs covered both law directions: seq `7` resolved
+`−1`, seq `3` resolved `+1`. All four registered claims were checked against
+their UUIDs, then exact evidence and opposite transitions read back from
+fresh processes at times before registration, before revision, and afterward.
+Withholding the matching row refused both cases before and after revision,
+with no change to any scratch ledger file. No shared ledger was used.
+
+This closes isolated replay from the saved store. No new importer binary was
+run; the current importer's validation and cold readback remain B2/E1.

@@ -1,0 +1,198 @@
+{
+  "psychopomp_ref": "7d72b415ad53ba3d670e1c6572e6dc8343a4b64b",
+  "historical_importer_ref": "62c3a18a0",
+  "store_sha256": "750fd1058916bf6837117b816c7f64dded91b09f3c14a5368aa919cc382aa834",
+  "export_sha256": "690fd735f4064389b3558e258d6cfab325d21ebb16417783a2b13aaee904441e",
+  "ledger_cli": "physis-core 0.3.0",
+  "ledger_cli_sha256": "07aaca6e73883d9c3cab6314bf86f3bb7e7ded3e2da3e1734636d13e1133ff3f",
+  "replayed_rows": [
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 0
+    },
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 1
+    },
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 2
+    },
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 3
+    },
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 4
+    },
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 5
+    },
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 6
+    },
+    {
+      "verdict": "VERIFIED",
+      "store_seq": 7
+    }
+  ],
+  "cases": [
+    {
+      "case": "law-1-state-3",
+      "expected_law": -1,
+      "proposal": {
+        "evidence": {
+          "plan_sha256": "611de9f44c0b176faa164a63147b9ccd78ab7bac9900645508d5eb48291b02cb",
+          "producer_key": "psychopomp:episode:0:1159617891002457984#0",
+          "resolved": -1,
+          "store_row_sha256": "d61732c87aab1d7bac4a613ad4a4fb696c079cefb2a10adb4cef51e023f98f1f",
+          "store_seq": 7,
+          "verdict": "VERIFIED"
+        },
+        "revisions": [
+          {
+            "hypothesis": "e6c9a9e9-51ea-4ea3-bbd9-acc2d01ed161",
+            "status": "Supported"
+          },
+          {
+            "hypothesis": "26f4c5ca-0d80-4661-81ff-b1ab048ba85f",
+            "status": "Contradicted"
+          }
+        ],
+        "status": "PROPOSED"
+      },
+      "rivals": [
+        {
+          "law": -1,
+          "uuid": "e6c9a9e9-51ea-4ea3-bbd9-acc2d01ed161",
+          "before_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law-1-state-3: diagnostic response follows law m=-1.\n\nSTATUS:\n  candidate (Confidence: 0.50, Coherence: 0.50, Fitness: 0.50)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.50 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.00, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (0):\n  (none recorded)\n\nCONTRADICTING EVIDENCE (0):\n  (none recorded)\n\nPROVENANCE:\n  No provenance recorded",
+          "after_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law-1-state-3: diagnostic response follows law m=-1.\n\nSTATUS:\n  supported (Confidence: 0.50, Coherence: 0.50, Fitness: 0.60)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.90 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.00, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (1):\n  \u2713 [psychopomp:b3-isolated] Verified B3 case law-1-state-3: store seq 7, producer psychopomp:episode:0:1159617891002457984#0, row sha256 d61732c87aab1d7bac4a613ad4a4fb696c079cefb2a10adb4cef51e023f98f1f, plan sha256 611de9f44c0b176faa164a63147b9ccd78ab7bac9900645508d5eb48291b02cb. (conf: 0.80)\n\nCONTRADICTING EVIDENCE (0):\n  (none recorded)\n\nPROVENANCE:\n  No provenance recorded",
+          "history_before_registration_at": "2026-11-24T13:54:00.272310+00:00",
+          "history_before_registration": "[e6c9a9e9-51ea-4ea3-bbd9-acc2d01ed161] is known but had no recorded belief at 2026-11-24 13:54:00.272310 UTC",
+          "history_before_at": "2026-11-24T13:54:00.389304+00:00",
+          "history_before": "Belief at 2026-11-24 13:54:00.389304 UTC for [e6c9a9e9-51ea-4ea3-bbd9-acc2d01ed161]: Candidate",
+          "history_after_at": "2026-11-24T13:54:00.396785+00:00",
+          "history_after": "Belief at 2026-11-24 13:54:00.396785 UTC for [e6c9a9e9-51ea-4ea3-bbd9-acc2d01ed161]: Supported"
+        },
+        {
+          "law": 1,
+          "uuid": "26f4c5ca-0d80-4661-81ff-b1ab048ba85f",
+          "before_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law-1-state-3: diagnostic response follows law m=+1.\n\nSTATUS:\n  candidate (Confidence: 0.50, Coherence: 0.50, Fitness: 0.50)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.50 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.00, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (0):\n  (none recorded)\n\nCONTRADICTING EVIDENCE (0):\n  (none recorded)\n\nPROVENANCE:\n  No provenance recorded",
+          "after_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law-1-state-3: diagnostic response follows law m=+1.\n\nSTATUS:\n  contradicted (Confidence: 0.50, Coherence: 0.50, Fitness: 0.30)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.10 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.10, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (0):\n  (none recorded)\n\nCONTRADICTING EVIDENCE (1):\n  \u2717 [psychopomp:b3-isolated] Verified B3 case law-1-state-3: store seq 7, producer psychopomp:episode:0:1159617891002457984#0, row sha256 d61732c87aab1d7bac4a613ad4a4fb696c079cefb2a10adb4cef51e023f98f1f, plan sha256 611de9f44c0b176faa164a63147b9ccd78ab7bac9900645508d5eb48291b02cb. (conf: 0.80)\n\nPROVENANCE:\n  No provenance recorded",
+          "history_before_registration_at": "2026-11-24T13:54:00.272310+00:00",
+          "history_before_registration": "[26f4c5ca-0d80-4661-81ff-b1ab048ba85f] is known but had no recorded belief at 2026-11-24 13:54:00.272310 UTC",
+          "history_before_at": "2026-11-24T13:54:00.389304+00:00",
+          "history_before": "Belief at 2026-11-24 13:54:00.389304 UTC for [26f4c5ca-0d80-4661-81ff-b1ab048ba85f]: Candidate",
+          "history_after_at": "2026-11-24T13:54:00.415470+00:00",
+          "history_after": "Belief at 2026-11-24 13:54:00.415470 UTC for [26f4c5ca-0d80-4661-81ff-b1ab048ba85f]: Contradicted"
+        }
+      ],
+      "withheld_before": {
+        "exit": 2,
+        "result": {
+          "verdict": "REFUSED",
+          "detail": "expected one stored row for psychopomp:episode:0:1159617891002457984#0, found 0"
+        },
+        "ledger_before": {
+          "nodes.json": "b384522ec78ba9cba337711604007dcde66c36f11f836988a6604a8b4fc56bcf"
+        },
+        "ledger_after": {
+          "nodes.json": "b384522ec78ba9cba337711604007dcde66c36f11f836988a6604a8b4fc56bcf"
+        }
+      },
+      "withheld_after": {
+        "exit": 2,
+        "result": {
+          "verdict": "REFUSED",
+          "detail": "expected one stored row for psychopomp:episode:0:1159617891002457984#0, found 0"
+        },
+        "ledger_before": {
+          "nodes.json": "919d742ad0f12736e271f90b4025ff2e5ad2acb6ba8987094057668155a48890"
+        },
+        "ledger_after": {
+          "nodes.json": "919d742ad0f12736e271f90b4025ff2e5ad2acb6ba8987094057668155a48890"
+        }
+      }
+    },
+    {
+      "case": "law+1-state-3",
+      "expected_law": 1,
+      "proposal": {
+        "evidence": {
+          "plan_sha256": "370e5f0f3536cb861ea097bb109c460e1b7c694b8966fb1998fa874233a2412d",
+          "producer_key": "psychopomp:episode:0:1159617891002457988#0",
+          "resolved": 1,
+          "store_row_sha256": "f13d59e431716b2b96e9f2bd6d6fdd87da49a8621750c82a5b26fbd3002c11e8",
+          "store_seq": 3,
+          "verdict": "VERIFIED"
+        },
+        "revisions": [
+          {
+            "hypothesis": "f05dd80d-088c-4839-87a6-289d31964156",
+            "status": "Contradicted"
+          },
+          {
+            "hypothesis": "f067b6e7-097a-4ebb-a1c4-450eea1ed05d",
+            "status": "Supported"
+          }
+        ],
+        "status": "PROPOSED"
+      },
+      "rivals": [
+        {
+          "law": -1,
+          "uuid": "f05dd80d-088c-4839-87a6-289d31964156",
+          "before_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law+1-state-3: diagnostic response follows law m=-1.\n\nSTATUS:\n  candidate (Confidence: 0.50, Coherence: 0.50, Fitness: 0.50)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.50 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.00, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (0):\n  (none recorded)\n\nCONTRADICTING EVIDENCE (0):\n  (none recorded)\n\nPROVENANCE:\n  No provenance recorded",
+          "after_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law+1-state-3: diagnostic response follows law m=-1.\n\nSTATUS:\n  contradicted (Confidence: 0.50, Coherence: 0.50, Fitness: 0.30)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.10 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.10, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (0):\n  (none recorded)\n\nCONTRADICTING EVIDENCE (1):\n  \u2717 [psychopomp:b3-isolated] Verified B3 case law+1-state-3: store seq 3, producer psychopomp:episode:0:1159617891002457988#0, row sha256 f13d59e431716b2b96e9f2bd6d6fdd87da49a8621750c82a5b26fbd3002c11e8, plan sha256 370e5f0f3536cb861ea097bb109c460e1b7c694b8966fb1998fa874233a2412d. (conf: 0.80)\n\nPROVENANCE:\n  No provenance recorded",
+          "history_before_registration_at": "2026-11-24T13:54:00.476022+00:00",
+          "history_before_registration": "[f05dd80d-088c-4839-87a6-289d31964156] is known but had no recorded belief at 2026-11-24 13:54:00.476022 UTC",
+          "history_before_at": "2026-11-24T13:54:00.590182+00:00",
+          "history_before": "Belief at 2026-11-24 13:54:00.590182 UTC for [f05dd80d-088c-4839-87a6-289d31964156]: Candidate",
+          "history_after_at": "2026-11-24T13:54:00.596484+00:00",
+          "history_after": "Belief at 2026-11-24 13:54:00.596484 UTC for [f05dd80d-088c-4839-87a6-289d31964156]: Contradicted"
+        },
+        {
+          "law": 1,
+          "uuid": "f067b6e7-097a-4ebb-a1c4-450eea1ed05d",
+          "before_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law+1-state-3: diagnostic response follows law m=+1.\n\nSTATUS:\n  candidate (Confidence: 0.50, Coherence: 0.50, Fitness: 0.50)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.50 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.00, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (0):\n  (none recorded)\n\nCONTRADICTING EVIDENCE (0):\n  (none recorded)\n\nPROVENANCE:\n  No provenance recorded",
+          "after_explain": "=== PHYSIS EXPLANATION REPORT ===\nINTERPRETATION:\n  B3 isolated case law+1-state-3: diagnostic response follows law m=+1.\n\nSTATUS:\n  supported (Confidence: 0.50, Coherence: 0.50, Fitness: 0.60)\n\nCOHERENCE PROFILE:\n  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 \u2192 0.50\n\nFITNESS BREAKDOWN:\n  empirical=0.90 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.00, fail_penalty=-0.00)\n\nSUPPORTING EVIDENCE (1):\n  \u2713 [psychopomp:b3-isolated] Verified B3 case law+1-state-3: store seq 3, producer psychopomp:episode:0:1159617891002457988#0, row sha256 f13d59e431716b2b96e9f2bd6d6fdd87da49a8621750c82a5b26fbd3002c11e8, plan sha256 370e5f0f3536cb861ea097bb109c460e1b7c694b8966fb1998fa874233a2412d. (conf: 0.80)\n\nCONTRADICTING EVIDENCE (0):\n  (none recorded)\n\nPROVENANCE:\n  No provenance recorded",
+          "history_before_registration_at": "2026-11-24T13:54:00.476022+00:00",
+          "history_before_registration": "[f067b6e7-097a-4ebb-a1c4-450eea1ed05d] is known but had no recorded belief at 2026-11-24 13:54:00.476022 UTC",
+          "history_before_at": "2026-11-24T13:54:00.590182+00:00",
+          "history_before": "Belief at 2026-11-24 13:54:00.590182 UTC for [f067b6e7-097a-4ebb-a1c4-450eea1ed05d]: Candidate",
+          "history_after_at": "2026-11-24T13:54:00.614595+00:00",
+          "history_after": "Belief at 2026-11-24 13:54:00.614595 UTC for [f067b6e7-097a-4ebb-a1c4-450eea1ed05d]: Supported"
+        }
+      ],
+      "withheld_before": {
+        "exit": 2,
+        "result": {
+          "verdict": "REFUSED",
+          "detail": "expected one stored row for psychopomp:episode:0:1159617891002457988#0, found 0"
+        },
+        "ledger_before": {
+          "nodes.json": "af05e470f4818e506803b7d195327f0b3ea4593534371fbabab1893175a3b31f"
+        },
+        "ledger_after": {
+          "nodes.json": "af05e470f4818e506803b7d195327f0b3ea4593534371fbabab1893175a3b31f"
+        }
+      },
+      "withheld_after": {
+        "exit": 2,
+        "result": {
+          "verdict": "REFUSED",
+          "detail": "expected one stored row for psychopomp:episode:0:1159617891002457988#0, found 0"
+        },
+        "ledger_before": {
+          "nodes.json": "c9d4a2eca2eda8addeae942e6fb822fad9d2c353d467f1225486d63218c80bad"
+        },
+        "ledger_after": {
+          "nodes.json": "c9d4a2eca2eda8addeae942e6fb822fad9d2c353d467f1225486d63218c80bad"
+        }
+      }
+    }
+  ]
+}

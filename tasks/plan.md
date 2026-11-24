@@ -1,8 +1,8 @@
 # Psychopomp P1: Active Discovery and Organizational Identity
 
-**Status (2026-11-24):** A4 event-bound local replay, B3 observation-store
-replay, C3 turnover replay and a single isolated turnover revision pair
-have been measured. D1/D2 finish at the finite
+**Status (2026-11-24):** A4 event-bound local replay, B3 isolated replay and
+revision for both law directions, C3 turnover replay and a single isolated
+turnover revision pair have been measured. D1/D2 finish at the finite
 [R-P1.59 confirmation witness](../docs/2026-11-24-PREREG-R-P1.59-paired-confirmation.md).
 The [task checklist](todo.md) tracks measured slices and open gates; the
 fixtures below retain their original planned predictions.
@@ -295,15 +295,12 @@ deployment, and keep the learner outside the authorization boundary.
 
 ## Resume order — 2026-11-24
 
-1. **Isolated B3/Checkpoint B.** Use the
-   [active capture and replay instructions](../docs/notes/active-discovery-replay.md)
-   from clean checkouts at pinned refs. Register distinct case-scoped rival
-   pairs for the two law directions in a new `PHYSIS_CORE_DIR`; independently
-   check each UUID-to-law binding from the registered claim text before any
-   write. Apply only exact-row-backed proposals, then reopen and verify both
-   rival histories and citations. Unsupported/no-update control must leave
-   ledger bytes unchanged. The earlier shared-ledger pair and isolated C3
-   pair are evidence of narrower paths, not substitutes.
+1. **Isolated B3/Checkpoint B — measured from the saved store.** The
+   [acceptance receipt](../research/loops/results/active-isolated-b3-20261124/)
+   pins the inputs, verifies both law directions and their exact citations in
+   a fresh ledger, and records byte-preserving refusal when evidence is
+   withheld. No new import, atomic pair update, or producer authentication
+   was demonstrated. Resume at B2/E1.
 2. **B2/E1 contract.** On Physis-next `feat/psychopomp-import`, finish typed
    provenance, subject namespace/consistency, required fields and input bounds.
    Prove ordered Rust CLI readback, same-key/different-payload conflict,

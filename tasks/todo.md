@@ -74,7 +74,7 @@ One writer at a time; a delegate's claim is not a gate.
   event before recording the decision. Reopened replay rejects a jointly
   fabricated reading and decision if the original event is retained.
   [Run instructions and limits](../docs/notes/active-discovery-replay.md).
-- [ ] **B3: Link real evidence.** Feed executed rows into the isolated store and
+- [x] **B3: Link real evidence.** Feed executed rows into the isolated store and
   link hypotheses/revision; reopen and recompute from receipt IDs. Compare to
   A4 across both laws and verify no unsupported update. Depends on A4/B2.
   **Store replay measured:** eight executed rows imported and replayed by
@@ -82,12 +82,13 @@ One writer at a time; a delegate's claim is not a gate.
   bind two rivals to the verified row; applying them at `40f8a80e`/`3fc720f1`
   produced opposite polarities on the same cited evidence, and `replay --at`
   shows no belief before the transition and `Supported` after.
-  **Still open:** isolated application for both law directions, independently
-  verified UUID-to-law assignments, exact citations/history after reopen, and
-  an unsupported/no-update control with unchanged ledger bytes. C3 below is
-  the separate turnover transfer; the shared pair does not close B3.
-- [ ] **Checkpoint B:** End-to-end replay from clean checkouts, exact refs and
-  run instructions; record CI and bundle states separately.
+  **Acceptance:** [isolated replay receipt](../research/loops/results/active-isolated-b3-20261124/)
+  verified both law directions, four UUID-to-law assignments, exact citations
+  and historical verdicts. Withholding each row before and after revision
+  refused all four probes without changing ledger bytes.
+- [x] **Checkpoint B (saved store):** Replayed the real imported observations
+  and reopened the isolated rival histories from a clean, pinned checkout.
+  No new Rust import in this run; current importer gates stay under B2/E1.
 
 ## C — Organizational identity
 
