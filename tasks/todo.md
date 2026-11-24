@@ -82,8 +82,10 @@ One writer at a time; a delegate's claim is not a gate.
   bind two rivals to the verified row; applying them at `40f8a80e`/`3fc720f1`
   produced opposite polarities on the same cited evidence, and `replay --at`
   shows no belief before the transition and `Supported` after.
-  **Still open:** transfer to the turnover pair, and any check that the
-  UUID-to-law assignment is right.
+  **Still open:** isolated application for both law directions, independently
+  verified UUID-to-law assignments, exact citations/history after reopen, and
+  an unsupported/no-update control with unchanged ledger bytes. C3 below is
+  the separate turnover transfer; the shared pair does not close B3.
 - [ ] **Checkpoint B:** End-to-end replay from clean checkouts, exact refs and
   run instructions; record CI and bundle states separately.
 
@@ -163,11 +165,10 @@ One writer at a time; a delegate's claim is not a gate.
   a structurally valid proposal still does not mutate the graph.
 - [x] **E5: Benchmark.** R-P1.52 (frozen `5dc9897`) capacity 4/4, D1–D6 upheld: exact `1.00/1.00`, closure baseline `0.00`, shuffled `0.00`, agreed arm abstains into one probe. [Receipt](../research/loops/results/decoder-capacity-20261123/). Supersedes R-P1.51's D4. **Remaining:** the agreed arm's overall precision is 0.67 — a repair-quality claim needs a predictor arm, not this benchmark.
 - [~] **E5 (first cut, superseded).** R-P1.51 froze at `308dae`, **failed on D4**: exact precision/recall 1.00, shuffled 0.00, empty `UNKNOWN`, nothing applied — all upheld; D4's arm omitted both missing edges, so its predicted agreement was unsatisfiable. Pinned as failing. **Next:** follow-up card with the agreed-case arm defined correctly, plus a genuine no-repair and deterministic-only baseline (this run had neither, so it is a contract benchmark only).
-- [ ] **E6: Learned ranker** only with measured headroom over E3. **Closed by
-  measurement:** [R-P1.56](../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md)
-  found support ranking below the shuffled control (P 0.194 vs 0.282), so a
-  learner on the same features would fit noise. Reopen only with features the
-  surviving-world counts do not contain, and beat chance first.
+- [ ] **E6: Learned ranker** only with valid measured E5 headroom. The
+  [R-P1.56](../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md) result is
+  exploratory: its unequal shuffle and recall denominator cannot establish
+  either below-chance performance or absence of recoverable signal.
 
 ### Guarded repair rollout
 
@@ -176,19 +177,18 @@ One writer at a time; a delegate's claim is not a gate.
 - [x] **Guarded verb (staged):** `physis repair` at `27da5323a` in PR #315 —
   world-side evidence, an approval bound to the exact state, one use checked
   under the store lock; 6 integration tests (including two writers racing one
-  approval) plus a CLI refusal receipt. No live target, no deployment, no write
-  separation.
+  approval in separate runtimes in one process) plus a CLI refusal receipt.
+  The digest binds content; it does not authenticate an operator.
 - [x] **Withdrawal surface:** `physis retract` / `physis revoke` at
   `d3d7627e0`, preview-by-default over the runtime's append-only records; the
   five-step shell flow runs. **Finding:** the preview reported `0 lost, 0
-  weakened` for a withdrawal that removed an entity and its edge, so its counts
-  are informational until `tms` says otherwise.
+  weakened` for a withdrawal that removed an entity and its edge. Block
+  approval until the preview is truthful or refuses, and its digest binds the
+  exact range and fold inputs.
 - [ ] **Writer staging:** release needs the repo's local gate
   (`scripts/ci-local.sh`) at the exact head, a restorable backup and an approval
   separate from the preview. Hosted CI is permanently unavailable (unpaid
   account, zero steps) and is not a gate anywhere on this fleet.
-- [x] **Ranking headroom: measured, none.** R-P1.56 found support ranking below
-  the shuffled control (P 0.194 vs 0.282), so E6 stays closed.
-- [ ] **Ranking, if reopened:** features beyond surviving-world counts that beat
-  chance on held-out cases before any training is described as justified.
-  See [rollout](../docs/notes/production-repair-rollout.md).
+- [ ] **E5 acceptance:** held-out observation-generated candidates, independent
+  labels, matched no-repair/deterministic/shuffled controls, and missing-edge
+  denominators. See [rollout](../docs/notes/production-repair-rollout.md).

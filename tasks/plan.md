@@ -1,14 +1,20 @@
 # Psychopomp P1: Active Discovery and Organizational Identity
 
-**Status:** planned, not run. [Task checklist](todo.md) is the execution queue.
+**Status (2026-11-24):** A4 event-bound local replay, B3 observation-store
+replay, C3 turnover replay and a single isolated turnover revision pair
+have been measured. D1/D2 finish at the finite
+[R-P1.59 confirmation witness](../docs/2026-11-24-PREREG-R-P1.59-paired-confirmation.md).
+The [task checklist](todo.md) tracks measured slices and open gates; the
+fixtures below retain their original planned predictions.
 **Goal:** demonstrate one independently verifiable result: notice a wrong
 model, select and run one safe experiment, then revise competing beliefs with
 an explanation that can be replayed.
 
 **Architecture:** Psychopomp produces and scores observations. An exact Bayesian
 controller ranks a finite catalogue by expected information about a declared
-target. Physis-next stores competing hypotheses and their evidence; an independent
-verifier checks that the evidence, not a lucky prediction, licensed the update.
+target. Physis-next stores the executed observations; `physis-core` stores the
+rival hypotheses and revisions. The verifier binds an exact stored observation
+to its plan and computed decision before proposing a revision.
 Start with a local CLI and a disposable store, not a new service or UI.
 
 **Sources:** [research/design note](../docs/notes/2026-11-23-active-law-identification.md),
@@ -286,3 +292,30 @@ separate.
 Operator-approved follow-on: [guarded repair writer and offline ranking](../docs/notes/production-repair-rollout.md).
 Start with the existing Physis-next store lock; stage the writer before
 deployment, and keep the learner outside the authorization boundary.
+
+## Resume order — 2026-11-24
+
+1. **Isolated B3/Checkpoint B.** Use the
+   [active capture and replay instructions](../docs/notes/active-discovery-replay.md)
+   from clean checkouts at pinned refs. Register distinct case-scoped rival
+   pairs for the two law directions in a new `PHYSIS_CORE_DIR`; independently
+   check each UUID-to-law binding from the registered claim text before any
+   write. Apply only exact-row-backed proposals, then reopen and verify both
+   rival histories and citations. Unsupported/no-update control must leave
+   ledger bytes unchanged. The earlier shared-ledger pair and isolated C3
+   pair are evidence of narrower paths, not substitutes.
+2. **B2/E1 contract.** On Physis-next `feat/psychopomp-import`, finish typed
+   provenance, subject namespace/consistency, required fields and input bounds.
+   Prove ordered Rust CLI readback, same-key/different-payload conflict,
+   concurrent partial overlap and byte-preserving refusal. Run exact-head
+   gates on omo and verify the restore artifact.
+3. **E5 before E6.** Audit R-P1.56 as exploratory, without rewriting its
+   recorded numbers. Freeze observation-generated held-out worlds, independent
+   labels, equal budgets/candidate sets, matched shuffle size, and recall over
+   missing true edges. Keep no-repair and deterministic controls. Stop before
+   training unless the experiment measures recoverable headroom.
+4. **Writer remains staging-only.** Before approval, make withdrawal previews
+   truthful or fail closed, bind the exact target/range and all fold inputs,
+   and measure independent evidence, operator separation and an actual
+   cross-process race. No live target or permission grant is authorized.
+   D3–D7 remain optional preregistered research, not blockers for B3.

@@ -137,9 +137,10 @@ printed `0 lost, 0 weakened` for a row whose withdrawal removed an entity and an
 edge. So the digest binds a report that can be empty while the withdrawal is
 not: an operator approves "nothing will be lost" and loses an edge. The counts
 come from `physis_query::tms::retraction_analysis`, not from the new surface, and
-they are not fixed here. **Treat a retraction's consequence counts as
-informational until that is understood; the digest binds the range, not the
-truth about what it costs.**
+they are not fixed here. **Do not use this preview for approval.** The digest
+binds report contents, not necessarily the target range: identical or empty
+reports can share a digest. Require the exact range and fold inputs to be
+bound, and correct the preview or refuse the operation.
 
 
 **Artifacts.** Head `27da5323a` is on `origin` and in a 16K delta bundle
@@ -171,15 +172,16 @@ today, and a green local run is currently impossible to obtain.
 
 
 
-## Ranking — measured, and the learner is not justified
+## Ranking — exploratory, not an acceptance gate
 
-[R-P1.56](../../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md) froze 24
-ambiguous synthetic cases (0 determined) and compared no-repair, consensus,
-top-3-by-support and a permuted-truth control. Consensus proposed nothing;
-top-3-by-support reached **P 0.194 / R 0.097** while the shuffled control scored
-**0.282**. The deterministic heuristic is *below chance*: high-support
-candidates complete other worlds, not the truth.
+[R-P1.56](../../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md) reported 24
+ambiguous synthetic cases (0 determined). Consensus proposed nothing; support
+ranking reported **P 0.194 / R 0.097**, versus shuffled precision **0.282**.
+The freeze is not evidenced on origin before measurement, the shuffle used
+six positives rather than three missing edges, and recall counted observed
+edges in its denominator. Preserve the run as exploratory: it proves neither
+below-chance performance nor absence of signal.
 
-So E6 stays closed. A learner trained on the same surviving-world counts would
-fit noise. Any future ranking card must add information those counts do not
-carry, and must beat chance before it is called headroom.
+No learner was trained. E6 remains blocked on a valid E5 measurement, not
+closed by this comparison. Use held-out partial observations, independent
+labels and matched no-repair, deterministic and shuffled controls.
