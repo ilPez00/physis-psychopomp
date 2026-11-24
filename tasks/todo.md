@@ -115,6 +115,10 @@ One writer at a time; a delegate's claim is not a gate.
 - [x] **D2 finite witness:** [R-P1.58](../docs/2026-11-24-PREREG-R-P1.58-budgeted-model-mismatch.md).
   Missing/out-of-support readings abstained; in-support mimics falsely
   declared a known law in 2/2 cases. Not empirical noise calibration.
+- [x] **D2 confirmation follow-up:** [R-P1.59](../docs/2026-11-24-PREREG-R-P1.59-paired-confirmation.md).
+  Same-episode confirmation catches 2/2 eligible mimics. A fresh reset at
+  equal mean cost falsely accepts 4/8; a paired-equivalent unseen law still
+  falsely resolves in 2/2 eligible cases.
 - [ ] **D3:** Contact/fold/action-disturbance counterfactuals and horizon sweep.
   Depends on D1 and a preregistered discriminating instrument.
 - [ ] **D4:** True delay versus outward sampler on identical crossing tasks.
