@@ -70,6 +70,17 @@ One writer at a time; a delegate's claim is not a gate.
   provenance, counterfactuals and torn tails; confirm dry-run has zero writes.
   Depends on B1. Gate: targeted Rust importer tests, CLI import/query smoke
   and repo-prescribed Rust checks on omo after resource checks.
+- [x] **B2/E1: importer hardened.** `f015751f3c` on `feat/psychopomp-import`:
+  approved-source, provenance-typed validation, canonical subject, digest and
+  input bounds, conflict refusal on same-key/different-payload, unterminated-tail
+  and redaction refusal — all before the append and re-checked under the lock.
+  14 module tests (4 red first), 52 store tests, workspace fmt, store and CLI
+  clippy clean, smoke PASS including a two-process overlap. The 8-row executed
+  export still imports 8 then re-imports 0 with 8 duplicates, and replays
+  `VERIFIED` at seqs 0–7 with rows identical to the saved capture except ingest
+  time. [Receipt](../docs/notes/2026-11-23-e1-importer.md#hardening-pass-at-f015751f3c-2026-11-24).
+  **Open:** no producer-authentication claim; `ci-local.sh` not rerun (three of
+  its steps already fail on base `f2b319cb8`).
 - [x] **A4 local replay:** Persist the plan before acquisition and the observed
   event before recording the decision. Reopened replay rejects a jointly
   fabricated reading and decision if the original event is retained.

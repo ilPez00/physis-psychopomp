@@ -1,10 +1,13 @@
 # Integration contract — `psychopomp.observation/1` into a Physis world
 
-Status: **producer side complete and machine-checked**; consumer side **absent**
-(measured 2026-11-22: `physis ingest` is a closed 12-source connector registry with
-per-source parsers and byte ceilings, and there is no generic JSONL ingress or
-`import` subcommand). This document is what a consumer needs in order to be written,
-and it separates what is guaranteed here from what must still be confirmed there.
+Status: **producer side complete and machine-checked**; consumer side **absent
+in `main`** (measured 2026-11-22: `physis ingest` is a closed 12-source connector
+registry with per-source parsers and byte ceilings, and there is no generic JSONL
+ingress or `import` subcommand). A consumer exists on the unmerged
+`feat/psychopomp-import` branch, hardened at `f015751f3c`; nothing here is a
+compatibility promise for it. This document is what a consumer needs in order to
+be written, and it separates what is guaranteed here from what must still be
+confirmed there.
 
 The [current P1 plan](../tasks/plan.md#phase-2-physis-next-round-trip) identifies
 the source-bearing canonical Physis-next branch and adds the concurrency,
@@ -50,7 +53,12 @@ One JSON line per observable event:
 
 - **Namespace the subject.** `episode:<seed>:<episode>` is stable but not global;
   a store with several producers must prefix it (Physis convention: per-root
-  namespacing, as `physis roots` does).
+  namespacing, as `physis roots` does). The staged importer instead refuses a
+  subject that differs from the provenance's own `episode:<seed>:<episode>`, so
+  a row cannot claim an episode another producer's provenance does not support;
+  each admitted row also carries `source: psychopomp`. That is a shape check,
+  not producer authentication. See the
+  [hardening receipt](notes/2026-11-23-e1-importer.md#hardening-pass-at-f015751f3c-2026-11-24).
 - **Treat `evidence: OBSERVED` as evidence, never as a prediction.** The producer
   emits no `PREDICTED` rows; anything a consumer infers must be labelled by the
   consumer.
