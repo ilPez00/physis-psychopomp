@@ -1,0 +1,9 @@
+  [0ce2fa2a] (Candidate) fitness=0.500 — Psychopomp C3 scratch pair, role 1: the organization follows open-loop replay without reading the imbalance.
+  [ce449cb9] (Candidate) fitness=0.500 — Psychopomp C3 scratch pair, role 1: the organization follows an imbalance-reading feedback law.
+Registered hypotheses: 2
+  [0ce2fa2a] (Candidate) fitness=0.500 — Psychopomp C3 scratch pair, role 1: the organization follows open-loop replay without reading the imbalance.
+  [ce449cb9] (Candidate) fitness=0.500 — Psychopomp C3 scratch pair, role 1: the organization follows an imbalance-reading feedback law.
+Registered hypotheses: 2
+  [0ce2fa2a] (Contradicted) fitness=0.300 — Psychopomp C3 scratch pair, role 1: the organization follows open-loop replay without reading the imbalance.
+  [ce449cb9] (Supported) fitness=0.600 — Psychopomp C3 scratch pair, role 1: the organization follows an imbalance-reading feedback law.
+Registered hypotheses: 2

@@ -1,0 +1,27 @@
+{
+  "status": "PROPOSED",
+  "rivals": {
+    "feedback": "ce449cb9-871c-48bc-be34-33e2b101629b",
+    "replay": "0ce2fa2a-fedc-44de-b71b-d30a7d9511a2"
+  },
+  "evidence": {
+    "producer_key": "psychopomp:episode:0:370203516603061041#0",
+    "store_seq": 1,
+    "probe": "perturbed",
+    "target": 1,
+    "plan_sha256": "2e5196d058f8cdcdf6d422ab25d9dddff8df6bdfeecabb4b2c1b044e06442d20",
+    "store_row_sha256": "91cf304ca11948722793aa7c1fbd5d404679b3da9d31b0463f3a35b76ab9ee73",
+    "verdict": "VERIFIED",
+    "resolved": "feedback"
+  },
+  "revisions": [
+    {
+      "hypothesis": "ce449cb9-871c-48bc-be34-33e2b101629b",
+      "status": "Supported"
+    },
+    {
+      "hypothesis": "0ce2fa2a-fedc-44de-b71b-d30a7d9511a2",
+      "status": "Contradicted"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "status": "ABSTAIN",
+  "rivals": {
+    "feedback": "ce449cb9-871c-48bc-be34-33e2b101629b",
+    "replay": "0ce2fa2a-fedc-44de-b71b-d30a7d9511a2"
+  },
+  "evidence": {
+    "producer_key": "psychopomp:episode:0:370203516603061040#0",
+    "store_seq": 0,
+    "probe": "passive",
+    "target": 1,
+    "plan_sha256": "fc9d96d7679f0be89c060656bc7cbc807d55b0bc234e887dcfde9a477e9f9bb7",
+    "store_row_sha256": "0a43f8f989dd9725269c6654144d34ce38b3bf63f916985b52b55906c4ea40bb",
+    "verdict": "ABSTAIN",
+    "resolved": null
+  },
+  "revisions": []
+}

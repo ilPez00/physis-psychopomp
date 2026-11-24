@@ -80,3 +80,8 @@ def test_turnover_revision_proposals_abstain_or_bind_both_rivals():
         script["propose_revision"](cases, rows, 99, rivals)
     with pytest.raises(ValueError, match="one stored row"):
         script["propose_revision"](cases, rows[1:], 0, rivals)
+    for name in ("passive", "perturbed"):
+        receipt = json.loads((ARTIFACT / "revision" / f"{name}.json").read_text())
+        pair = receipt["rivals"]
+        assert script["propose_revision"](cases, rows, receipt["evidence"]["store_seq"],
+                                          (pair["feedback"], pair["replay"])) == receipt

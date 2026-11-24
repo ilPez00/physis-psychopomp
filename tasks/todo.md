@@ -101,9 +101,10 @@ One writer at a time; a delegate's claim is not a gate.
   **Store replay measured:** eight one-tick `loads` observations imported at
   Physis-next `2773ccbbc`; 4/4 perturbed resolutions and 4/4 passive
   abstentions after reopen. See [receipt](../research/loops/results/turnover-store-replay-20261124/).
-- [ ] **C3: Turnover rival revisions.** Link replayed observations to
-  case-scoped hypothesis IDs; confirm an abstention leaves both rivals
-  unchanged. No hypothesis ledger was written by the store replay.
+- [x] **C3: Turnover rival revision smoke.** One role-1 pair in an isolated
+  `physis-core` ledger. Passive seq 0 left ledger bytes unchanged before
+  and after revision; perturbed seq 1 drove opposite revisions, verified
+  in fresh processes. The replay command itself remains read-only.
 
 ## D — Further research cards
 

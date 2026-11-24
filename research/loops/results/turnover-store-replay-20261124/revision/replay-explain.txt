@@ -1,0 +1,21 @@
+=== PHYSIS EXPLANATION REPORT ===
+INTERPRETATION:
+  Psychopomp C3 scratch pair, role 1: the organization follows open-loop replay without reading the imbalance.
+
+STATUS:
+  contradicted (Confidence: 0.50, Coherence: 0.50, Fitness: 0.30)
+
+COHERENCE PROFILE:
+  sem=0.50 log=0.50 tmp=0.50 cau=0.50 pro=0.50 emp=0.50 → 0.50
+
+FITNESS BREAKDOWN:
+  empirical=0.10 pred_succ=0.50 logic=0.50 sem=0.50 (contra_penalty=-0.10, fail_penalty=-0.00)
+
+SUPPORTING EVIDENCE (0):
+  (none recorded)
+
+CONTRADICTING EVIDENCE (1):
+  ✗ [psychopomp:c3-turnover] Turnover tick 4, role 1, perturbed: verified store seq 1, producer psychopomp:episode:0:370203516603061041#0, row sha256 91cf304ca11948722793aa7c1fbd5d404679b3da9d31b0463f3a35b76ab9ee73, plan sha256 2e5196d058f8cdcdf6d422ab25d9dddff8df6bdfeecabb4b2c1b044e06442d20; loads [5,5] resolve feedback in the declared fixture. (conf: 0.80)
+
+PROVENANCE:
+  No provenance recorded
