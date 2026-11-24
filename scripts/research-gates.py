@@ -66,6 +66,8 @@ GATES = [
      "Checkpoint A: replay checks the executor's 8/8 decisions from saved observable events, 8/8 shuffled abstain, second action refused"),
     ("scripts/paired-counterfactual.py", 0, "paired counterfactual: PASS",
      "R-P1.57: marginals match, reuse MAE is 0 vs 3, two candidates cover both laws"),
+    ("scripts/budgeted-model-mismatch.py", 0, "budgeted model mismatch: PASS",
+     "R-P1.58: matched budget beats controls; outside-support abstains, in-support mimic falsely resolves"),
     ("scripts/producer-dependence-prereg.py", 0, "prereg run: PASS",
      "R-P1.46: matched marginals give 1/2, 3/4, 1 under shared, independent, complementary masks; anonymous control ties"),
     ("scripts/polygon-radius-prereg.py", 0, "prereg run: PASS",

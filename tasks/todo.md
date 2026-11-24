@@ -112,8 +112,9 @@ One writer at a time; a delegate's claim is not a gate.
   frozen at `ae1cba8`. All five checks matched: equal marginals, paired
   residual-reuse MAE `0` versus `3`, and two-candidate coverage `8/8` per law.
   Next D2: noise, budget, and out-of-catalogue abstention.
-- [ ] **D2:** Cost/noise/out-of-model stress tests and adaptive vs fixed/random
-  policies. Depends on A4. Require decision and abstention metrics per cell.
+- [x] **D2 finite witness:** [R-P1.58](../docs/2026-11-24-PREREG-R-P1.58-budgeted-model-mismatch.md).
+  Missing/out-of-support readings abstained; in-support mimics falsely
+  declared a known law in 2/2 cases. Not empirical noise calibration.
 - [ ] **D3:** Contact/fold/action-disturbance counterfactuals and horizon sweep.
   Depends on D1 and a preregistered discriminating instrument.
 - [ ] **D4:** True delay versus outward sampler on identical crossing tasks.
