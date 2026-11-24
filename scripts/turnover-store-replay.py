@@ -7,6 +7,7 @@ import sys
 from fractions import Fraction
 from itertools import product
 from pathlib import Path
+from uuid import UUID
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -102,11 +103,38 @@ def replay(root, store_rows):
     return results
 
 
+def propose_revision(root, store_rows, seq, rivals):
+    """Propose one case's changes; an abstention licenses no ledger action."""
+    if len(rivals) != 2 or len(set(rivals)) != 2:
+        raise ValueError("expected two distinct rival UUIDs (feedback, replay)")
+    if any(str(UUID(rival)) != rival for rival in rivals):
+        raise ValueError("rival UUIDs must use canonical notation")
+    evidence = next((row for row in replay(root, store_rows) if row["store_seq"] == seq), None)
+    if evidence is None:
+        raise ValueError(f"seq {seq} is not a captured turnover case")
+    abstained = evidence["verdict"] == ABSTAIN
+    return {
+        "status": ABSTAIN if abstained else "PROPOSED",
+        "rivals": dict(zip(ARMS, rivals)),
+        "evidence": evidence,
+        "revisions": [] if abstained else [
+            {"hypothesis": rival, "status": "Supported" if arm == evidence["resolved"]
+             else "Contradicted"}
+            for arm, rival in zip(ARMS, rivals)
+        ],
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("cases", type=Path)
     parser.add_argument("--store-log", type=Path)
+    parser.add_argument("--store-seq", type=int, help="select one replayed case for a revision proposal")
+    parser.add_argument("--rivals", nargs=2, metavar=("FEEDBACK_UUID", "REPLAY_UUID"))
     args = parser.parse_args()
+    if (args.store_seq is not None or args.rivals is not None) and (
+            args.store_log is None or args.store_seq is None or args.rivals is None):
+        parser.error("a revision proposal requires --store-log, --store-seq and --rivals")
     try:
         if args.store_log is None:
             args.cases.mkdir()
@@ -118,7 +146,9 @@ def main():
                     if not line.endswith("\n"):
                         raise ValueError("unterminated store row")
                     rows.append(json.loads(line))
-            print(json.dumps(replay(args.cases, rows), indent=2))
+            result = (replay(args.cases, rows) if args.rivals is None else
+                      propose_revision(args.cases, rows, args.store_seq, args.rivals))
+            print(json.dumps(result, indent=2))
         return 0
     except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
         print(f"REFUSED: {error}", file=sys.stderr)

@@ -53,3 +53,30 @@ def test_saved_store_replays_both_roles_without_simulation(monkeypatch):
     assert {(target, sum(r["target"] == target and r["verdict"] == "ABSTAIN"
                         and r["resolved"] is None for r in actual))
             for target in (1, 2)} == {(1, 2), (2, 2)}
+
+
+def test_turnover_revision_proposals_abstain_or_bind_both_rivals():
+    script = runpy.run_path(str(SCRIPT))
+    rows = [json.loads(line) for line in (ARTIFACT / "store.jsonl").read_text().splitlines()]
+    cases = ARTIFACT / "cases"
+    rivals = ("00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002")
+    saved = json.loads((ARTIFACT / "replay.json").read_text())
+    for case in saved:
+        proposal = script["propose_revision"](cases, rows, case["store_seq"], rivals)
+        assert proposal["evidence"] == case
+        if case["verdict"] == "ABSTAIN":
+            assert proposal["status"] == "ABSTAIN"
+            assert proposal["revisions"] == []
+        else:
+            assert proposal["status"] == "PROPOSED"
+            assert proposal["revisions"] == [
+                {"hypothesis": rival, "status": "Supported" if arm == case["resolved"]
+                 else "Contradicted"}
+                for arm, rival in zip(("feedback", "replay"), rivals)
+            ]
+    with pytest.raises(ValueError, match="distinct"):
+        script["propose_revision"](cases, rows, 1, (rivals[0], rivals[0]))
+    with pytest.raises(ValueError, match="not a captured"):
+        script["propose_revision"](cases, rows, 99, rivals)
+    with pytest.raises(ValueError, match="one stored row"):
+        script["propose_revision"](cases, rows[1:], 0, rivals)

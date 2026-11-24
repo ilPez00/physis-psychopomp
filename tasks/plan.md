@@ -258,6 +258,10 @@ decision or reveals a failure the current verifier misses.
    imported rows by producer key. Four perturbed cases must resolve and four
    passive cases must abstain; a missing, duplicated or mismatched row must
    refuse. This is replay validation, not a new research claim or ledger write.
+   Next, keep the replay command read-only: bind one exact store seq to an
+   operator-supplied feedback/replay UUID pair. A passive result emits no
+   transitions. Check an isolated hypothesis ledger before and after that
+   control, then apply one verified proposal and reopen both rivals.
 3. **Harden B2/E1 on its existing feature branch.** Freeze key and provenance
    validation before tests. Add ordered readback, mixed overlap and same-key
    conflict controls, including concurrent writers. Cold-check the importer
