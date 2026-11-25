@@ -1,0 +1,32 @@
+cases 24 (12 dev, 12 held-out); determined 0/24; pool mean 21.5; missing 3/case
+
+development (12 cases) — sensor TPR 0.8, FPR 0.2, one query
+| arm | queries | proposed | correct | false | precision | recall | abstentions | completion error |
+|---|---|---|---|---|---|---|---|---|
+| A | 0 | 0 | 0/36 | 0 | — (0 proposals) | 0.000 | 12/12 | 0.140 |
+| B | 0 | 36 | 5/36 | 31 | 0.139 | 0.139 | 0/12 | 0.240 |
+| B1 | 1 | 36 | 5/36 | 31 | 0.139 | 0.139 | 0/12 | 0.240 |
+| C | 1 | 36 | 6/36 | 30 | 0.167 | 0.167 | 0/12 | 0.230 |
+| D | 1 | 36 | 6/36 | 30 | 0.167 | 0.167 | 0/12 | 0.233 |
+| E | 1 | 36 | 6/36 | 30 | 0.167 | 0.167 | 0/12 | 0.231 |
+| F | 1 | 36 | 7.96/36 | 28.04 | 0.221 | 0.018 | 0/12 | 0.217 |
+
+held_out (12 cases) — sensor TPR 0.8, FPR 0.2, one query
+| arm | queries | proposed | correct | false | precision | recall | abstentions | completion error |
+|---|---|---|---|---|---|---|---|---|
+| A | 0 | 0 | 0/36 | 0 | — (0 proposals) | 0.000 | 12/12 | 0.143 |
+| B | 0 | 36 | 7/36 | 29 | 0.194 | 0.194 | 0/12 | 0.230 |
+| B1 | 1 | 36 | 7/36 | 29 | 0.194 | 0.194 | 0/12 | 0.230 |
+| C | 1 | 36 | 7/36 | 29 | 0.194 | 0.194 | 0/12 | 0.231 |
+| D | 1 | 36 | 6/36 | 30 | 0.167 | 0.167 | 0/12 | 0.238 |
+| E | 1 | 36 | 7/36 | 29 | 0.194 | 0.194 | 0/12 | 0.232 |
+| F | 1 | 36 | 6.44/36 | 29.56 | 0.179 | 0.015 | 0/12 | 0.235 |
+
+H1 fixture ambiguous: UPHELD (0/24 determined)
+H2 no leak through probe choice: UPHELD (F error 0.235 vs B 0.230)
+H3 one paired probe pays: FALSIFIED (D error 0.238 vs B 0.230; precision 0.167 vs 0.194)
+H4 association pays: FALSIFIED (D 0.238 vs E 0.232)
+H5 choosing the edge matters: FALSIFIED (D 0.238 vs C 0.231)
+H6 posterior calibrated: UPHELD (predicted 0.266 vs measured 0.167)
+one-probe headroom: NO HEADROOM
+receipt: research/loops/results/one-probe-20261125/receipt.json

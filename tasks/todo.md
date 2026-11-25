@@ -185,6 +185,12 @@ One writer at a time; a delegate's claim is not a gate.
   chance on development (0.139 vs 0.141), 0.057 above it held-out, and its
   completion error is worse than silence (0.230 vs 0.143). E6 stays closed; the
   missing ingredient is information the surviving-world counts do not carry.
+  [R-P1.61](../docs/2026-11-25-PREREG-R-P1.61-one-probe.md) then bought one:
+  a correctly paired probe at TPR 0.8 / FPR 0.2 scores 0.238 against passive
+  0.230, its permuted-edge control 0.232 and an uninformative control 0.235.
+  The probe replaced 2.5 of 3 proposed edges on 21/24 cases and raised accuracy
+  on none, so the sensor, not the policy, is the binding constraint. Sizing the
+  sensor is a new card; no learner and no re-run under this claim.
 
 ### Guarded repair rollout
 
