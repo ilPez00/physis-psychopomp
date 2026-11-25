@@ -60,7 +60,10 @@ writer; the writer must not depend on learner output.
    deterministic evidence rules and a label-shuffled control. Report correct
    recoveries, false corrections, abstentions and downstream prediction error
    per held-out world. Show where the deterministic baseline leaves recoverable
-   cases; stop if observations cannot distinguish the rivals.
+   cases; stop if observations cannot distinguish the rivals. Score completion
+   error over the whole candidate pool, not only proposed edges: R-P1.60 found
+   a top-3 support arm with 0.194 precision whose completion error (0.230) was
+   worse than proposing nothing (0.143), which precision and recall alone hid.
 3. Only with measured headroom, trial a small offline ranker against the
    frozen baseline and shuffle. Promote to read-only shadow mode only if it
    improves held-out correct recoveries without increasing false corrections,

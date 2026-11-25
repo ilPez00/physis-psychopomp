@@ -179,8 +179,12 @@ One writer at a time; a delegate's claim is not a gate.
 - [~] **E5 (first cut, superseded).** R-P1.51 froze at `308dae`, **failed on D4**: exact precision/recall 1.00, shuffled 0.00, empty `UNKNOWN`, nothing applied — all upheld; D4's arm omitted both missing edges, so its predicted agreement was unsatisfiable. Pinned as failing. **Next:** follow-up card with the agreed-case arm defined correctly, plus a genuine no-repair and deterministic-only baseline (this run had neither, so it is a contract benchmark only).
 - [ ] **E6: Learned ranker** only with valid measured E5 headroom. The
   [R-P1.56](../docs/2026-11-23-PREREG-R-P1.56-repair-headroom.md) result is
-  exploratory: its unequal shuffle and recall denominator cannot establish
-  either below-chance performance or absence of recoverable signal.
+  exploratory (null sized to 6 edges against a 3-edge decision, recall divided
+  by the whole truth set). [R-P1.60](../docs/2026-11-25-PREREG-R-P1.60-repair-eval.md)
+  re-measured on a calibrated null: **no headroom** — top-3 support is at
+  chance on development (0.139 vs 0.141), 0.057 above it held-out, and its
+  completion error is worse than silence (0.230 vs 0.143). E6 stays closed; the
+  missing ingredient is information the surviving-world counts do not carry.
 
 ### Guarded repair rollout
 
@@ -203,4 +207,9 @@ One writer at a time; a delegate's claim is not a gate.
   account, zero steps) and is not a gate anywhere on this fleet.
 - [ ] **E5 acceptance:** held-out observation-generated candidates, independent
   labels, matched no-repair/deterministic/shuffled controls, and missing-edge
-  denominators. See [rollout](../docs/notes/production-repair-rollout.md).
+  denominators. [R-P1.60](../docs/2026-11-25-PREREG-R-P1.60-repair-eval.md)
+  supplies the corrected measurement and returns **NO HEADROOM**; the gate is
+  still open for a fixture whose candidates carry signal, because this one has
+  no non-vacuous precise arm (consensus 1.0 and 0.9 both abstain on all 24
+  cases) and its recall arm is worse than silence under squared error. See
+  [rollout](../docs/notes/production-repair-rollout.md).

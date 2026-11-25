@@ -1,0 +1,30 @@
+cases 24 (12 dev, 12 held-out); determined by observations: 0/24
+candidate pool: mean 21.5 edges; missing true edges per case: 3
+
+development (12 cases)
+| arm | proposed | correct | false | precision | recall | abstentions | completion error |
+|---|---|---|---|---|---|---|---|
+| A | 0 | 0/36 | 0/0 | 0.000 | 0.000 | 12/12 | 0.140 |
+| B | 0 | 0/36 | 0/0 | 0.000 | 0.000 | 12/12 | 0.140 |
+| C | 36 | 5/36 | 31/36 | 0.139 | 0.139 | 0/12 | 0.240 |
+| E | 0 | 0/36 | 0/0 | 0.000 | 0.000 | 12/12 | 0.140 |
+| D null | — | — | — | 0.141 | — | — | — |
+| D analytic | — | — | — | 0.140 | — | — | — |
+
+held_out (12 cases)
+| arm | proposed | correct | false | precision | recall | abstentions | completion error |
+|---|---|---|---|---|---|---|---|
+| A | 0 | 0/36 | 0/0 | 0.000 | 0.000 | 12/12 | 0.143 |
+| B | 0 | 0/36 | 0/0 | 0.000 | 0.000 | 12/12 | 0.143 |
+| C | 36 | 7/36 | 29/36 | 0.194 | 0.194 | 0/12 | 0.230 |
+| E | 0 | 0/36 | 0/0 | 0.000 | 0.000 | 12/12 | 0.143 |
+| D null | — | — | — | 0.138 | — | — | — |
+| D analytic | — | — | — | 0.143 | — | — | — |
+
+H1 fixture ambiguous: UPHELD (0/24 determined)
+H2 null calibrated: UPHELD (D 0.138 vs analytic 0.143)
+H3 support beats null: FALSIFIED (margin 0.057, paired 6/12)
+H4 proposing beats denial: FALSIFIED (error C 0.230 vs A 0.143)
+H5 headroom: FALSIFIED (unused precision 0.806)
+repair headroom: NO HEADROOM
+receipt: research/loops/results/repair-eval-20261125/receipt.json
