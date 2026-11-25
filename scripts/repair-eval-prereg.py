@@ -246,9 +246,10 @@ def main() -> int:
         "checks": {"H1": h1, "H2": h2, "H3": h3, "H4": h4, "H5": h5},
         "paired_wins": f"{wins}/{len(paired)}",
         "verdict": verdict,
-        "per_case": rows,
+        "per_case": [{key: value for key, value in row.items() if key != "D_draws"}
+                     for row in rows],
     }
-    (out / "receipt.json").write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n")
+    (out / "receipt.json").write_text(json.dumps(receipt, sort_keys=True) + "\n")
     print(f"receipt: {out.relative_to(Path(__file__).resolve().parents[1])}/receipt.json")
     return 0 if h1 else 1
 
