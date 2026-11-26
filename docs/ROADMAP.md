@@ -122,16 +122,24 @@ next work. This roadmap keeps the status and evidence for completed cards.
 
 1. **Active law identification:** notice a failed nominal prediction, choose
    one safe simulated experiment to distinguish rival laws, verify the update.
-2. **Physis-next integration:** verify canonical APIs in isolation; import,
-   query and replay real evidence. The Rust source exists; the round trip
-   does not.
+2. **Physis-next integration:** **done 2026-11-26** — the round trip exists.
+   `integrate/psychopomp-import-20261126` (draft PR #364) merges the importer
+   that had sat unmerged since 2026-11-24; a 24-row export imports (24/0 dup),
+   re-imports as 24 duplicates, reads back through `physis subject` with typed
+   provenance, and an audit packet over it verifies offline and fails on a
+   tampered row (exit 1). Receipt:
+   [`2026-11-26-R-P1.7-ingest-roundtrip.md`](2026-11-26-R-P1.7-ingest-roundtrip.md).
 3. **Organizational identity:** distinguish recovery after complete component
    turnover from inventory-matched open-loop replay. Only then review typed
    uncertainty across tasks.
-4. **Importer (E1/B2):** `physis-store/psychopomp.rs` landed on a physis-next
-   branch (`feat/psychopomp-import`, `9520ea6e8`) — UTC ingest time explicit,
-   simulated seconds preserved, OBSERVED-only, dedup inside the store lock.
-   CLI subcommand and the two-process concurrency test remain.
+4. **Importer (E1/B2):** **done 2026-11-26.** `physis import <schema> <file>` is
+   in place with the store arm (`physis-store/psychopomp.rs`): UTC ingest time
+   explicit, simulated seconds preserved, OBSERVED-only, dedup inside the store
+   lock, same-key/different-payload refused as a conflict. The two-process case
+   is pinned by `scripts/psychopomp-import-smoke.sh` (no duplicates; one process
+   may abort by design), 14 module tests green. Merged via draft PR #364.
+   Remaining limit, stated: one schema, one arm — not generic ingress, and no
+   store-scale throughput measurement.
 5. **Graph repair (Phase 5):** additions are routed and measured (`declare`,
    `claim`); **retraction is blocked upstream** — `removed:rel|` is filtered to
    code sources, and `tms`/`whatif` are previews only.
