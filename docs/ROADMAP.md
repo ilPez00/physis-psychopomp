@@ -123,7 +123,7 @@ next work. This roadmap keeps the status and evidence for completed cards.
 1. **Active law identification:** notice a failed nominal prediction, choose
    one safe simulated experiment to distinguish rival laws, verify the update.
 2. **Physis-next integration:** **done 2026-11-26** — the round trip exists.
-   `integrate/psychopomp-import-20261126` (draft PR #364) merges the importer
+   **PR #375** (`integrate/psychopomp-import-main`) merges the importer
    that had sat unmerged since 2026-11-24; a 24-row export imports (24/0 dup),
    re-imports as 24 duplicates, reads back through `physis subject` with typed
    provenance, and an audit packet over it verifies offline and fails on a
