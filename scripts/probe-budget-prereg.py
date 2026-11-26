@@ -121,7 +121,15 @@ def best_edges(worlds: list[frozenset], pool: set, k: int) -> list:
 
 def probe(worlds: list[frozenset], pool: set, truth: set, k: int, q: float,
           rng: random.Random) -> list[frozenset]:
-    """Query `k` edges in information order; filter by every reading."""
+    """Query `k` edges in information order; filter by every reading.
+
+    Batch design: the `k` edges are chosen once from the *original* surviving
+    set. A sequential design recomputes the best remaining edge after each
+    reading and is strictly more informative; it was measured afterwards and is
+    better at mid budgets (k=8: 0.278 vs 0.222) but does not reach the bar, so
+    P3 stays falsified under either design. The card declared neither, and this
+    is the one the receipt is frozen against.
+    """
     kept = list(worlds)
     for edge in best_edges(worlds, pool, k):
         p = q if edge in truth else 1.0 - q
