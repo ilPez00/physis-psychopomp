@@ -189,8 +189,13 @@ One writer at a time; a delegate's claim is not a gate.
   a correctly paired probe at TPR 0.8 / FPR 0.2 scores 0.238 against passive
   0.230, its permuted-edge control 0.232 and an uninformative control 0.235.
   The probe replaced 2.5 of 3 proposed edges on 21/24 cases and raised accuracy
-  on none, so the sensor, not the policy, is the binding constraint. Sizing the
-  sensor is a new card; no learner and no re-run under this claim.
+  on none. R-P1.61 concluded "the sensor, not the policy, is the binding
+  constraint". [R-P1.62](../docs/2026-11-26-PREREG-R-P1.62-probe-budget.md)
+  swept quality and budget separately and **falsified that reading both ways**:
+  no single probe clears passive+0.10 at any quality — even a perfect sensor
+  gives 0.222 against a 0.294 bar — while budget alone needs k=21 at q=0.8 and
+  k=3 at q=1.0. The two multiply. No headroom: nobody has priced a query yet,
+  and probing the whole pool is a scanner. E6 stays closed.
 
 ### Guarded repair rollout
 

@@ -67,9 +67,12 @@ writer; the writer must not depend on learner output.
 3. Only with measured headroom, trial a small offline ranker against the
    frozen baseline and shuffle. Both measured gates are negative so far:
    R-P1.60 found support counting at the null with completion error worse than
-   silence, and R-P1.61 found that one probe at `TPR 0.8 / FPR 0.2` reshuffles
-   the top-3 on 21/24 cases and raises accuracy on none. Size the information
-   source before considering a ranker. Promote to read-only shadow mode only if it
+   silence, R-P1.61 found one probe at `TPR 0.8 / FPR 0.2` reshuffles the top-3
+   on 21/24 cases and raises accuracy on none, and R-P1.62 showed a single probe
+   cannot reach the bar at **any** sensor quality (a perfect one gives 0.222
+   against 0.294) while pure budget needs the whole candidate pool. Before any
+   ranker: **price one acquisition against one missed edge.** Until a query has a
+   cost, "more probes" is not a policy. Promote to read-only shadow mode only if it
    improves held-out correct recoveries without increasing false corrections,
    under preregistered thresholds. Output is order, confidence and abstention,
    never an approval, assertion or tool call.
