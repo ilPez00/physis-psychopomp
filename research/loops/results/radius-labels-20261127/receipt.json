@@ -1,0 +1,160 @@
+{
+ "anchor": [
+  39.9,
+  60.1,
+  34.9,
+  65.0
+ ],
+ "card": "R-P1.73",
+ "claim_id": "969e3ade-530c-4d53-9851-9cbe0e0a0c3c",
+ "command": "python3 scripts/radius-labels-prereg.py",
+ "corner_clip_crossings": {
+  "r=0": 2,
+  "r=2": 2
+ },
+ "edge_deltas": {
+  "0.5": null,
+  "1.0": null,
+  "2.0": null
+ },
+ "per_radius": {
+  "0.0": {
+   "crossings": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "estimate": [
+    39.9,
+    60.1,
+    34.9,
+    65.0
+   ],
+   "estimates_seen": 5,
+   "mean_crossings": 2.0,
+   "of_seeds": 5
+  },
+  "0.5": {
+   "crossings": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "estimate": null,
+   "estimates_seen": 0,
+   "mean_crossings": 2.0,
+   "of_seeds": 5
+  },
+  "1.0": {
+   "crossings": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "estimate": null,
+   "estimates_seen": 0,
+   "mean_crossings": 2.0,
+   "of_seeds": 5
+  },
+  "2.0": {
+   "crossings": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "estimate": null,
+   "estimates_seen": 0,
+   "mean_crossings": 2.0,
+   "of_seeds": 5
+  }
+ },
+ "prereg": "docs/2026-11-27-PREREG-R-P1.73-radius-labels.md",
+ "radii": [
+  0.0,
+  0.5,
+  1.0,
+  2.0
+ ],
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "verdict": "P1=HELD, P2=FAILED, P3=FAILED, P4=FAILED, P5=FAILED",
+ "widths": {
+  "0.0": 20.2,
+  "0.5": null,
+  "1.0": null,
+  "2.0": null
+ }
+}

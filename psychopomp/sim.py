@@ -329,13 +329,35 @@ def transition_rect(
     (measured, R-P1.17).
     """
     for rect in occluders(cfg, t):
-        before = inside_rect(rect, px, py)
-        after = inside_rect(rect, cx, cy)
+        # The visibility pass uses the DISC rule when `visual_radius > 0` (a body
+        # is hidden only when its whole disc is inside), so the labeller must use
+        # the same predicate. With `inside_rect` alone, a radius-shifted crossing
+        # has both endpoints inside by the point rule, this returns None, and the
+        # crossing is labelled `sweep` — which `_rect_bounds` ignores, so the
+        # rectangle estimator silently returned no estimate for every radius > 0
+        # (measured, R-P1.73).
+        before = _covered(cfg, rect, px, py)
+        after = _covered(cfg, rect, cx, cy)
         if entering and after and not before:
             return rect
         if not entering and before and not after:
             return rect
     return None
+
+
+def _covered(cfg: SimConfig, rect, x: float, y: float) -> bool:
+    """`inside_rect` under the same rule `observable` applies.
+
+    With a radius, the point must be at least `r` from every edge, which is what
+    makes the emitter's `tr.visible` and this labeller agree.
+    """
+    r = cfg.visual_radius
+    if not inside_rect(rect, x, y):
+        return False
+    if r <= 0.0:
+        return True
+    return rect[0] + r <= x <= rect[1] - r and rect[2] + r <= y <= rect[3] - r
+
 
 
 def _lagged_attrs(config: SimConfig, tr, j: int, attrs: dict,
