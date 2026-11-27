@@ -1,0 +1,124 @@
+{
+ "anchor": {
+  "expected_pool": 21.5,
+  "measured_pool": 21.5,
+  "n": 4
+ },
+ "at_k8_precision": {
+  "3": 0.5555555555555556,
+  "4": 0.3333333333333333
+ },
+ "at_k8_surviving": {
+  "3": 41.416666666666664,
+  "4": 879.0
+ },
+ "card": "R-P1.67",
+ "cells": {
+  "3@12": {
+   "cases": 12,
+   "completion_error": 0.26746632996632996,
+   "k": 12,
+   "mean_surviving": 41.416666666666664,
+   "n": 3,
+   "precision": 0.5555555555555556
+  },
+  "3@4": {
+   "cases": 12,
+   "completion_error": 0.3173400673400673,
+   "k": 4,
+   "mean_surviving": 41.416666666666664,
+   "n": 3,
+   "precision": 0.4722222222222222
+  },
+  "3@8": {
+   "cases": 12,
+   "completion_error": 0.2720959595959596,
+   "k": 8,
+   "mean_surviving": 41.416666666666664,
+   "n": 3,
+   "precision": 0.5555555555555556
+  },
+  "4@12": {
+   "cases": 12,
+   "completion_error": 0.16569624544452918,
+   "k": 12,
+   "mean_surviving": 879.0,
+   "n": 4,
+   "precision": 0.4166666666666667
+  },
+  "4@4": {
+   "cases": 12,
+   "completion_error": 0.23888846512416306,
+   "k": 4,
+   "mean_surviving": 879.0,
+   "n": 4,
+   "precision": 0.16666666666666666
+  },
+  "4@8": {
+   "cases": 12,
+   "completion_error": 0.1906962454445292,
+   "k": 8,
+   "mean_surviving": 879.0,
+   "n": 4,
+   "precision": 0.3333333333333333
+  }
+ },
+ "claim_id": "38b247fe-4c45-4814-bf53-93dc32b06c91",
+ "command": "python3 scripts/pool-size-prereg.py",
+ "controls": {
+  "3@8": {
+   "cases_beating_passive": 4,
+   "k": 8,
+   "n": 3
+  },
+  "4@8": {
+   "cases_beating_passive": 3,
+   "k": 8,
+   "n": 4
+  }
+ },
+ "dev_cells": {
+  "3@8": {
+   "cases": 12,
+   "completion_error": 0.1611952861952862,
+   "k": 8,
+   "mean_surviving": 42.5,
+   "n": 3,
+   "precision": 0.7222222222222222
+  },
+  "4@8": {
+   "cases": 12,
+   "completion_error": 0.18261674718196455,
+   "k": 8,
+   "mean_surviving": 911.75,
+   "n": 4,
+   "precision": 0.3611111111111111
+  }
+ },
+ "entity_counts": [
+  3,
+  4
+ ],
+ "null_rates": {
+  "3@8": 4,
+  "4@8": 3
+ },
+ "passive": {
+  "3": {
+   "cases": 12,
+   "completion_error": 0.41224747474747475,
+   "precision": 0.3055555555555556
+  },
+  "4": {
+   "cases": 12,
+   "completion_error": 0.22990677176031868,
+   "precision": 0.19444444444444445
+  }
+ },
+ "pools": {
+  "3": 10.083333333333334,
+  "4": 21.5
+ },
+ "prereg": "docs/2026-11-27-PREREG-R-P1.67-pool-size.md",
+ "verdict": "P1=HELD, P2=FAILED, P3=HELD, P4=HELD, P5=HELD"
+}
