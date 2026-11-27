@@ -1,0 +1,483 @@
+{
+ "amendment": "Amendment 1: the simulator already carries extra_o/poly_o/visual_radius; R-P1.45 measured visibility, not attribution",
+ "arms": {
+  "A": {
+   "area": 600.0,
+   "estimate": [
+    39.9,
+    60.1,
+    34.9,
+    65.0
+   ],
+   "margins": [
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity
+   ],
+   "unique": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "visible": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "B": {
+   "area": 600.0,
+   "estimate": [
+    39.9,
+    60.1,
+    34.9,
+    65.0
+   ],
+   "margins": [
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity
+   ],
+   "unique": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "visible": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "C": {
+   "area": 420.0,
+   "estimate": [
+    39.9,
+    60.1,
+    34.9,
+    65.0
+   ],
+   "margins": [
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity
+   ],
+   "unique": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "visible": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "D": {
+   "area": 504.0,
+   "estimate": null,
+   "margins": [
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity
+   ],
+   "unique": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "visible": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  }
+ },
+ "card": "R-P1.70",
+ "cells": {
+  "A": [
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 0,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 1,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 2,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 3,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 4,
+    "unique": false,
+    "visible_at_event": false
+   }
+  ],
+  "B": [
+   {
+    "ambiguity": 2,
+    "arm": "B",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 0,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "B",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 1,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "B",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 2,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "B",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 3,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "B",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 4,
+    "unique": false,
+    "visible_at_event": false
+   }
+  ],
+  "C": [
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 0,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 1,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 2,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 3,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "estimate": [
+     39.9,
+     60.1,
+     34.9,
+     65.0
+    ],
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 4,
+    "unique": false,
+    "visible_at_event": false
+   }
+  ],
+  "D": [
+   {
+    "ambiguity": 2,
+    "arm": "D",
+    "estimate": null,
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 0,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "D",
+    "estimate": null,
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 1,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "D",
+    "estimate": null,
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 2,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "D",
+    "estimate": null,
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 3,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "D",
+    "estimate": null,
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 4,
+    "unique": false,
+    "visible_at_event": false
+   }
+  ]
+ },
+ "claim_id": "4504c1af-eb53-4caf-94f3-1ea5a462c726",
+ "command": "python3 scripts/mask-seams-prereg.py",
+ "event": [
+  46.0,
+  45.0
+ ],
+ "geometry_moved_B_vs_A": false,
+ "prereg": "docs/2026-11-27-PREREG-R-P1.70-mask-seams.md",
+ "radius_shift": null,
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "verdict": "P1=HELD, P2=FAILED, P3=FAILED, P4=FAILED, P5=FAILED"
+}
