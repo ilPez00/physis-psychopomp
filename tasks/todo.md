@@ -181,9 +181,20 @@ One writer at a time; a delegate's claim is not a gate.
   axis-aligned rectangles only. The card's P4 failed for a decoder reason:
   `attribute` rebuilds counterfactuals in world coordinates, so a rotated
   observation is scored against unrotated candidates.
-- [ ] **D7:** Partially overlapping producers plus incorrect tags at matched
+- [x] **D7:** Partially overlapping producers plus incorrect tags at matched
   marginal delivery. Independent; require matched anonymous and tag-shuffled
   controls before claiming a fusion rule.
+  **CLOSED 2026-11-27, two cards.** Incorrect tags →
+  [R-P1.74](../docs/2026-11-27-PREREG-R-P1.74-tag-errors.md): a constant
+  per-producer tag error leaves distinguishability **exactly unchanged** (it is a
+  relabelling) while inverting the decision, so any fusion rule must be scored on
+  decided-world accuracy, not on whether sequences differ. Partial overlap →
+  [R-P1.75](../docs/2026-11-27-PREREG-R-P1.75-partial-overlap.md): overlap alone
+  is **not** a mitigation — what decides it is which side covers more of the
+  intersecting markers (`partial-cross` right 2–1, `partial-A-wide` wrong 2–1,
+  full and disjoint tie). Matched anonymous and matched-marginal controls held in
+  both cards. **No fusion rule is claimed** by either: majority-over-markers is
+  the scoring rule for the question, not an algorithm.
 
 ## E — Graph repair (proposals only)
 
