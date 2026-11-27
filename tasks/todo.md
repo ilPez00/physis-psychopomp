@@ -140,8 +140,15 @@ One writer at a time; a delegate's claim is not a gate.
 - [ ] **D5:** Composite masks, non-convex/reflex corners, finite-radius
   crossing labels and calibration. Independent. Gate seam/control pair before
   expanding the planner.
-- [ ] **D6:** Rotating-observer frames; separately test coordinate invariance
+- [x] **D6:** Rotating-observer frames; separately test coordinate invariance
   and physical coverage changes. Independent.
+  [R-P1.65](../docs/2026-11-27-PREREG-R-P1.65-rotating-observer.md): coordinate
+  invariance **holds** (round trip error `0.0`, no world created or destroyed,
+  scene verdict invariant 5/5, no hidden field). Physical coverage under a
+  rotating *occluder* is **out of scope by declaration** — the simulator has
+  axis-aligned rectangles only. The card's P4 failed for a decoder reason:
+  `attribute` rebuilds counterfactuals in world coordinates, so a rotated
+  observation is scored against unrotated candidates.
 - [ ] **D7:** Partially overlapping producers plus incorrect tags at matched
   marginal delivery. Independent; require matched anonymous and tag-shuffled
   controls before claiming a fusion rule.
