@@ -1,0 +1,829 @@
+{
+ "base_verdict": [
+  false,
+  false,
+  false,
+  false,
+  false
+ ],
+ "bodies_verdicts": {
+  "0.000000": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "0.523599": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "0.785398": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "1.047198": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "1.570796": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "card": "R-P1.65",
+ "cells": [
+  {
+   "arm": "scene",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 0.0,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    17.3372,
+    61.9711
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    17.3372,
+    61.9711
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    17.3372,
+    61.9711
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    17.3372,
+    61.9711
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    17.3372,
+    61.9711
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 0.523599,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    0.7071,
+    64.3467
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    0.7071,
+    64.3467
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    0.7071,
+    64.3467
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    0.7071,
+    64.3467
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    0.7071,
+    64.3467
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 0.785398,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -15.9711,
+    62.3372
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -15.9711,
+    62.3372
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -15.9711,
+    62.3372
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -15.9711,
+    62.3372
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -15.9711,
+    62.3372
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 1.047198,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -45.0,
+    46.0
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -45.0,
+    46.0
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -45.0,
+    46.0
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -45.0,
+    46.0
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "scene",
+   "covered": false,
+   "event": [
+    -45.0,
+    46.0
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 0,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 1,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 2,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 3,
+   "theta": 1.570796,
+   "unique": false
+  },
+  {
+   "arm": "bodies",
+   "covered": true,
+   "event": [
+    46.0,
+    45.0
+   ],
+   "margin": Infinity,
+   "seed": 4,
+   "theta": 1.570796,
+   "unique": false
+  }
+ ],
+ "claim_id": "23576a80-0d32-4939-8ec3-ec3585dcc64f",
+ "command": "python3 scripts/rotating-observer-prereg.py",
+ "coverage": {
+  "0.000000/bodies": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "0.000000/scene": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "0.523599/bodies": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "0.523599/scene": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "0.785398/bodies": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "0.785398/scene": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "1.047198/bodies": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "1.047198/scene": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "1.570796/bodies": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "1.570796/scene": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "leak_scan": {
+  "banned_found": [],
+  "ok": true
+ },
+ "prereg": "docs/2026-11-27-PREREG-R-P1.65-rotating-observer.md",
+ "rotations": [
+  0.0,
+  0.523599,
+  0.785398,
+  1.047198,
+  1.570796
+ ],
+ "round_trip": {
+  "0.000000": {
+   "ok": true,
+   "worst_position_error": 0.0,
+   "worst_speed_error": 0.0
+  },
+  "0.523599": {
+   "ok": true,
+   "worst_position_error": 0.0,
+   "worst_speed_error": 0.0
+  },
+  "0.785398": {
+   "ok": true,
+   "worst_position_error": 0.0,
+   "worst_speed_error": 0.0
+  },
+  "1.047198": {
+   "ok": true,
+   "worst_position_error": 0.0,
+   "worst_speed_error": 0.0
+  },
+  "1.570796": {
+   "ok": true,
+   "worst_position_error": 0.0,
+   "worst_speed_error": 0.0
+  }
+ },
+ "scene_verdicts": {
+  "0.000000": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "0.523599": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "0.785398": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "1.047198": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "1.570796": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "verdict": "P1=HELD, P2=HELD, P3=HELD, P4=FAILED, P5=HELD",
+ "world_counts": {
+  "0.000000": {
+   "truth_in_worlds": true,
+   "worlds": 2
+  },
+  "0.523599": {
+   "truth_in_worlds": true,
+   "worlds": 2
+  },
+  "0.785398": {
+   "truth_in_worlds": true,
+   "worlds": 2
+  },
+  "1.047198": {
+   "truth_in_worlds": true,
+   "worlds": 2
+  },
+  "1.570796": {
+   "truth_in_worlds": true,
+   "worlds": 2
+  }
+ }
+}
