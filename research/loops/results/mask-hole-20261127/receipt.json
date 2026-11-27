@@ -1,0 +1,410 @@
+{
+ "bbox_contains_notch": true,
+ "card": "R-P1.71",
+ "cells": {
+  "A": [
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 0,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 1,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 2,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 3,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "A",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 4,
+    "unique": false,
+    "visible_at_event": false
+   }
+  ],
+  "B": [
+   {
+    "ambiguity": 1,
+    "arm": "B",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 54.55,
+    "seed": 0,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "B",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 54.55,
+    "seed": 1,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "B",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 54.55,
+    "seed": 2,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "B",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 54.55,
+    "seed": 3,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "B",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 54.55,
+    "seed": 4,
+    "unique": true,
+    "visible_at_event": true
+   }
+  ],
+  "C": [
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 0,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 1,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 2,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 3,
+    "unique": false,
+    "visible_at_event": false
+   },
+   {
+    "ambiguity": 2,
+    "arm": "C",
+    "event": [
+     46.0,
+     45.0
+    ],
+    "margin": Infinity,
+    "seed": 4,
+    "unique": false,
+    "visible_at_event": false
+   }
+  ],
+  "D": [
+   {
+    "ambiguity": 1,
+    "arm": "D",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 21.5,
+    "seed": 0,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "D",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 21.5,
+    "seed": 1,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "D",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 21.5,
+    "seed": 2,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "D",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 21.5,
+    "seed": 3,
+    "unique": true,
+    "visible_at_event": true
+   },
+   {
+    "ambiguity": 1,
+    "arm": "D",
+    "event": [
+     46.0,
+     55.0
+    ],
+    "margin": 21.5,
+    "seed": 4,
+    "unique": true,
+    "visible_at_event": true
+   }
+  ]
+ },
+ "claim_id": "2b0c9ed6-3458-4e3d-9a14-c0139f6ff330",
+ "command": "python3 scripts/mask-hole-prereg.py",
+ "events": {
+  "notch": [
+   46.0,
+   55.0
+  ],
+  "solid": [
+   46.0,
+   45.0
+  ]
+ },
+ "mask": {
+  "parked": [
+   2.0,
+   4.0,
+   2.0,
+   4.0
+  ],
+  "poly": [
+   [
+    40.0,
+    35.0
+   ],
+   [
+    60.0,
+    35.0
+   ],
+   [
+    60.0,
+    65.0
+   ],
+   [
+    52.0,
+    65.0
+   ],
+   [
+    52.0,
+    50.0
+   ],
+   [
+    40.0,
+    50.0
+   ]
+  ],
+  "solid": [
+   40.0,
+   60.0,
+   35.0,
+   65.0
+  ]
+ },
+ "mutation": [
+  {
+   "ambiguity": 2,
+   "arm": "mutation",
+   "seed": 0,
+   "unique": false,
+   "visible_at_event": false
+  },
+  {
+   "ambiguity": 2,
+   "arm": "mutation",
+   "seed": 1,
+   "unique": false,
+   "visible_at_event": false
+  },
+  {
+   "ambiguity": 2,
+   "arm": "mutation",
+   "seed": 2,
+   "unique": false,
+   "visible_at_event": false
+  },
+  {
+   "ambiguity": 2,
+   "arm": "mutation",
+   "seed": 3,
+   "unique": false,
+   "visible_at_event": false
+  },
+  {
+   "ambiguity": 2,
+   "arm": "mutation",
+   "seed": 4,
+   "unique": false,
+   "visible_at_event": false
+  }
+ ],
+ "prereg": "docs/2026-11-27-PREREG-R-P1.71-mask-hole.md",
+ "probes": {
+  "A": {
+   "notch": false,
+   "outside": true,
+   "solid": false
+  },
+  "B": {
+   "notch": true,
+   "outside": true,
+   "solid": false
+  },
+  "C": {
+   "notch": true,
+   "outside": true,
+   "solid": false
+  },
+  "D": {
+   "notch": true,
+   "outside": true,
+   "solid": true
+  }
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "unique": {
+  "A": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "B": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "C": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "D": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ "verdict": "P1=HELD, P2=HELD, P3=HELD, P4=HELD, P5=HELD",
+ "visibility": {
+  "A": false,
+  "B": true,
+  "C": false,
+  "D": true
+ }
+}
