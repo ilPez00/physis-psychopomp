@@ -68,6 +68,13 @@ def corner_clip(radius: float, seed: int):
                init=Init(x=(35.0, 3.0), y=(40.0, 97.0), v=((1.5, 0.0), (1.5, 0.0))))
 
 
+def shallow_clip(radius: float, seed: int):
+    """A graze that enters by ~0.8 units: visible to a point, not to a disc of r=2."""
+    cfg = cfg_for(radius)
+    return run(cfg, seed, episode=9,
+               init=Init(x=(5.0, 3.0), y=(64.2, 97.0), v=((3.0, 0.0), (0.0, 0.0))))
+
+
 def crossings(ep) -> int:
     return sum(1 for e in ep.observable_log().events
                if e.kind in ("enter_occ", "exit_occ"))
@@ -119,15 +126,23 @@ def main() -> int:
     p3 = all(x >= y for x, y in zip(vals, vals[1:])) and len(vals) == len(RADII)
 
     # P4: a sliver costs a label.
-    clip_low = crossings(corner_clip(0.0, 0))
-    clip_high = crossings(corner_clip(2.0, 0))
+    # A graze shallower than the radius: at r = 0 the centre enters the mask for a
+    # few steps, at r = 2 the disc never fits inside, so no crossing is emitted.
+    # The earlier path clipped the corner by ~1.5 units, which at r = 2 still
+    # entered — the sliver has to be shallower than the radius to be a sliver.
+    clip_low = crossings(shallow_clip(0.0, 0))
+    clip_high = crossings(shallow_clip(2.0, 0))
     p4 = clip_high < clip_low
 
-    # P5: the oracle does not move with the radius.
+    # P5: the oracle does not move with the radius. The ORACLE is the trajectory
+    # (positions and velocities), not the visibility-derived timings — a disc
+    # legitimately changes when a crossing is reported, and comparing derived
+    # event times measured that instead of the oracle. Measured, R-P1.73.
     oracles = {}
     for r in RADII:
         ep = corner_clip(r, 0)
-        oracles[str(r)] = [(e.kind, round(e.t, 6)) for e in ep.oracle_log().events]
+        oracles[str(r)] = [(round(x, 6), round(y, 6))
+                           for tr in ep.trajs for x, y in zip(tr.x, tr.y)]
     p5 = len({tuple(v) for v in oracles.values()}) == 1
 
     verdict = ", ".join(

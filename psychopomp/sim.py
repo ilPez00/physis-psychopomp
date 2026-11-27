@@ -294,8 +294,17 @@ def occluders(cfg: SimConfig, t: int = 0) -> Tuple[Tuple[float, float, float, fl
 
 
 def _enter_side(rect: Tuple[float, float, float, float],
-                px: float, py: float, cx: float, cy: float) -> str:
-    x0, x1, y0, y1 = rect
+                px: float, py: float, cx: float, cy: float,
+                radius: float = 0.0) -> str:
+    """Which edge the body entered through, in the label's coordinate frame.
+
+    `radius` must be the same one `transition_rect` and `observable` use: with a
+    disc, "inside" means at least `r` from every edge, so the entry coordinate is
+    shifted inward by `r`. Without that, a radius-shifted crossing falls outside
+    every axis test and is labelled `corner`, which the emitter refuses
+    (measured, R-P1.73).
+    """
+    x0, x1, y0, y1 = rect[0] + radius, rect[1] - radius, rect[2] + radius, rect[3] - radius
     if px < x0 and cx >= x0 and y0 <= cy <= y1:
         return "left"
     if px > x1 and cx <= x1 and y0 <= cy <= y1:
@@ -307,8 +316,10 @@ def _enter_side(rect: Tuple[float, float, float, float],
     return "corner"
 
 
-def _exit_side(rect: Tuple[float, float, float, float], x: float, y: float) -> str:
-    x0, x1, y0, y1 = rect
+def _exit_side(rect: Tuple[float, float, float, float], x: float, y: float,
+               radius: float = 0.0) -> str:
+    """Which edge the body left through, in the disc's frame when `radius > 0`."""
+    x0, x1, y0, y1 = rect[0] + radius, rect[1] - radius, rect[2] + radius, rect[3] - radius
     if x < x0:
         return "left"
     if x > x1:
@@ -598,7 +609,8 @@ def run(
                 rect = transition_rect(config, j, tr.x[j - 1], tr.y[j - 1],
                                        tr.x[j], tr.y[j], entering=False)
                 # no rectangle crossing: either a polygon edge or a sweep
-                side = "sweep" if rect is None else _exit_side(rect, tr.x[j], tr.y[j])
+                side = ("sweep" if rect is None else
+                        _exit_side(rect, tr.x[j], tr.y[j], config.visual_radius))
                 edge = None
                 if rect is None:
                     for poly in config.poly_o:
@@ -633,7 +645,8 @@ def run(
                 rect = transition_rect(config, j, tr.x[j - 1], tr.y[j - 1],
                                        tr.x[j], tr.y[j], entering=True)
                 side = ("sweep" if rect is None else
-                        _enter_side(rect, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j]))
+                        _enter_side(rect, tr.x[j - 1], tr.y[j - 1], tr.x[j], tr.y[j],
+                                   config.visual_radius))
                 edge = None
                 if rect is None:
                     for poly in config.poly_o:
