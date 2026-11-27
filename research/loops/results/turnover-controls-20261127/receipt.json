@@ -1,0 +1,197 @@
+{
+ "anchor": {
+  "1@0": {
+   "feedback": 3,
+   "loads": {
+    "4": [
+     4,
+     4
+    ],
+    "5": [
+     4,
+     4
+    ],
+    "6": [
+     4,
+     4
+    ]
+   },
+   "open_loop": 3
+  },
+  "1@1": {
+   "feedback": 3,
+   "loads": {
+    "4": [
+     5,
+     4
+    ],
+    "5": [
+     5,
+     4
+    ],
+    "6": [
+     5,
+     4
+    ]
+   },
+   "open_loop": 3
+  },
+  "1@2": {
+   "feedback": 3,
+   "loads": {
+    "4": [
+     5,
+     5
+    ],
+    "5": [
+     5,
+     5
+    ],
+    "6": [
+     5,
+     5
+    ]
+   },
+   "open_loop": 0
+  },
+  "2@0": {
+   "feedback": 3,
+   "loads": {
+    "4": [
+     4,
+     4
+    ],
+    "5": [
+     4,
+     4
+    ],
+    "6": [
+     4,
+     4
+    ]
+   },
+   "open_loop": 3
+  },
+  "2@1": {
+   "feedback": 3,
+   "loads": {
+    "4": [
+     4,
+     5
+    ],
+    "5": [
+     4,
+     5
+    ],
+    "6": [
+     4,
+     5
+    ]
+   },
+   "open_loop": 3
+  },
+  "2@2": {
+   "feedback": 3,
+   "loads": {
+    "4": [
+     5,
+     5
+    ],
+    "5": [
+     5,
+     5
+    ],
+    "6": [
+     5,
+     5
+    ]
+   },
+   "open_loop": 0
+  }
+ },
+ "card": "R-P1.72",
+ "claim_id": "274089df-03a6-4763-8bec-155aadf526c0",
+ "command": "python3 scripts/turnover-controls-prereg.py",
+ "feedback_removed": {
+  "1": {
+   "arm": "feedback-removed",
+   "loads": {
+    "4": [
+     5,
+     5
+    ],
+    "5": [
+     5,
+     5
+    ],
+    "6": [
+     5,
+     5
+    ]
+   },
+   "residence": 3,
+   "target": 1
+  },
+  "2": {
+   "arm": "feedback-removed",
+   "loads": {
+    "4": [
+     5,
+     5
+    ],
+    "5": [
+     5,
+     5
+    ],
+    "6": [
+     5,
+     5
+    ]
+   },
+   "residence": 3,
+   "target": 2
+  }
+ },
+ "independent_copy": {
+  "arm": "independent-copy",
+  "note": "initial inventory is fixed at (4,4) inside run(), so two distinct inventories are not expressible; the control is answered on the property that is (state-dependence)",
+  "residence": [
+   3,
+   3
+  ],
+  "same_transfers": true,
+  "targets": [
+   1,
+   2
+  ]
+ },
+ "not_constructible": [
+  {
+   "control": "sham (p = -2)",
+   "why": "run() refuses p outside 0..2 and exposes no per-role sign; a true zero-net-imbalance arm needs a new argument, not a hand-built trajectory"
+  },
+  {
+   "control": "independent initial inventory",
+   "why": "loads start at a fixed (4,4) inside run(); two inventories would need a parameter"
+  }
+ ],
+ "prereg": "docs/2026-11-27-PREREG-R-P1.72-turnover-controls.md",
+ "sham": {
+  "1": {
+   "arm": "sham",
+   "constructible": false,
+   "note": "run() refuses p outside 0..2 and exposes no per-role sign; a true zero-net-imbalance arm needs a new argument, so it is reported rather than approximated",
+   "residence_if_run": 3,
+   "target": 1
+  },
+  "2": {
+   "arm": "sham",
+   "constructible": false,
+   "note": "run() refuses p outside 0..2 and exposes no per-role sign; a true zero-net-imbalance arm needs a new argument, so it is reported rather than approximated",
+   "residence_if_run": 3,
+   "target": 2
+  }
+ },
+ "sham_note": "not constructible; zero-imbalance cell ties in both arms",
+ "verdict": "P1=HELD, P2=FAILED, P3=HELD, P4=FAILED, P5=HELD"
+}
