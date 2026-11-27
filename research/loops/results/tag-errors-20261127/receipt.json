@@ -1,0 +1,168 @@
+{
+ "anchor_perfect": {
+  "complementary": "1",
+  "independent": "3/4",
+  "shared": "1/2"
+ },
+ "card": "R-P1.74",
+ "claim_id": "8ad30edd-8bab-47ad-b9c8-f76b3905290a",
+ "command": "python3 scripts/tag-errors-prereg.py",
+ "matched_marginals": {
+  "complementary(0, 1)": [
+   {
+    "markers": 1,
+    "sources": [
+     "producer:B"
+    ],
+    "world": 0
+   },
+   {
+    "markers": 1,
+    "sources": [
+     "producer:B"
+    ],
+    "world": 1
+   }
+  ],
+  "complementary(1, 0)": [
+   {
+    "markers": 1,
+    "sources": [
+     "producer:A"
+    ],
+    "world": 0
+   },
+   {
+    "markers": 1,
+    "sources": [
+     "producer:A"
+    ],
+    "world": 1
+   }
+  ],
+  "independent(0, 0)": [
+   {
+    "markers": 0,
+    "sources": [],
+    "world": 0
+   },
+   {
+    "markers": 0,
+    "sources": [],
+    "world": 1
+   }
+  ],
+  "independent(0, 1)": [
+   {
+    "markers": 1,
+    "sources": [
+     "producer:B"
+    ],
+    "world": 0
+   },
+   {
+    "markers": 1,
+    "sources": [
+     "producer:B"
+    ],
+    "world": 1
+   }
+  ],
+  "independent(1, 0)": [
+   {
+    "markers": 1,
+    "sources": [
+     "producer:A"
+    ],
+    "world": 0
+   },
+   {
+    "markers": 1,
+    "sources": [
+     "producer:A"
+    ],
+    "world": 1
+   }
+  ],
+  "independent(1, 1)": [
+   {
+    "markers": 2,
+    "sources": [
+     "producer:A",
+     "producer:B"
+    ],
+    "world": 0
+   },
+   {
+    "markers": 2,
+    "sources": [
+     "producer:A",
+     "producer:B"
+    ],
+    "world": 1
+   }
+  ],
+  "shared(0, 0)": [
+   {
+    "markers": 0,
+    "sources": [],
+    "world": 0
+   },
+   {
+    "markers": 0,
+    "sources": [],
+    "world": 1
+   }
+  ],
+  "shared(1, 1)": [
+   {
+    "markers": 2,
+    "sources": [
+     "producer:A",
+     "producer:B"
+    ],
+    "world": 0
+   },
+   {
+    "markers": 2,
+    "sources": [
+     "producer:A",
+     "producer:B"
+    ],
+    "world": 1
+   }
+  ]
+ },
+ "prereg": "docs/2026-11-27-PREREG-R-P1.74-tag-errors.md",
+ "verdict": "P1=HELD, P2=FAILED, P3=FAILED, P4=FAILED, P5=HELD",
+ "w1_one_wrong": {
+  "complementary": "1",
+  "independent": "3/4",
+  "shared": "1/2"
+ },
+ "w2_both_wrong": {
+  "complementary": "1",
+  "independent": "3/4",
+  "shared": "1/2"
+ },
+ "w2_inverts": {
+  "complementary": true,
+  "independent": false,
+  "shared": false
+ },
+ "w3_random_wrong": {
+  "complementary": "1",
+  "independent": "3/4",
+  "shared": "1/2"
+ },
+ "w4_anonymous_ties": {
+  "complementary": 0,
+  "independent": 0,
+  "shared": 0
+ },
+ "w5_tag_shuffle": {
+  "complementary": "1",
+  "independent": "3/4",
+  "shared": "1/2"
+ }
+}
