@@ -135,8 +135,14 @@ One writer at a time; a delegate's claim is not a gate.
   falsely resolves in 2/2 eligible cases.
 - [ ] **D3:** Contact/fold/action-disturbance counterfactuals and horizon sweep.
   Depends on D1 and a preregistered discriminating instrument.
-- [ ] **D4:** True delay versus outward sampler on identical crossing tasks.
+- [x] **D4:** True delay versus outward sampler on identical crossing tasks.
   Independent. Preserve R-P1.43 historical verdict.
+  [R-P1.66](../docs/2026-11-27-PREREG-R-P1.66-true-delay.md): the true delay is
+  an **exact null for this estimator** (margin `0.200` at every lag, to twelve
+  decimals) while the lagging sampler moves it (`0.200 → −0.550`). R-P1.43's
+  Amendment 1 was right; the card's own P2 prediction was wrong and is recorded
+  as failed. The instruments *are* distinguishable as logs, so this is a result
+  about the estimator, not about a missing implementation.
 - [ ] **D5:** Composite masks, non-convex/reflex corners, finite-radius
   crossing labels and calibration. Independent. Gate seam/control pair before
   expanding the planner.
