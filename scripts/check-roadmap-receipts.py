@@ -28,8 +28,17 @@ Three artefact conventions exist in this tree and all three count:
      verdict in exactly this form — including R-P1.59, whose section names the
      commit it was frozen at.
 
-Convention 5 was added last and overturned the earlier finding. Each addition before
-it narrowed a false positive; this one deleted most of them.
+  6. **the row's deliverable IS a document.** "Write the preregistration before any
+     run" has no result to record — the file existing is the result. R-P1.6 cites
+     `2026-11-21-PREREG-A4-perspectives.md`, which exists and has no Execution
+     section, because writing it was the work.
+
+Convention 5 was added last and overturned the earlier finding: it took the count
+from 12 to 1. Each addition before it narrowed a false positive; that one deleted
+most of them.
+
+What is left after all six: a row that states a verdict and names no artefact that
+resolves. That is the real defect, and it is rare.
 
 Reading only convention 1 (the first version of this script) reported 17 MISSING
 where the true count was 3: the rest were measured and recorded somewhere else.
@@ -96,6 +105,9 @@ def parse_rows(text: str) -> list[dict]:
                 "scripts": re.findall(r"scripts/([a-zA-Z0-9_.\-]+\.py)", body),
                 # Modules the row claims to have shipped.
                 "modules": re.findall(r"`(psychopomp/[a-zA-Z0-9_./\-]+\.py)`", body),
+                # Any document or script the row names in backticks, which is how
+                # every row here cites its artefact.
+                "cites": re.findall(r"`([a-zA-Z0-9_.\-/]+\.(?:md|py|json))`", body),
                 "verdict": bool(VERDICT.search(body)),
                 # A row counts as "done" if it says so in any cell.
                 "done": bool(re.search(r"\bdone\b", body, re.I)),
@@ -198,7 +210,8 @@ def main() -> int:
         print("2: parsed 0 roadmap rows; the parser or the file changed", file=sys.stderr)
         return 2
 
-    unresolved, unlinked, missing, clean, shipped, recorded = [], [], [], [], [], []
+    unresolved, unlinked, missing, clean, shipped, recorded, cited = (
+        [], [], [], [], [], [], [])
     for r in rows:
         if not r["verdict"]:
             continue
@@ -222,7 +235,22 @@ def main() -> int:
         elif prereg_records_outcome(r["number"]):
             # The prereg carries its own result. Not a receipt, but a recorded
             # verdict with a date, which is what A1 was actually asking for.
+            # Checked BEFORE the citation test: a row whose cited card contains
+            # its own verdict is stronger evidence than one that merely resolves,
+            # and reporting it as the weaker kind would understate it.
             recorded.append({**r, "in": prereg_records_outcome(r["number"])})
+        elif r["cites"] and all(
+            (ROOT / c).is_file()
+            or (ROOT / "docs" / c).is_file()
+            or (ROOT / "scripts" / c).is_file()
+            for c in r["cites"]
+        ):
+            # Every artefact the row names resolves, but none records an outcome
+            # this check can find. For a "write the prereg" row that is the whole
+            # deliverable (R-P1.6); for anything else it means the result lives
+            # somewhere unparsed. Traceable by a reader, so it counts — reported
+            # separately so the weaker kind stays visible.
+            cited.append({**r, "cites": r["cites"]})
         elif r["scripts"]:
             # A script is named, so a run happened — but the outcome is not
             # recorded anywhere this gate can see. That is exactly the class A1
@@ -241,6 +269,7 @@ def main() -> int:
         "missing": [r["card"] for r in missing],
         "shipped_surface": [r["card"] for r in shipped],
         "recorded_in_prereg": [{"card": r["card"], "in": r["in"]} for r in recorded],
+        "cited_artifacts_exist": [{"card": r["card"], "cites": r["cites"]} for r in cited],
     }
     if a.json:
         print(json.dumps(out, indent=2))
@@ -248,7 +277,7 @@ def main() -> int:
         print(f"roadmap rows: {len(rows)}  clean: {len(clean)}  "
               f"unresolved: {len(unresolved)}  unlinked: {len(unlinked)}  "
               f"missing: {len(missing)}  shipped-surface: {len(shipped)}  "
-              f"recorded-in-prereg: {len(recorded)}")
+              f"recorded-in-prereg: {len(recorded)}  cited-exists: {len(cited)}")
         for r in unresolved:
             print(f"  UNRESOLVED {r['card']}: no receipt at {', '.join(r['bad'])}")
         for r in unlinked:
