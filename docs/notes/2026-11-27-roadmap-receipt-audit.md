@@ -49,3 +49,13 @@ Only one is `receipt.json`; the others are a directory with any output, a dated
 missing when 5 were real. A parser that reads one convention and passes is the
 failure mode this gate exists to prevent, which is why it exits 2 when it parses
 zero rows.
+
+## Backup state at this commit
+
+- Origin: `3381468` on `fix/p1-evidence-audit`.
+- NAS: `physis-psychopomp-r168-3381468.bundle`, sha256 `5bdd2736f980…`.
+- **Air USB: SKIPPED, not written.** Air stopped answering mid-session
+  (`scp: Connection closed`, then `ssh: connect to host 100.66.51.47 port 22:
+  Connection timed out`); three retries over ~2½ minutes failed, and the LAN
+  address has no route either. Recorded as a skip — the NAS copy and origin
+  stand, and the third copy is outstanding until the node is reachable.
