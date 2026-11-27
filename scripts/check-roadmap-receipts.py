@@ -21,6 +21,15 @@ Three artefact conventions exist in this tree and all three count:
   4. a **shipped surface**: the row names a module that exists, and a test covers
      it. A product row ("ship the planner") is not a measurement and cannot have a
      receipt; requiring one would push authors to invent a receipt file.
+  5. **the prereg carries its own result.** Far from being an edge case, this is
+     the dominant convention here: the card is frozen, then an `## Execution
+     status` section is appended with the verdict. A gate that only looked for
+     `receipt.json` reported 12 rows as untraceable when 11 of them had a recorded
+     verdict in exactly this form — including R-P1.59, whose section names the
+     commit it was frozen at.
+
+Convention 5 was added last and overturned the earlier finding. Each addition before
+it narrowed a false positive; this one deleted most of them.
 
 Reading only convention 1 (the first version of this script) reported 17 MISSING
 where the true count was 3: the rest were measured and recorded somewhere else.
@@ -111,6 +120,28 @@ def artifact_exists(name: str) -> bool:
     return False
 
 
+EXEC_SECTION = re.compile(r"^#+\s*(Execution|Result|Outcome|Status)\b", re.I | re.M)
+
+
+def prereg_records_outcome(number: str) -> list[str]:
+    """Docs naming this card that carry their own execution/result section.
+
+    Returns the filenames, so a caller can name where the evidence is rather than
+    just claiming it exists.
+    """
+    found = []
+    for f in (ROOT / "docs").glob("*.md"):
+        if not re.search(rf"R-P1\.{number}(?!\d)", f.name):
+            continue
+        try:
+            body = f.read_text(errors="ignore")
+        except OSError:
+            continue
+        if EXEC_SECTION.search(body):
+            found.append(f.name)
+    return found
+
+
 def shipped_tested(module: Path) -> bool:
     """Is this module named by any test file?"""
     stem = module.stem
@@ -167,7 +198,7 @@ def main() -> int:
         print("2: parsed 0 roadmap rows; the parser or the file changed", file=sys.stderr)
         return 2
 
-    unresolved, unlinked, missing, clean, shipped = [], [], [], [], []
+    unresolved, unlinked, missing, clean, shipped, recorded = [], [], [], [], [], []
     for r in rows:
         if not r["verdict"]:
             continue
@@ -188,6 +219,10 @@ def main() -> int:
             # in its own bucket so the count stays honest about what was checked:
             # this proves the code is there and tested, never that a number holds.
             shipped.append(r)
+        elif prereg_records_outcome(r["number"]):
+            # The prereg carries its own result. Not a receipt, but a recorded
+            # verdict with a date, which is what A1 was actually asking for.
+            recorded.append({**r, "in": prereg_records_outcome(r["number"])})
         elif r["scripts"]:
             # A script is named, so a run happened — but the outcome is not
             # recorded anywhere this gate can see. That is exactly the class A1
@@ -205,19 +240,23 @@ def main() -> int:
         "unlinked": [{"card": r["card"], "found": r["found"]} for r in unlinked],
         "missing": [r["card"] for r in missing],
         "shipped_surface": [r["card"] for r in shipped],
+        "recorded_in_prereg": [{"card": r["card"], "in": r["in"]} for r in recorded],
     }
     if a.json:
         print(json.dumps(out, indent=2))
     else:
         print(f"roadmap rows: {len(rows)}  clean: {len(clean)}  "
               f"unresolved: {len(unresolved)}  unlinked: {len(unlinked)}  "
-              f"missing: {len(missing)}  shipped-surface: {len(shipped)}")
+              f"missing: {len(missing)}  shipped-surface: {len(shipped)}  "
+              f"recorded-in-prereg: {len(recorded)}")
         for r in unresolved:
             print(f"  UNRESOLVED {r['card']}: no receipt at {', '.join(r['bad'])}")
         for r in unlinked:
             print(f"  unlinked   {r['card']}: receipt exists ({r['found'][0]}) but the row does not cite it")
+        for r in recorded:
+            print(f"  recorded   {r['card']}: outcome recorded in {r['in'][0]}")
         for r in missing:
-            print(f"  MISSING    {r['card']}: states a verdict, no receipt found")
+            print(f"  MISSING    {r['card']}: states a verdict, nothing recorded anywhere")
 
     # Fail on anything that makes a claim untraceable. `unlinked` is a warning:
     # the evidence exists, the row just does not point at it.
