@@ -1,0 +1,86 @@
+{
+ "anonymous": {
+  "disjoint": "tie",
+  "full": "tie",
+  "partial-A-wide": "tie",
+  "partial-cross": "tie"
+ },
+ "arms": {
+  "disjoint": [
+   [
+    "m1"
+   ],
+   [
+    "m2"
+   ]
+  ],
+  "full": [
+   [
+    "m1",
+    "m2"
+   ],
+   [
+    "m1",
+    "m2"
+   ]
+  ],
+  "partial-A-wide": [
+   [
+    "m1",
+    "m2"
+   ],
+   [
+    "m2"
+   ]
+  ],
+  "partial-cross": [
+   [
+    "m1"
+   ],
+   [
+    "m1",
+    "m2"
+   ]
+  ]
+ },
+ "card": "R-P1.75",
+ "claim_id": "a362d23e-06f7-4327-b129-966e15d664f5",
+ "command": "python3 scripts/partial-overlap-prereg.py",
+ "coupling": "rebuilt view on R-P1.46's worlds: two markers, per-producer coverage; NOT comparable to that card's fractions",
+ "delivery_counts": {
+  "disjoint:producer:A:m1": 1,
+  "disjoint:producer:A:m2": 0,
+  "disjoint:producer:B:m1": 0,
+  "disjoint:producer:B:m2": 1,
+  "full:producer:A:m1": 1,
+  "full:producer:A:m2": 1,
+  "full:producer:B:m1": 1,
+  "full:producer:B:m2": 1,
+  "partial-A-wide:producer:A:m1": 1,
+  "partial-A-wide:producer:A:m2": 1,
+  "partial-A-wide:producer:B:m1": 0,
+  "partial-A-wide:producer:B:m2": 1,
+  "partial-cross:producer:A:m1": 1,
+  "partial-cross:producer:A:m2": 0,
+  "partial-cross:producer:B:m1": 1,
+  "partial-cross:producer:B:m2": 1
+ },
+ "markers": [
+  "m1",
+  "m2"
+ ],
+ "one_producer_wrong": {
+  "disjoint": "tie",
+  "full": "tie",
+  "partial-A-wide": "wrong",
+  "partial-cross": "right"
+ },
+ "perfect": {
+  "disjoint": "right",
+  "full": "right",
+  "partial-A-wide": "right",
+  "partial-cross": "right"
+ },
+ "prereg": "docs/2026-11-27-PREREG-R-P1.75-partial-overlap.md",
+ "verdict": "P1=HELD, P2=FAILED, P3=HELD, P4=HELD, P5=HELD"
+}
