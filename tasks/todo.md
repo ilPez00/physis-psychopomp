@@ -154,9 +154,24 @@ One writer at a time; a delegate's claim is not a gate.
   Amendment 1 was right; the card's own P2 prediction was wrong and is recorded
   as failed. The instruments *are* distinguishable as logs, so this is a result
   about the estimator, not about a missing implementation.
-- [ ] **D5:** Composite masks, non-convex/reflex corners, finite-radius
+- [x] **D5:** Composite masks, non-convex/reflex corners, finite-radius
   crossing labels and calibration. Independent. Gate seam/control pair before
   expanding the planner.
+  **CLOSED 2026-11-27, one clause per card:**
+  composite masks and reflex corners →
+  [R-P1.70](../docs/2026-11-27-PREREG-R-P1.70-mask-seams.md) (found
+  `BlindEstimate` is a rectangle by construction, and that its own "reflex" arm
+  never made a hole) then
+  [R-P1.71](../docs/2026-11-27-PREREG-R-P1.71-mask-hole.md) (one mask, notch
+  event **unique 5/5**, solid-arm event **tie 5/5**); finite-radius labels and
+  calibration → [R-P1.73](../docs/2026-11-27-PREREG-R-P1.73-radius-labels.md),
+  which found and **fixed a real defect**: the crossing labeller used the point
+  rule while the visibility pass used the disc, so no estimate existed for any
+  `visual_radius > 0`. Post-fix widths 20.2 → 16.0 across `r = 0…2` with per-edge
+  deltas tracking `r` within ±0.35.
+  **Not closed by this:** estimating a hole (the estimator is still a rectangle)
+  and non-convex masks beyond one L. Those are new mechanisms, not missed
+  clauses, and the planner seam the item gates is still where it was.
 - [x] **D6:** Rotating-observer frames; separately test coordinate invariance
   and physical coverage changes. Independent.
   [R-P1.65](../docs/2026-11-27-PREREG-R-P1.65-rotating-observer.md): coordinate
