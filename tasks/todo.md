@@ -38,13 +38,24 @@ One writer at a time; a delegate's claim is not a gate.
   the frozen fixture (`predictions_for`) and refuses a self-consistent lie;
   8 tests. Written by the W2 delegate on an **unpinned model**, then reviewed and
   fixed here — not a delegate result. The loop half is still open.
-- [ ] **A4: Bounded execute and verify loop.** Reject a second diagnostic action,
+- [x] **A4: Bounded execute and verify loop.** Reject a second diagnostic action,
   non-allowlisted action and forged receipts. Verify both laws and all reset
   states, losing controls and abstention. Depends on A2/A3. Gate:
   `tests/test_active_discovery.py` and the demo replay in `scripts/research-gates.py`.
   First review `work/occluded-evidence-proof` (`2f08e49`) for reusable receipt
   and verifier code. Its four-cell early/late-observer fixture is separate
   from R-P1.48; neither card's results substitute for A4 on this fixture.
+  **CLOSED 2026-11-27 — each named guard already had a test, 17 across three
+  files:** second diagnostic → `test_second_diagnostic_is_refused`;
+  non-allowlisted policy → `test_unknown_policy_refuses_before_simulation`;
+  forged receipt → 11 assertions in `tests/test_active_receipt.py`;
+  abstention on a malformed log → `test_malformed_log_abstains`. Both laws and
+  all reset states →
+  `test_adaptive_resolves_both_laws_and_all_states`; losing controls →
+  `test_passive_and_shuffled_never_resolve`. Run:
+  `.venv/bin/python -m pytest tests/test_active_{loop,discovery,receipt}.py`
+  → **17 passed**. The item was stale, like D4 and D6 before it: the work
+  existed and the checkbox did not.
 - [x] **Checkpoint A (local half).** `scripts/active-discovery.py` — selected
   action sealed before acquisition; verifier checks the executor's actual
   8/8 decisions against the frozen fixture; 8/8 shuffled abstentions; second
