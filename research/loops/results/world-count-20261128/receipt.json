@@ -1,0 +1,194 @@
+{
+ "arithmetic": {
+  "measured": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "predicted": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "card": "R-P1.77",
+ "cells": {
+  "3@3@active": {
+   "arm": "active",
+   "cases": 120,
+   "hits": 40,
+   "mean_precision": 0.1111111111111111,
+   "mean_worlds_after": 8.958333333333334,
+   "mean_worlds_before": 12.266666666666667,
+   "n": 3,
+   "precision": 0.1111111111111111,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 3
+  },
+  "3@3@passive": {
+   "arm": "passive",
+   "cases": 120,
+   "hits": 32,
+   "mean_precision": 0.08888888888888888,
+   "mean_worlds_after": 12.266666666666667,
+   "mean_worlds_before": 12.266666666666667,
+   "n": 3,
+   "precision": 0.08888888888888889,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 3
+  },
+  "3@3@shuffle": {
+   "arm": "shuffle",
+   "cases": 120,
+   "hits": 32,
+   "mean_precision": 0.08888888888888888,
+   "mean_worlds_after": 12.266666666666667,
+   "mean_worlds_before": 12.266666666666667,
+   "n": 3,
+   "precision": 0.08888888888888889,
+   "proposed": 360,
+   "shuffle": true,
+   "size": 3
+  },
+  "3@6@active": {
+   "arm": "active",
+   "cases": 120,
+   "hits": 164,
+   "mean_precision": 0.45555555555555555,
+   "mean_worlds_after": 21.6,
+   "mean_worlds_before": 41.74166666666667,
+   "n": 3,
+   "precision": 0.45555555555555555,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 6
+  },
+  "3@6@passive": {
+   "arm": "passive",
+   "cases": 120,
+   "hits": 144,
+   "mean_precision": 0.4,
+   "mean_worlds_after": 41.74166666666667,
+   "mean_worlds_before": 41.74166666666667,
+   "n": 3,
+   "precision": 0.4,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 6
+  },
+  "3@6@shuffle": {
+   "arm": "shuffle",
+   "cases": 120,
+   "hits": 144,
+   "mean_precision": 0.4,
+   "mean_worlds_after": 41.74166666666667,
+   "mean_worlds_before": 41.74166666666667,
+   "n": 3,
+   "precision": 0.4,
+   "proposed": 360,
+   "shuffle": true,
+   "size": 6
+  },
+  "4@3@active": {
+   "arm": "active",
+   "cases": 120,
+   "hits": 18,
+   "mean_precision": 0.05,
+   "mean_worlds_after": 18.866666666666667,
+   "mean_worlds_before": 24.783333333333335,
+   "n": 4,
+   "precision": 0.05,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 3
+  },
+  "4@3@passive": {
+   "arm": "passive",
+   "cases": 120,
+   "hits": 16,
+   "mean_precision": 0.04444444444444444,
+   "mean_worlds_after": 24.783333333333335,
+   "mean_worlds_before": 24.783333333333335,
+   "n": 4,
+   "precision": 0.044444444444444446,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 3
+  },
+  "4@3@shuffle": {
+   "arm": "shuffle",
+   "cases": 120,
+   "hits": 16,
+   "mean_precision": 0.04444444444444444,
+   "mean_worlds_after": 24.783333333333335,
+   "mean_worlds_before": 24.783333333333335,
+   "n": 4,
+   "precision": 0.044444444444444446,
+   "proposed": 360,
+   "shuffle": true,
+   "size": 3
+  },
+  "4@6@active": {
+   "arm": "active",
+   "cases": 120,
+   "hits": 82,
+   "mean_precision": 0.22777777777777777,
+   "mean_worlds_after": 604.7083333333334,
+   "mean_worlds_before": 994.4583333333334,
+   "n": 4,
+   "precision": 0.22777777777777777,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 6
+  },
+  "4@6@passive": {
+   "arm": "passive",
+   "cases": 120,
+   "hits": 68,
+   "mean_precision": 0.18888888888888886,
+   "mean_worlds_after": 994.4583333333334,
+   "mean_worlds_before": 994.4583333333334,
+   "n": 4,
+   "precision": 0.18888888888888888,
+   "proposed": 360,
+   "shuffle": false,
+   "size": 6
+  },
+  "4@6@shuffle": {
+   "arm": "shuffle",
+   "cases": 120,
+   "hits": 68,
+   "mean_precision": 0.18888888888888886,
+   "mean_worlds_after": 994.4583333333334,
+   "mean_worlds_before": 994.4583333333334,
+   "n": 4,
+   "precision": 0.18888888888888888,
+   "proposed": 360,
+   "shuffle": true,
+   "size": 6
+  }
+ },
+ "claim_id": "a6f8533c-b57f-4dd5-adde-2aaa1707a9bb",
+ "command": "python3 scripts/world-count-prereg.py",
+ "deltas": {
+  "3@3": 0.022222222222222213,
+  "3@6": 0.055555555555555525,
+  "4@3": 0.005555555555555557,
+  "4@6": 0.03888888888888889
+ },
+ "entities": [
+  3,
+  4
+ ],
+ "heldout": 120,
+ "prereg": "docs/2026-11-28-PREREG-R-P1.77-world-count.md",
+ "sizes": [
+  3,
+  6
+ ],
+ "verdict": "P1=FAILED, P2=HELD, P3=HELD, P4=HELD, P5=HELD"
+}
