@@ -1,0 +1,97 @@
+{
+ "amendment": "R-P1.57 is a finite arithmetic table with no horizon; this uses the simulator path D3 describes",
+ "card": "R-P1.76",
+ "claim_id": "3b085a31-3aae-44ff-a678-71f977904534",
+ "command": "python3 scripts/horizon-prereg.py",
+ "horizons": [
+  25,
+  30,
+  40,
+  60,
+  80,
+  120,
+  160,
+  200
+ ],
+ "kick": {
+  "additive": [
+   0.0,
+   1.5
+  ],
+  "flipped": [
+   0.0,
+   -1.5
+  ],
+  "t": 20
+ },
+ "peak": 59.520814,
+ "peak_at": 120,
+ "prereg": "docs/2026-11-27-PREREG-R-P1.76-horizon.md",
+ "rows": {
+  "120": {
+   "control_distance": 73.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 59.520814
+  },
+  "160": {
+   "control_distance": 73.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 59.520814
+  },
+  "200": {
+   "control_distance": 83.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 59.520814
+  },
+  "25": {
+   "control_distance": 33.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 3.3
+  },
+  "30": {
+   "control_distance": 43.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 3.3
+  },
+  "40": {
+   "control_distance": 43.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 3.3
+  },
+  "60": {
+   "control_distance": 53.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 12.3
+  },
+  "80": {
+   "control_distance": 53.434114,
+   "correct": 5,
+   "decided": 5,
+   "of_seeds": 5,
+   "separation": 12.3
+  }
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "sufficient_horizon": 25,
+ "verdict": "P1=HELD, P2=HELD, P3=HELD, P4=HELD, P5=HELD"
+}
