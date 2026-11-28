@@ -29,6 +29,11 @@ STEPS = [
     ("law conformance", [PY, "scripts/law-conformance.py"]),
     ("research gates", [PY, "scripts/research-gates.py"]),
     ("prereg checklist", [PY, "scripts/prereg-checklist.py"]),
+    # A claim with no artefact is caught by check-roadmap-receipts; a claim
+    # with no SEARCH is what actually happened on 2026-11-27 (R-P1.70 and
+    # R-P1.73 restated R-P1.33 and R-P1.44). This one prompts a read, not a
+    # verdict -- a hit means "open that receipt".
+    ("prior art", [PY, "scripts/check-prior-art.py"]),
     ("repro block", [PY, "scripts/repro-table.py", "--check"]),
     ("recoverability", [PY, "scripts/recoverability.py"]),
     ("probe baseline", [PY, "scripts/probes.py"]),
