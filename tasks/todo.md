@@ -144,8 +144,20 @@ One writer at a time; a delegate's claim is not a gate.
   Same-episode confirmation catches 2/2 eligible mimics. A fresh reset at
   equal mean cost falsely accepts 4/8; a paired-equivalent unseen law still
   falsely resolves in 2/2 eligible cases.
-- [ ] **D3:** Contact/fold/action-disturbance counterfactuals and horizon sweep.
+- [x] **D3:** Contact/fold/action-disturbance counterfactuals and horizon sweep.
   Depends on D1 and a preregistered discriminating instrument.
+  **CLOSED 2026-11-28, both clauses already measured.**
+  Contact/fold → [R-P1.23](../docs/2026-11-22-PREREG-R-P1.23-gravity-hidden-contact.md)
+  (`hidden-contact-20261122`): the pair contacts at `(50.0, 34.6)`, hidden under
+  `o = (40,60,20,65)` and observable under R-P1.20's `(40,60,35,65)` with the same
+  dynamics; P1–P3 upheld, P4 falsified as its row records. Re-ran the script on
+  2026-11-28 and it reproduces those four verdicts exactly.
+  Horizon → [R-P1.76](../docs/2026-11-27-PREREG-R-P1.76-horizon.md): attribution
+  is **5/5 correct at T=25** while `motion_distance` is 3.3 of its 59.5 ceiling,
+  so the verdict saturates about 5× sooner than the distance; separation peaks at
+  `T=120` and is flat to 200.
+  **D1 dependency met** (R-P1.57, frozen `ae1cba8`). The instrument D3 asked for is
+  `attribute` + `motion_distance`, already preregistered in those cards.
 - [x] **D4:** True delay versus outward sampler on identical crossing tasks.
   Independent. Preserve R-P1.43 historical verdict.
   [R-P1.66](../docs/2026-11-27-PREREG-R-P1.66-true-delay.md): the true delay is
